@@ -44,7 +44,7 @@ export default function AccountPage() {
       setError(res.error)
       return
     }
-    toast(`Welcome to ICT Quest, ${res.user.displayName.split(' ')[0]}! 🎉`)
+    toast(`Welcome to CodeLingo, ${res.user.displayName.split(' ')[0]}! 🎉`)
     navigate('/profile')
   }
 
@@ -143,7 +143,7 @@ export default function AccountPage() {
         </form>
       )}
       <p className="text-[.78rem] text-ink-soft mt-4">
-        This is a demo account system for practicing ICT Quest — please don't use a real or important password.
+        This is a demo account system for practicing CodeLingo — please don't use a real or important password.
       </p>
     </div>
   )

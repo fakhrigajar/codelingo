@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="max-w-[1180px] mx-auto flex justify-between items-center flex-wrap gap-3 text-ink-soft text-sm">
         <div className="flex items-center gap-2.5 font-display font-extrabold text-base text-indigo-dark">
           <span className="w-2.5 h-2.5 rounded bg-sun" />
-          ICT Quest
+          CodeLingo
         </div>
         <span>A prototype e-learning site. Accounts &amp; chat are stored locally on this device.</span>
       </div>

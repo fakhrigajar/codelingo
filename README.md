@@ -1,4 +1,4 @@
-# ICT Quest
+# CodeLingo
 
 A kids' ICT e-learning site — courses, grade roadmaps, badges, XP, and a
 community chat — rebuilt with **Vite + React**, styled entirely with
@@ -21,7 +21,7 @@ npm run preview   # preview the production build
 Go to **`/admin/login`** and log in with the default password:
 
 ```
-ictquest-admin
+codelingo-admin
 ```
 
 You can change this in `src/data/data.js` (`ADMIN_PASSWORD`).
@@ -47,7 +47,7 @@ src/
   data/
     data.js              default seed content (courses, grades, badges, rooms)
   lib/
-    storage.js           localStorage helpers (namespaced under "ictquest:")
+    storage.js           localStorage helpers (namespaced under "codelingo:")
     helpers.js            small pure helper functions (progress %, ids, etc.)
   context/
     ContentContext.jsx    editable app content (persisted, admin-driven)

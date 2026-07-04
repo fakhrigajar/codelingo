@@ -1,4 +1,4 @@
-// Default/seed content for ICT Quest.
+// Default/seed content for CodeLingo.
 // This is the initial data used the very first time the app runs.
 // After that, everything the admin edits lives in localStorage
 // (see src/context/ContentContext.jsx) and this file is only the
@@ -619,4 +619,4 @@ export const DEFAULT_PAGE_TEXT = {
 
 // Admin password for the demo admin route.
 // Change this before deploying anywhere real.
-export const ADMIN_PASSWORD = "ictquest-admin";
+export const ADMIN_PASSWORD = "codelingo-admin";

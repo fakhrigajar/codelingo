@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center px-6">
       <div className="max-w-[380px] w-full bg-white border-2 border-line rounded-[20px] p-9">
-        <div className="font-display font-extrabold text-xl text-indigo-dark mb-1">ICT Quest</div>
+        <div className="font-display font-extrabold text-xl text-indigo-dark mb-1">CodeLingo</div>
         <p className="font-mono text-xs text-ink-soft mb-6">Admin panel access</p>
         {error && <div className="bg-[#FFEDEB] text-[#B23B2C] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-4">{error}</div>}
         <form onSubmit={handleSubmit}>
@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
           </button>
         </form>
         <p className="text-[.78rem] text-ink-soft mt-4">
-          Demo default password: <code className="font-mono">ictquest-admin</code> — change it in{' '}
+          Demo default password: <code className="font-mono">codelingo-admin</code> — change it in{' '}
           <code className="font-mono">src/data/data.js</code>.
         </p>
       </div>

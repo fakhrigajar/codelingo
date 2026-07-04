@@ -13,8 +13,7 @@ export default function CourseCard({
   return (
     <div
       onClick={() => navigate(`/courses/${course.id}`)}
-      className="bg-white rounded-2xl border-2 h-[200px] border-line overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
-      style={minWidth ? { minWidth } : undefined}
+      className="bg-white rounded-2xl border-2 h-[250px] border-line overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
     >
       <div className="w-full h-2.5" style={{ background: course.color }} />
       <div className="p-5 flex-1 flex flex-col">

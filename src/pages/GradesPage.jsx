@@ -23,7 +23,7 @@ export default function GradesPage() {
 
   return (
     <div>
-      <div className="pt-1.5">
+      <div className="pt-12 pb-2.5">
         <h1 className="text-[2.2rem]">{pageText.gradesTitle}</h1>
         <p className="text-ink-soft max-w-[600px]">{pageText.gradesSubtitle}</p>
         <FilterRow

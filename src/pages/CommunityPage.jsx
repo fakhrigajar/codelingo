@@ -71,13 +71,6 @@ export default function CommunityPage() {
 
   return (
     <div>
-      <div className="pt-12 pb-2.5">
-        <h1 className="text-[2.2rem]">Community</h1>
-        <p className="text-ink-soft max-w-[600px]">
-          Say hi, ask for help, or show off your latest project. Messages here are visible to everyone using ICT
-          Quest — be kind, and never share personal details.
-        </p>
-      </div>
       <div className="grid md:grid-cols-[220px_1fr] gap-6 pt-11">
         <div className="flex flex-col gap-2">
           {rooms.map((r) => (

@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import { AdminAuthProvider } from './context/AdminAuthContext'
 import { ToastProvider } from './context/ToastContext'
 
+import ScrollToTop from './components/common/ScrollToTop'
 import Layout from './components/layout/Layout'
 import RequireAuth from './routes/RequireAuth'
 import RequireAdmin from './routes/RequireAdmin'
@@ -33,6 +34,7 @@ export default function App() {
       <AuthProvider>
         <AdminAuthProvider>
           <ToastProvider>
+            <ScrollToTop />
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<HomePage />} />

@@ -24,7 +24,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-bg">
       <div className="max-w-[1180px] mx-auto px-6 py-8 grid md:grid-cols-[220px_1fr] gap-8">
         <aside className="md:sticky md:top-8 h-fit">
-          <div className="font-display font-extrabold text-lg text-indigo-dark mb-1">ICT Quest</div>
+          <div className="font-display font-extrabold text-lg text-indigo-dark mb-1">CodeLingo</div>
           <div className="font-mono text-xs text-ink-soft mb-5">Admin panel</div>
           <nav className="flex md:flex-col gap-1.5 flex-wrap">
             {links.map((l) => (

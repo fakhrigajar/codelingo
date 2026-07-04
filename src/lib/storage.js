@@ -1,7 +1,7 @@
-// Small localStorage wrapper. Everything is namespaced under "ictquest:"
+// Small localStorage wrapper. Everything is namespaced under "codelingo:"
 // so the app never collides with anything else living in localStorage.
 
-const PREFIX = 'ictquest:'
+const PREFIX = 'codelingo:'
 
 export function storageGet(key, fallback = null) {
   try {
