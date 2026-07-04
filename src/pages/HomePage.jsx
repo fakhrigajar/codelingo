@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
-import BootScreen from "../components/home/BootScreen";
 import CourseCard from "../components/courses/CourseCard";
 import { Carousel } from "antd";
+import HeroRight from "../components/home/HeroRight";
 
 const FEATURES = [
   {
@@ -187,54 +187,57 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="relative py-16 pb-10 grid md:grid-cols-[1.05fr_.95fr] gap-10 items-center">
-        <div>
-          <div className="eyebrow">🖥️ ICT for curious kids, ages 7–13</div>
-          <h1 className="text-[2.9rem] max-w-[560px]">
-            Boot up your brain.
-            <br />
-            Learn tech by doing.
-          </h1>
-          <p className="text-[1.15rem] text-ink-soft max-w-[480px] my-4 mb-7">
-            Bite-sized courses in computers, coding, typing, internet safety,
-            digital art and robotics — built for kids, guided by badges, and
-            backed by a friendly community.
-          </p>
-          <div className="flex gap-3.5 flex-wrap mb-5">
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate("/courses")}
-            >
-              Start learning →
-            </button>
-            <button className="btn btn-outline" onClick={goAccountOrProfile}>
-              Create free account
-            </button>
+      <section className="py-10">
+        <div className="relative overflow-hidden rounded-[28px] bg-[#05070C] p-8 md:p-12 grid md:grid-cols-[1.05fr_.95fr] gap-10 items-center">
+          <div className="hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]" />
+          <div className="absolute inset-0 z-0 pointer-events-none [background:radial-gradient(circle_at_15%_100%,rgba(140,122,230,.25),transparent_50%),radial-gradient(circle_at_90%_0%,rgba(255,201,60,.14),transparent_45%)]" />
+          <div className="relative z-10">
+            <h1 className="text-[2.9rem] font-bold text-white">
+              Boot up your brain.
+              <br />
+              Learn tech by doing.
+            </h1>
+            <p className="text-[1.15rem] text-[#C4CCEB] my-4 mb-7">
+              Bite-sized courses in computers, coding, typing, internet safety,
+              digital art and robotics — built for kids, guided by badges, and
+              backed by a friendly community.
+            </p>
+            <div className="flex gap-3.5 flex-wrap mb-5">
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate("/courses")}
+              >
+                Start learning →
+              </button>
+              <button className="btn btn-outline" onClick={goAccountOrProfile}>
+                Create free account
+              </button>
+            </div>
+            <div className="flex gap-7 mt-6 flex-wrap font-mono">
+              <div>
+                <b className="block text-2xl text-white">{courses.length}</b>
+                <span className="text-[.78rem] text-[#8891C4]">
+                  course modules
+                </span>
+              </div>
+              <div>
+                <b className="block text-2xl text-white">
+                  {courses.reduce((a, c) => a + c.lessons.length, 0)}+
+                </b>
+                <span className="text-[.78rem] text-[#8891C4]">
+                  bite-size lessons
+                </span>
+              </div>
+              <div>
+                <b className="block text-2xl text-white">3</b>
+                <span className="text-[.78rem] text-[#8891C4]">chat rooms</span>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-7 mt-6 flex-wrap font-mono">
-            <div>
-              <b className="block text-2xl text-indigo-dark">
-                {courses.length}
-              </b>
-              <span className="text-[.78rem] text-ink-soft">
-                course modules
-              </span>
-            </div>
-            <div>
-              <b className="block text-2xl text-indigo-dark">
-                {courses.reduce((a, c) => a + c.lessons.length, 0)}+
-              </b>
-              <span className="text-[.78rem] text-ink-soft">
-                bite-size lessons
-              </span>
-            </div>
-            <div>
-              <b className="block text-2xl text-indigo-dark">3</b>
-              <span className="text-[.78rem] text-ink-soft">chat rooms</span>
-            </div>
+          <div className="relative z-10">
+            <HeroRight />
           </div>
         </div>
-        <BootScreen />
       </section>
 
       <section className="py-16 relative">
@@ -320,7 +323,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16">
+      <section>
         <div className="bg-indigo-dark rounded-[22px] p-12 flex justify-between items-center gap-6 flex-wrap [background-image:radial-gradient(circle_at_90%_10%,rgba(255,201,60,.18),transparent_45%),radial-gradient(circle_at_10%_90%,rgba(140,122,230,.22),transparent_45%)]">
           <div>
             <h2 className="text-white text-[1.8rem] max-w-[460px]">

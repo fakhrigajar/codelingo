@@ -1,7 +1,7 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { initials } from "../../lib/helpers";
-
+import siteLogo from "../../assets/codelingo.png";
 const links = [
   { to: "/", label: "Home", end: true },
   { to: "/courses", label: "Courses" },
@@ -16,10 +16,13 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-[100] bg-bg/90 backdrop-blur-md border-b-2 border-line">
       <div className="max-w-[1180px] mx-auto flex items-center gap-6 px-6 py-3.5">
-        <div className="flex items-center gap-2.5 font-display font-extrabold text-[1.3rem] text-indigo-dark">
-          <span className="w-3.5 h-3.5 rounded [box-shadow:6px_0_0_#FF6B5B,12px_0_0_#2FC493] bg-sun mr-3.5" />
+        <Link
+          to="/"
+          className="flex items-center gap font-display font-extrabold text-[1.3rem] text-indigo-dark"
+        >
+          <img className="w-10" src={siteLogo} alt="" />
           CodeLingo
-        </div>
+        </Link>
         <nav className="hidden sm:flex gap-1 ml-2 flex-1">
           {links.map((l) => (
             <NavLink
