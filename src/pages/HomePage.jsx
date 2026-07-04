@@ -188,9 +188,9 @@ export default function HomePage() {
   return (
     <div>
       <section className="py-10">
-        <div className="relative overflow-hidden rounded-[28px] bg-[#05070C] p-8 md:p-12 grid md:grid-cols-[1.05fr_.95fr] gap-10 items-center">
+        <div className="relative overflow-hidden rounded-[28px] bg-[#05070C] dark:bg-transparent p-8 md:p-12 grid md:grid-cols-[1.05fr_.95fr] gap-10 items-center">
           <div className="hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]" />
-          <div className="absolute inset-0 z-0 pointer-events-none [background:radial-gradient(circle_at_15%_100%,rgba(140,122,230,.25),transparent_50%),radial-gradient(circle_at_90%_0%,rgba(255,201,60,.14),transparent_45%)]" />
+          <div className="absolute inset-0 z-0 pointer-events-none dark:bg-none [background:radial-gradient(circle_at_15%_100%,rgba(140,122,230,.25),transparent_50%),radial-gradient(circle_at_90%_0%,rgba(255,201,60,.14),transparent_45%)]" />
           <div className="relative z-10">
             <h1 className="text-[2.9rem] font-bold text-white">
               Boot up your brain.
@@ -246,7 +246,7 @@ export default function HomePage() {
           <h2 className="text-[2.1rem]">
             Everything a young technologist needs
           </h2>
-          <p className="text-ink-soft text-[1.05rem]">
+          <p className="text-ink-soft dark:text-white/60 text-[1.05rem]">
             Six features, wired together — click through any of them from the
             course or community pages.
           </p>
@@ -255,7 +255,7 @@ export default function HomePage() {
           {FEATURES.map((f) => (
             <div
               key={f.pad}
-              className="bg-panel rounded-2xl px-6 pt-7 pb-6 border-2 border-line relative transition-all hover:-translate-y-1.5 hover:border-mint hover:shadow-card"
+              className="bg-panel dark:bg-white/5 rounded-2xl px-6 pt-7 pb-6 border-2 border-line dark:border-white/10 relative transition-all hover:-translate-y-1.5 hover:border-mint hover:shadow-card"
             >
               <span className="font-mono text-[.7rem] text-[#9AA6C7] absolute top-3.5 right-4">
                 {f.pad}
@@ -267,7 +267,9 @@ export default function HomePage() {
                 {f.icon}
               </div>
               <h3 className="text-[1.15rem] mb-2">{f.title}</h3>
-              <p className="text-ink-soft text-[.95rem] m-0">{f.body}</p>
+              <p className="text-ink-soft dark:text-white/60 text-[.95rem] m-0">
+                {f.body}
+              </p>
             </div>
           ))}
         </div>
@@ -282,13 +284,15 @@ export default function HomePage() {
           {STEPS.map((s) => (
             <div
               key={s.num}
-              className="bg-panel border-2 border-line rounded-2xl p-5 text-left"
+              className="bg-panel dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-left"
             >
               <span className="font-mono font-bold text-violet text-[.85rem] mb-2.5 block">
                 {s.num}
               </span>
               <h4 className="text-[1.02rem] mb-1.5">{s.title}</h4>
-              <p className="text-ink-soft text-[.9rem] m-0">{s.body}</p>
+              <p className="text-ink-soft dark:text-white/60 text-[.9rem] m-0">
+                {s.body}
+              </p>
             </div>
           ))}
         </div>

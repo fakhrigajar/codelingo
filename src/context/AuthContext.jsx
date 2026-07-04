@@ -69,6 +69,39 @@ export function AuthProvider({ children }) {
     storageRemove(SESSION_KEY)
   }, [])
 
+  const updateAccount = useCallback(({ displayName, username, email, currentPassword, newPassword }) => {
+    if (!currentUser) return { ok: false, error: 'Not logged in.' }
+    if (!currentPassword || currentUser.password !== currentPassword) {
+      return { ok: false, error: 'Current password is incorrect.' }
+    }
+    const uname = username.trim().toLowerCase()
+    if (!displayName.trim() || !uname) {
+      return { ok: false, error: 'Please fill in every required field.' }
+    }
+    if (newPassword && newPassword.length < 4) {
+      return { ok: false, error: 'New password must be at least 4 characters.' }
+    }
+    const users = getUsers()
+    if (uname !== currentUser.username && users[uname]) {
+      return { ok: false, error: 'That username is taken — try another.' }
+    }
+    const updated = {
+      ...currentUser,
+      displayName: displayName.trim(),
+      username: uname,
+      email: email.trim(),
+      password: newPassword || currentUser.password,
+    }
+    if (uname !== currentUser.username) {
+      delete users[currentUser.username]
+    }
+    users[uname] = updated
+    saveUsers(users)
+    setCurrentUser(updated)
+    storageSet(SESSION_KEY, uname)
+    return { ok: true, user: updated }
+  }, [currentUser])
+
   const saveCurrentUser = useCallback((updated) => {
     setCurrentUser(updated)
     const users = getUsers()
@@ -76,7 +109,7 @@ export function AuthProvider({ children }) {
     saveUsers(users)
   }, [])
 
-  const value = { currentUser, ready, login, signup, logout, saveCurrentUser }
+  const value = { currentUser, ready, login, signup, logout, saveCurrentUser, updateAccount }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

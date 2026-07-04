@@ -44,7 +44,7 @@ export default function CommunityPage() {
     return (
       <div className="pt-12">
         <h1 className="text-[2.2rem]">Community</h1>
-        <p className="text-ink-soft">No chat rooms have been set up yet.</p>
+        <p className="text-ink-soft dark:text-white/60">No chat rooms have been set up yet.</p>
       </div>
     )
   }
@@ -78,21 +78,21 @@ export default function CommunityPage() {
               key={r.id}
               onClick={() => setActiveRoom(r.id)}
               className={`text-left px-3.5 py-3 rounded-xl border-2 font-bold text-[.92rem] ${
-                activeRoom === r.id ? 'bg-violet border-violet text-white' : 'bg-white border-line text-ink-soft'
+                activeRoom === r.id ? 'bg-violet border-violet text-white' : 'bg-white dark:bg-white/5 border-line dark:border-white/10 text-ink-soft dark:text-white/60'
               }`}
             >
               # {r.name}
             </button>
           ))}
         </div>
-        <div className="bg-white border-2 border-line rounded-[18px] flex flex-col h-[560px] overflow-hidden">
-          <div className="px-5 py-4 border-b-2 border-line flex justify-between items-center">
+        <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] flex flex-col h-[560px] overflow-hidden">
+          <div className="px-5 py-4 border-b-2 border-line dark:border-white/10 flex justify-between items-center">
             <h3 className="m-0 text-[1.05rem]"># {room.name}</h3>
-            <span className="font-mono text-xs text-ink-soft">{room.sub}</span>
+            <span className="font-mono text-xs text-ink-soft dark:text-white/60">{room.sub}</span>
           </div>
           <div ref={boxRef} className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3.5">
             {messages.length === 0 && (
-              <p className="text-ink-soft text-center mt-10">No messages yet — be the first to say hi! 👋</p>
+              <p className="text-ink-soft dark:text-white/60 text-center mt-10">No messages yet — be the first to say hi! 👋</p>
             )}
             {messages.slice(-100).map((m, i) => {
               const mine = currentUser && m.username === currentUser.username
@@ -105,10 +105,10 @@ export default function CommunityPage() {
                   <div>
                     <div
                       className={`rounded-xl px-3.5 py-2.5 ${
-                        mine ? 'bg-indigo-dark text-white rounded-tr-[3px]' : 'bg-[#F1F5FD] rounded-tl-[3px]'
+                        mine ? 'bg-indigo-dark dark:bg-violet text-white rounded-tr-[3px]' : 'bg-[#F1F5FD] dark:bg-white/10 rounded-tl-[3px]'
                       }`}
                     >
-                      <div className={`font-extrabold text-[.8rem] mb-0.5 ${mine ? 'text-[#BFD0FF]' : 'text-indigo-dark'}`}>
+                      <div className={`font-extrabold text-[.8rem] mb-0.5 ${mine ? 'text-[#BFD0FF]' : 'text-indigo-dark dark:text-white'}`}>
                         {m.displayName}
                         <span className="font-mono text-[.65rem] text-[#9AA6C7] ml-2">{time}</span>
                       </div>
@@ -119,7 +119,7 @@ export default function CommunityPage() {
               )
             })}
           </div>
-          <div className="flex gap-2.5 px-4 py-3.5 border-t-2 border-line">
+          <div className="flex gap-2.5 px-4 py-3.5 border-t-2 border-line dark:border-white/10">
             <input
               type="text"
               value={input}
@@ -127,7 +127,7 @@ export default function CommunityPage() {
               onKeyDown={(e) => e.key === 'Enter' && sendChat()}
               maxLength={240}
               placeholder="Say something friendly..."
-              className="flex-1 border-2 border-line rounded-xl px-3.5 py-3 font-body text-[.95rem] focus:border-violet outline-none"
+              className="flex-1 bg-white dark:bg-white/5 border-2 border-line dark:border-white/15 dark:text-white rounded-xl px-3.5 py-3 font-body text-[.95rem] focus:border-violet outline-none"
             />
             <button className="btn btn-dark btn-sm" onClick={sendChat}>
               Send

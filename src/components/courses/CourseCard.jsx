@@ -13,13 +13,13 @@ export default function CourseCard({
   return (
     <div
       onClick={() => navigate(`/courses/${course.id}`)}
-      className="bg-white rounded-2xl border-2 h-[250px] border-line overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
+      className="bg-white dark:bg-white/5 rounded-2xl border-2 h-[250px] border-line dark:border-white/10 overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
     >
       <div className="w-full h-2.5" style={{ background: course.color }} />
       <div className="p-5 flex-1 flex flex-col">
         <h3 className="text-[1.5rem] font-bold mb-1.5">{course.title}</h3>
-        <p className="text-ink-soft text-[.9rem] flex-1">{course.blurb}</p>
-        <div className="flex justify-between items-center mt-4 font-mono text-[.72rem] text-ink-soft">
+        <p className="text-ink-soft dark:text-white/60 text-[.9rem] flex-1">{course.blurb}</p>
+        <div className="flex justify-between items-center mt-4 font-mono text-[.72rem] text-ink-soft dark:text-white/60">
           <span
             className="px-2.5 py-1 rounded-md font-bold"
             style={{ background: `${course.color}33` }}
@@ -30,13 +30,13 @@ export default function CourseCard({
         </div>
         {(showProgress || currentUser) && (
           <>
-            <div className="h-2 bg-line rounded-md overflow-hidden mt-3">
+            <div className="h-2 bg-line dark:bg-white/10 rounded-md overflow-hidden mt-3">
               <div
                 className="h-full bg-mint rounded-md"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <div className="font-mono text-[.68rem] text-ink-soft mt-1.5">
+            <div className="font-mono text-[.68rem] text-ink-soft dark:text-white/60 mt-1.5">
               {pct}% complete
             </div>
           </>

@@ -16,9 +16,9 @@ export default function ProfilePage() {
   const totalCompleted = Object.values(currentUser.completed).reduce((a, arr) => a + arr.length, 0)
 
   const handleLogout = () => {
+    navigate('/')
     logout()
     toast('Logged out. See you soon!')
-    navigate('/')
   }
 
   return (
@@ -29,7 +29,7 @@ export default function ProfilePage() {
         </div>
         <div className="flex-1 min-w-[200px]">
           <h1 className="text-[1.9rem]">{currentUser.displayName}</h1>
-          <p className="font-mono text-ink-soft text-[.85rem]">
+          <p className="font-mono text-ink-soft dark:text-white/50 text-[.85rem]">
             @{currentUser.username} · age {currentUser.age} · joined{' '}
             {new Date(currentUser.joined).toLocaleDateString()}
           </p>
@@ -40,17 +40,17 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4 my-7">
-        <div className="bg-white border-2 border-line rounded-2xl p-5 text-center">
-          <b className="block font-mono text-[1.7rem] text-indigo-dark">{currentUser.xp}</b>
-          <span className="text-[.82rem] text-ink-soft">Total XP</span>
+        <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-center">
+          <b className="block font-mono text-[1.7rem] text-indigo-dark dark:text-white">{currentUser.xp}</b>
+          <span className="text-[.82rem] text-ink-soft dark:text-white/60">Total XP</span>
         </div>
-        <div className="bg-white border-2 border-line rounded-2xl p-5 text-center">
-          <b className="block font-mono text-[1.7rem] text-indigo-dark">{totalCompleted}</b>
-          <span className="text-[.82rem] text-ink-soft">Lessons completed</span>
+        <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-center">
+          <b className="block font-mono text-[1.7rem] text-indigo-dark dark:text-white">{totalCompleted}</b>
+          <span className="text-[.82rem] text-ink-soft dark:text-white/60">Lessons completed</span>
         </div>
-        <div className="bg-white border-2 border-line rounded-2xl p-5 text-center">
-          <b className="block font-mono text-[1.7rem] text-indigo-dark">{currentUser.badges.length}</b>
-          <span className="text-[.82rem] text-ink-soft">Badges earned</span>
+        <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-center">
+          <b className="block font-mono text-[1.7rem] text-indigo-dark dark:text-white">{currentUser.badges.length}</b>
+          <span className="text-[.82rem] text-ink-soft dark:text-white/60">Badges earned</span>
         </div>
       </div>
 
@@ -62,10 +62,10 @@ export default function ProfilePage() {
             <div
               key={b.id}
               title={b.desc}
-              className={`bg-white border-2 border-line rounded-2xl px-4 py-3.5 text-center w-[110px] ${!has ? 'opacity-35' : ''}`}
+              className={`bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl px-4 py-3.5 text-center w-[110px] ${!has ? 'opacity-35' : ''}`}
             >
               <div className="text-2xl">{b.icon}</div>
-              <div className="text-[.72rem] font-bold mt-1.5 text-ink-soft">{b.name}</div>
+              <div className="text-[.72rem] font-bold mt-1.5 text-ink-soft dark:text-white/60">{b.name}</div>
             </div>
           )
         })}

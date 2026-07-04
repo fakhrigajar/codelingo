@@ -16,7 +16,7 @@ export default function GradesPage() {
     return (
       <div className="pt-12">
         <h1 className="text-[2.2rem]">{pageText.gradesTitle}</h1>
-        <p className="text-ink-soft">No grades have been added yet. Check back soon!</p>
+        <p className="text-ink-soft dark:text-white/60">No grades have been added yet. Check back soon!</p>
       </div>
     )
   }
@@ -25,7 +25,7 @@ export default function GradesPage() {
     <div>
       <div className="pt-12 pb-2.5">
         <h1 className="text-[2.2rem]">{pageText.gradesTitle}</h1>
-        <p className="text-ink-soft max-w-[600px]">{pageText.gradesSubtitle}</p>
+        <p className="text-ink-soft dark:text-white/60 max-w-[600px]">{pageText.gradesSubtitle}</p>
         <FilterRow
           options={grades.map((g) => ({ value: g.id, label: g.label }))}
           active={activeGradeId}
@@ -33,10 +33,10 @@ export default function GradesPage() {
         />
       </div>
       <div className="mt-2.5">
-        <p className="text-ink-soft text-[.95rem] mb-7">
+        <p className="text-ink-soft dark:text-white/60 text-[.95rem] mb-7">
           Ages {grade.age} · {grade.topics.length} stops on this roadmap
         </p>
-        <div className="relative ml-[22px] border-l-[3px] border-dashed border-line pl-[38px]">
+        <div className="relative ml-[22px] border-l-[3px] border-dashed border-line dark:border-white/15 pl-[38px]">
           {grade.topics.map((topic, i) => {
             const course = courseById(courses, topic.source?.courseId)
             const lesson = lessonById(course, topic.source?.lessonId)

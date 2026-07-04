@@ -35,8 +35,8 @@ export default function QuizPanel({ lesson, done, onComplete }) {
             {q.options.map((opt, oi) => {
               let extra = ''
               if (submitted) {
-                if (oi === q.correct) extra = 'bg-[#E4FBF2] border-mint text-[#0B7A55]'
-                else if (oi === answers[qi]) extra = 'bg-[#FFEDEB] border-coral text-[#B23B2C]'
+                if (oi === q.correct) extra = 'bg-[#E4FBF2] border-mint text-[#0B7A55] dark:bg-[#0B3B2E] dark:text-[#6EE7B7]'
+                else if (oi === answers[qi]) extra = 'bg-[#FFEDEB] border-coral text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5]'
               } else if (answers[qi] === oi) {
                 extra = 'border-violet'
               }
@@ -49,7 +49,7 @@ export default function QuizPanel({ lesson, done, onComplete }) {
                     if (submitted) return
                     setAnswers((prev) => prev.map((a, i) => (i === qi ? oi : a)))
                   }}
-                  className={`block w-full text-left bg-bg border-2 border-line rounded-xl px-4 py-3.5 mb-2.5 font-bold text-ink hover:border-violet disabled:cursor-default ${extra}`}
+                  className={`block w-full text-left bg-bg dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-xl px-4 py-3.5 mb-2.5 font-bold text-ink dark:text-white hover:border-violet disabled:cursor-default ${extra}`}
                 >
                   {opt}
                 </button>

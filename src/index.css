@@ -10,7 +10,7 @@
   h2,
   h3,
   h4 {
-    @apply font-display text-indigo-dark leading-tight;
+    @apply font-display text-indigo-dark dark:text-white leading-tight;
     margin: 0 0 0.4em 0;
   }
   a {
@@ -42,20 +42,20 @@
     @apply bg-indigo-dark text-white shadow-dark hover:shadow-dark-lg hover:-translate-y-0.5;
   }
   .btn-outline {
-    @apply bg-white text-indigo-dark border-2 border-line hover:border-indigo-dark;
+    @apply bg-white text-indigo-dark border-2 border-line hover:border-indigo-dark dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:border-white/40;
   }
   .btn-sm {
     @apply px-3.5 py-2 text-sm rounded-[10px];
   }
   .eyebrow {
-    @apply inline-flex items-center gap-2 bg-[#FFF3D6] text-[#9A6B00] font-mono text-xs font-bold px-3 py-1.5 rounded-full tracking-wide mb-4;
+    @apply inline-flex items-center gap-2 bg-[#FFF3D6] text-[#9A6B00] dark:bg-white/10 dark:text-[#FFD98A] font-mono text-xs font-bold px-3 py-1.5 rounded-full tracking-wide mb-4;
   }
   .field label {
-    @apply block font-bold text-sm mb-1.5 text-ink-soft;
+    @apply block font-bold text-sm mb-1.5 text-ink-soft dark:text-white/60;
   }
   .field input,
   .field select {
-    @apply w-full px-3.5 py-3 border-2 border-line rounded-[10px] font-body text-[.95rem] focus:border-violet outline-none;
+    @apply w-full px-3.5 py-3 bg-white border-2 border-line rounded-[10px] font-body text-[.95rem] text-ink focus:border-violet outline-none dark:bg-white/5 dark:border-white/15 dark:text-white;
   }
 }
 

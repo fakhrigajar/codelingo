@@ -17,7 +17,7 @@ export default function CoursesPage() {
     <div>
       <div className="pt-12 pb-2.5">
         <h1 className="text-[2.2rem]">Course library</h1>
-        <p className="text-ink-soft max-w-[600px]">
+        <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
           Six modules covering the ICT basics every kid should know. Tap a card to open it.
         </p>
         <FilterRow

@@ -88,10 +88,10 @@ export default function CourseDetailPage() {
         <div className="flex-1 min-w-[220px]">
           <span className="eyebrow">{course.level}</span>
           <h1 className="text-[1.9rem]">{course.title}</h1>
-          <p className="text-ink-soft max-w-[520px]">{course.blurb}</p>
+          <p className="text-ink-soft dark:text-white/60 max-w-[520px]">{course.blurb}</p>
         </div>
       </div>
-      <div className="h-2 bg-line rounded-md overflow-hidden max-w-[400px]">
+      <div className="h-2 bg-line dark:bg-white/10 rounded-md overflow-hidden max-w-[400px]">
         <div className="h-full bg-mint rounded-md" style={{ width: `${pct}%` }} />
       </div>
       <div className="flex flex-col gap-3 mt-6">
@@ -101,17 +101,17 @@ export default function CourseDetailPage() {
             <div
               key={l.id}
               onClick={() => handleOpenLesson(l.id)}
-              className="flex items-center gap-4 bg-white border-2 border-line rounded-2xl px-4.5 px-[18px] py-4 cursor-pointer transition-colors hover:border-violet"
+              className="flex items-center gap-4 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl px-4.5 px-[18px] py-4 cursor-pointer transition-colors hover:border-violet"
             >
               <div
                 className={`w-[30px] h-[30px] rounded-full border-2 flex items-center justify-center flex-shrink-0 text-[.9rem] ${
-                  done ? 'bg-mint border-mint text-white' : 'border-line'
+                  done ? 'bg-mint border-mint text-white' : 'border-line dark:border-white/15'
                 }`}
               >
                 {done ? '✓' : ''}
               </div>
               <div className="font-bold flex-1">{l.title}</div>
-              <div className="font-mono text-xs text-ink-soft">{l.type === 'quiz' ? 'QUIZ' : 'LESSON'}</div>
+              <div className="font-mono text-xs text-ink-soft dark:text-white/60">{l.type === 'quiz' ? 'QUIZ' : 'LESSON'}</div>
             </div>
           )
         })}

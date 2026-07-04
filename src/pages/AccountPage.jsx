@@ -49,12 +49,12 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="max-w-[440px] mx-auto my-16 bg-white border-2 border-line rounded-[20px] p-9">
-      <div className="flex gap-2 mb-6 bg-[#F1F5FD] rounded-xl p-1">
+    <div className="max-w-[440px] mx-auto my-16 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-9">
+      <div className="flex gap-2 mb-6 bg-[#F1F5FD] dark:bg-white/5 rounded-xl p-1">
         <button
           onClick={() => switchTab('login')}
           className={`flex-1 py-2.5 rounded-[9px] font-extrabold ${
-            tab === 'login' ? 'bg-white text-indigo-dark shadow-[0_2px_6px_rgba(27,38,71,.12)]' : 'text-ink-soft'
+            tab === 'login' ? 'bg-white dark:bg-white/10 text-indigo-dark dark:text-white shadow-[0_2px_6px_rgba(27,38,71,.12)]' : 'text-ink-soft dark:text-white/50'
           }`}
         >
           Log in
@@ -62,14 +62,14 @@ export default function AccountPage() {
         <button
           onClick={() => switchTab('signup')}
           className={`flex-1 py-2.5 rounded-[9px] font-extrabold ${
-            tab === 'signup' ? 'bg-white text-indigo-dark shadow-[0_2px_6px_rgba(27,38,71,.12)]' : 'text-ink-soft'
+            tab === 'signup' ? 'bg-white dark:bg-white/10 text-indigo-dark dark:text-white shadow-[0_2px_6px_rgba(27,38,71,.12)]' : 'text-ink-soft dark:text-white/50'
           }`}
         >
           Sign up
         </button>
       </div>
 
-      {error && <div className="bg-[#FFEDEB] text-[#B23B2C] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-4">{error}</div>}
+      {error && <div className="bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-4">{error}</div>}
 
       {tab === 'login' ? (
         <form onSubmit={handleLogin}>
@@ -142,7 +142,7 @@ export default function AccountPage() {
           </button>
         </form>
       )}
-      <p className="text-[.78rem] text-ink-soft mt-4">
+      <p className="text-[.78rem] text-ink-soft dark:text-white/50 mt-4">
         This is a demo account system for practicing CodeLingo — please don't use a real or important password.
       </p>
     </div>

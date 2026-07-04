@@ -16,6 +16,7 @@ import GradesPage from './pages/GradesPage'
 import CommunityPage from './pages/CommunityPage'
 import AccountPage from './pages/AccountPage'
 import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 import AdminLoginPage from './pages/AdminLoginPage'
@@ -48,6 +49,14 @@ export default function App() {
                   element={
                     <RequireAuth>
                       <ProfilePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <RequireAuth>
+                      <SettingsPage />
                     </RequireAuth>
                   }
                 />
