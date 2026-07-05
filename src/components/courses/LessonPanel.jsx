@@ -1,10 +1,29 @@
 import QuizPanel from "./QuizPanel";
 
+function BackToAbout({ onBack }) {
+  return (
+    <button
+      type="button"
+      onClick={onBack}
+      className="flex items-center gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 hover:text-violet dark:hover:text-violet mb-4 -ml-1"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M7.78033 5.03033C8.07322 4.73744 8.07322 4.26256 7.78033 3.96967C7.48744 3.67678 7.01256 3.67678 6.71967 3.96967L3.72175 6.9676C3.5848 7.10348 3.5 7.29184 3.5 7.50001C3.5 7.69314 3.573 7.86922 3.69292 8.00217C3.70157 8.01176 3.71049 8.02116 3.71967 8.03034L6.71967 11.0303C7.01256 11.3232 7.48744 11.3232 7.78033 11.0303C8.07322 10.7374 8.07322 10.2626 7.78033 9.96967L6.06066 8.25H14.25C17.1495 8.25 19.5 10.6005 19.5 13.5C19.5 16.3995 17.1495 18.75 14.25 18.75H3.75C3.33579 18.75 3 19.0858 3 19.5C3 19.9142 3.33579 20.25 3.75 20.25H14.25C17.9779 20.25 21 17.2279 21 13.5C21 9.77208 17.9779 6.75 14.25 6.75H6.06067L7.78033 5.03033Z"
+          className="fill-current"
+        />
+      </svg>
+      Back to overview
+    </button>
+  );
+}
+
 export default function LessonPanel({
   course,
   lesson,
   currentUser,
   onComplete,
+  onBack,
 }) {
   const done =
     currentUser && (currentUser.completed[course.id] || []).includes(lesson.id);
@@ -12,6 +31,7 @@ export default function LessonPanel({
   if (lesson.type === "quiz") {
     return (
       <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7 mt-6">
+        {onBack && <BackToAbout onBack={onBack} />}
         <QuizPanel
           lesson={lesson}
           done={done}
@@ -23,6 +43,7 @@ export default function LessonPanel({
 
   return (
     <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7 mt-6">
+      {onBack && <BackToAbout onBack={onBack} />}
       <span className="eyebrow">📖 lesson</span>
       <h2>{lesson.title}</h2>
       <p className="text-[1.02rem]">{lesson.body}</p>

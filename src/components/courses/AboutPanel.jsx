@@ -1,7 +1,46 @@
+import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { completedCount, progressPct } from "../../lib/helpers";
 
+const SIZES = {
+  mobile: { node: 40, row: 66, topPad: 40, offset: 34, icon: 16, iconLast: 18 },
+  desktop: { node: 64, row: 100, topPad: 60, offset: 60, icon: 24, iconLast: 26 },
+};
+const LABEL_WIDTH = 150;
+const LABEL_GAP = 16;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 640,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isMobile;
+}
+
+function shadeColor(hex, percent) {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const amt = Math.round(2.55 * percent);
+  const clamp = (v) => (v < 0 ? 0 : v > 255 ? 255 : v);
+  const R = clamp((num >> 16) + amt);
+  const G = clamp(((num >> 8) & 0x00ff) + amt);
+  const B = clamp((num & 0x0000ff) + amt);
+  return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+}
+
 export default function AboutPanel({ course, currentUser, badges, onStart }) {
+  const isMobile = useIsMobile();
+  const sz = isMobile ? SIZES.mobile : SIZES.desktop;
+  const NODE_SIZE = sz.node;
+  const ROW_HEIGHT = sz.row;
+  const TOP_PAD = sz.topPad;
+  const ICON_SIZE = sz.icon;
+  const ICON_SIZE_LAST = sz.iconLast;
+  const OFFSETS = [0, sz.offset, 0, -sz.offset];
   const lessonCount = course.lessons.filter((l) => l.type === "lesson").length;
   const quizCount = course.lessons.filter((l) => l.type === "quiz").length;
   const doneIds = (currentUser && currentUser.completed[course.id]) || [];
@@ -87,66 +126,256 @@ export default function AboutPanel({ course, currentUser, badges, onStart }) {
         </p>
       )}
 
-      <div className="mb-6 overflow-x-auto no-scrollbar">
-        <div className="flex items-center min-w-max px-1 py-2">
+      <div className="mb-8">
+        <div
+          className="relative mx-auto"
+          style={{
+            width:
+              NODE_SIZE +
+              Math.max(...OFFSETS.map(Math.abs)) * 2 +
+              40 +
+              (isMobile ? 0 : (LABEL_GAP + LABEL_WIDTH) * 2),
+            height:
+              (course.lessons.length - 1) * ROW_HEIGHT +
+              NODE_SIZE +
+              TOP_PAD +
+              8,
+          }}
+        >
           {course.lessons.map((l, i) => {
             const isDone = doneIds.includes(l.id);
-            return (
-              <div key={l.id} className="flex items-center">
-                {i > 0 && (
-                  <div
-                    className={`w-6 sm:w-9 h-0.5 flex-shrink-0 ${
-                      isDone ? "" : "bg-line dark:bg-white/10"
-                    }`}
-                    style={isDone ? { background: course.color } : undefined}
-                  />
-                )}
+            const isLast = i === course.lessons.length - 1;
+            const isCurrent = !isDone && l.id === firstIncomplete.id;
+            const isActive = isDone || isCurrent;
+            const isLocked =
+              !isDone && i > 0 && !doneIds.includes(course.lessons[i - 1].id);
+            const offsetX = OFFSETS[i % OFFSETS.length];
+            const cy = i * ROW_HEIGHT + NODE_SIZE / 2 + TOP_PAD;
+            const labelOnRight = offsetX >= 0;
+
+            let connector = null;
+            if (!isLast) {
+              const nextOffsetX = OFFSETS[(i + 1) % OFFSETS.length];
+              const dx = nextOffsetX - offsetX;
+              const dy = ROW_HEIGHT;
+              const length = Math.hypot(dx, dy);
+              const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+              connector = (
                 <div
-                  title={l.title}
-                  className={`w-9 h-9 rounded-full border-2 flex items-center justify-center flex-shrink-0 text-[.85rem] font-bold ${
-                    isDone
-                      ? "text-white border-transparent"
-                      : "border-line dark:border-white/15 text-ink-soft dark:text-white/50"
+                  className={`absolute rounded-full ${
+                    isDone ? "" : "bg-line dark:bg-white/10"
                   }`}
-                  style={isDone ? { background: course.color } : undefined}
+                  style={{
+                    left: `calc(50% + ${offsetX}px)`,
+                    top: cy,
+                    width: length,
+                    height: isMobile ? 4 : 6,
+                    background: isDone ? course.color : undefined,
+                    transform: `rotate(${angle}deg)`,
+                    transformOrigin: "0 50%",
+                  }}
+                />
+              );
+            }
+
+            return (
+              <Fragment key={l.id}>
+                {connector}
+
+                {isCurrent && (
+                  <div
+                    className={`absolute z-20 whitespace-nowrap rounded-xl font-mono font-bold text-white shadow-md ${
+                      isMobile ? "px-2.5 py-1 text-[.6rem]" : "px-4 py-1.5 text-[.72rem]"
+                    }`}
+                    style={{
+                      left: `calc(50% + ${offsetX}px)`,
+                      top: cy - NODE_SIZE / 2 - (isMobile ? 30 : 42),
+                      transform: "translateX(-50%)",
+                      background: course.color,
+                    }}
+                  >
+                    START
+                    <div
+                      className="absolute left-1/2 -bottom-1.5 w-3 h-3 -translate-x-1/2 rotate-45"
+                      style={{ background: course.color }}
+                    />
+                  </div>
+                )}
+
+                {!isMobile && (
+                  <div
+                    className={`absolute z-10 leading-tight ${
+                      isLocked
+                        ? "text-ink-soft/50 dark:text-white/25"
+                        : "text-ink dark:text-white/90"
+                    }`}
+                    style={{
+                      top: cy,
+                      transform: "translateY(-50%)",
+                      width: LABEL_WIDTH,
+                      textAlign: labelOnRight ? "left" : "right",
+                      ...(labelOnRight
+                        ? {
+                            left: `calc(50% + ${offsetX + NODE_SIZE / 2 + LABEL_GAP}px)`,
+                          }
+                        : {
+                            right: `calc(50% + ${NODE_SIZE / 2 + LABEL_GAP - offsetX}px)`,
+                          }),
+                    }}
+                  >
+                    <div
+                      className="font-mono text-[.68rem] font-bold uppercase tracking-wide"
+                      style={{ color: isActive ? course.color : undefined }}
+                    >
+                      Unit {i + 1}
+                    </div>
+                    <div className="text-[.82rem] font-bold line-clamp-2">
+                      {l.title}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  title={l.title}
+                  disabled={isLocked}
+                  onClick={() => !isLocked && onStart?.(l.id)}
+                  className={`absolute z-10 rounded-full flex items-center justify-center transition-transform ${
+                    isLocked ? "cursor-not-allowed" : "hover:scale-105"
+                  } ${
+                    isActive
+                      ? "text-white"
+                      : "bg-white dark:bg-white/5 border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/40"
+                  } ${isCurrent ? "animate-pulse" : ""}`}
+                  style={{
+                    left: `calc(50% + ${offsetX}px)`,
+                    top: cy,
+                    width: NODE_SIZE,
+                    height: NODE_SIZE,
+                    transform: "translate(-50%, -50%)",
+                    background: isActive ? course.color : undefined,
+                    boxShadow: isActive
+                      ? `0 ${isMobile ? 3 : 5}px 0 ${shadeColor(course.color, -25)}`
+                      : `0 ${isMobile ? 2 : 3}px 0 rgba(0,0,0,0.06)`,
+                  }}
                 >
                   {isDone ? (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none">
                       <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
                         d="M19.5249 6.46434C19.8208 6.75426 19.8256 7.22911 19.5357 7.52495L11.1641 16.0674C10.0858 17.1676 8.31417 17.1676 7.23591 16.0674L4.46434 13.2392C4.17442 12.9434 4.17922 12.4685 4.47505 12.1786C4.77089 11.8887 5.24574 11.8935 5.53566 12.1893L8.30723 15.0175C8.79735 15.5176 9.60265 15.5176 10.0928 15.0175L18.4643 6.47505C18.7543 6.17922 19.2291 6.17442 19.5249 6.46434Z"
                         fill="white"
                       />
                     </svg>
-                  ) : l.type === "quiz" ? (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12.9287 2.69642C12.3607 2.34078 11.6395 2.34078 11.0714 2.69642L3.01544 7.74017C1.8954 8.44141 1.9269 10.0835 3.07301 10.7412L11.129 15.3647C11.6685 15.6743 12.3317 15.6743 12.8712 15.3647L20.2501 11.1298V14.9997C20.2501 15.4139 20.5859 15.7497 21.0001 15.7497C21.4143 15.7497 21.7501 15.4139 21.7501 14.9997V9.66584C21.9298 8.96773 21.6776 8.17395 20.9847 7.74017L12.9287 2.69642Z"
-                        className="fill-indigo-dark dark:fill-white/50"
+                  ) : isLocked ? (
+                    <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none">
+                      <rect
+                        x="5"
+                        y="11"
+                        width="14"
+                        height="9"
+                        rx="2.5"
+                        fill="currentColor"
+                        opacity="0.5"
                       />
                       <path
-                        d="M5.87338 13.4838C5.64129 13.3506 5.3558 13.3511 5.12422 13.4852C4.89264 13.6193 4.75006 13.8667 4.75006 14.1343V18.3524C4.75006 19.6762 6.135 20.4874 7.28666 19.9988C8.64749 19.4214 10.5618 18.7499 12.0001 18.7499C13.4383 18.7499 15.3526 19.4214 16.7135 19.9988C17.8651 20.4874 19.2501 19.6762 19.2501 18.3524V14.1343C19.2501 13.8667 19.1075 13.6194 18.8759 13.4853C18.6443 13.3512 18.3588 13.3506 18.1267 13.4838L12.4979 16.7143C12.1896 16.8912 11.8106 16.8912 11.5023 16.7143L5.87338 13.4838Z"
-                        className="fill-indigo-dark dark:fill-white/50"
+                        d="M8 11V8a4 4 0 0 1 8 0v3"
+                        stroke="currentColor"
+                        strokeOpacity="0.5"
+                        strokeWidth="1.8"
+                        fill="none"
+                      />
+                    </svg>
+                  ) : isLast ? (
+                    <svg width={ICON_SIZE_LAST} height={ICON_SIZE_LAST} viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M7 4h10v3.2c0 2.9-1.8 5.4-4.4 6.3l-.1 2.5h2.3a1 1 0 0 1 0 2H9.2a1 1 0 0 1 0-2h2.3l-.1-2.5C8.8 12.6 7 10.1 7 7.2V4z"
+                        fill={isActive ? "white" : "currentColor"}
+                        opacity={isActive ? 1 : 0.5}
+                      />
+                      <path
+                        d="M5 5H3.5a1.5 1.5 0 0 0-1.5 1.5v1A3.5 3.5 0 0 0 5.5 11"
+                        stroke={isActive ? "white" : "currentColor"}
+                        strokeOpacity={isActive ? 1 : 0.5}
+                        strokeWidth="1.6"
+                        fill="none"
+                      />
+                      <path
+                        d="M19 5h1.5A1.5 1.5 0 0 1 22 6.5v1A3.5 3.5 0 0 1 18.5 11"
+                        stroke={isActive ? "white" : "currentColor"}
+                        strokeOpacity={isActive ? 1 : 0.5}
+                        strokeWidth="1.6"
+                        fill="none"
+                      />
+                      <rect
+                        x="8"
+                        y="18"
+                        width="8"
+                        height="2.4"
+                        rx="1.2"
+                        fill={isActive ? "white" : "currentColor"}
+                        opacity={isActive ? 1 : 0.5}
+                      />
+                    </svg>
+                  ) : l.type === "quiz" ? (
+                    <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M4 10.5h16v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z"
+                        fill={isActive ? "white" : "currentColor"}
+                        opacity={isActive ? 1 : 0.5}
+                      />
+                      <path
+                        d="M3.5 8.5A1.5 1.5 0 0 1 5 7h14a1.5 1.5 0 0 1 1.5 1.5V11h-17V8.5z"
+                        fill={isActive ? "white" : "currentColor"}
+                      />
+                      <circle
+                        cx="12"
+                        cy="9.2"
+                        r="1.3"
+                        fill={isActive ? undefined : "currentColor"}
+                        className={isActive ? "opacity-70" : ""}
+                        style={
+                          isActive
+                            ? { fill: shadeColor(course.color, -25) }
+                            : undefined
+                        }
+                      />
+                      <rect
+                        x="10.7"
+                        y="10.3"
+                        width="2.6"
+                        height="2.6"
+                        rx="0.5"
+                        fill={
+                          isActive
+                            ? shadeColor(course.color, -25)
+                            : "currentColor"
+                        }
+                        opacity={isActive ? 0.7 : 1}
                       />
                     </svg>
                   ) : (
-                    i + 1
+                    <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 6.5c-1.7-1.3-4-2-6.3-2-.7 0-1.2.5-1.2 1.2v10.6c0 .7.5 1.2 1.2 1.2 2 0 4.2.6 5.7 1.8.4.3.9.3 1.2 0 1.5-1.2 3.7-1.8 5.7-1.8.7 0 1.2-.5 1.2-1.2V5.7c0-.7-.5-1.2-1.2-1.2-2.3 0-4.6.7-6.3 2z"
+                        fill={isActive ? "white" : "currentColor"}
+                        opacity={isActive ? 1 : 0.5}
+                      />
+                      <path
+                        d="M12 6.5v11.8"
+                        stroke={
+                          isActive
+                            ? shadeColor(course.color, -25)
+                            : "currentColor"
+                        }
+                        strokeOpacity={isActive ? 0.6 : 0.3}
+                        strokeWidth="1.4"
+                      />
+                    </svg>
                   )}
-                </div>
-              </div>
+                </button>
+              </Fragment>
             );
           })}
         </div>

@@ -100,89 +100,34 @@ export default function CourseDetailPage() {
       ? ` New badge: ${badges.find((b) => b.id === newBadges[0])?.name} 🎉`
       : "";
     toast(`+${xp} XP earned!${badgeMsg}`);
+
+    const nextLesson = course.lessons[course.lessons.indexOf(lesson) + 1];
+    setTimeout(() => {
+      setActiveLessonId(nextLesson ? nextLesson.id : ABOUT_ID);
+    }, 1200);
   };
 
   return (
     <div>
-      <div className="grid grid-cols-[1fr_3fr] gap-5">
-        <div>
-          <div className="flex flex-col gap-3 mt-6">
-            <div
-              onClick={() => handleOpenLesson(ABOUT_ID)}
-              className={`flex items-center bg-white dark:bg-white/5 border-2 rounded-2xl px-4.5 px-[18px] py-4 cursor-pointer transition-colors border-line dark:border-white/10`}
-            >
-              <div className="font-bold w-full text-center">About</div>
-            </div>
-            {course.lessons.map((l, i) => {
-              const done =
-                currentUser &&
-                (currentUser.completed[course.id] || []).includes(l.id);
-              return (
-                <div
-                  key={l.id}
-                  onClick={() => handleOpenLesson(l.id)}
-                  className={`flex items-center gap-4 bg-white dark:bg-white/5 border-2 rounded-2xl px-4.5 px-[18px] py-4 cursor-pointer transition-colors hover:border-violet ${
-                    activeLessonId === l.id
-                      ? "border-violet"
-                      : "border-line dark:border-white/10"
-                  }`}
-                >
-                  <div
-                    className={`w-[30px] h-[30px] rounded-full border-2 flex items-center justify-center flex-shrink-0 text-[.9rem] ${
-                      done
-                        ? "bg-mint border-mint text-white"
-                        : "border-line dark:border-white/15"
-                    }`}
-                  >
-                    {done ? (
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M19.5249 6.46434C19.8208 6.75426 19.8256 7.22911 19.5357 7.52495L11.1641 16.0674C10.0858 17.1676 8.31417 17.1676 7.23591 16.0674L4.46434 13.2392C4.17442 12.9434 4.17922 12.4685 4.47505 12.1786C4.77089 11.8887 5.24574 11.8935 5.53566 12.1893L8.30723 15.0175C8.79735 15.5176 9.60265 15.5176 10.0928 15.0175L18.4643 6.47505C18.7543 6.17922 19.2291 6.17442 19.5249 6.46434Z"
-                          fill="white"
-                        />
-                      </svg>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <h1 className="font-bold">UNIT {i + 1}:</h1>
-                    <h2>{l.title}</h2>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div>
-          <div id="lesson-panel" className="scroll-mt-24">
-            {activeLessonId === ABOUT_ID ? (
-              <AboutPanel
-                course={course}
-                currentUser={currentUser}
-                badges={badges}
-                onStart={handleOpenLesson}
-              />
-            ) : (
-              activeLesson && (
-                <LessonPanel
-                  course={course}
-                  lesson={activeLesson}
-                  currentUser={currentUser}
-                  onComplete={handleComplete}
-                />
-              )
-            )}
-          </div>
-        </div>
+      <div id="lesson-panel" className="scroll-mt-24">
+        {activeLessonId === ABOUT_ID ? (
+          <AboutPanel
+            course={course}
+            currentUser={currentUser}
+            badges={badges}
+            onStart={handleOpenLesson}
+          />
+        ) : (
+          activeLesson && (
+            <LessonPanel
+              course={course}
+              lesson={activeLesson}
+              currentUser={currentUser}
+              onComplete={handleComplete}
+              onBack={() => handleOpenLesson(ABOUT_ID)}
+            />
+          )
+        )}
       </div>
     </div>
   );
