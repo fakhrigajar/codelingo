@@ -65,7 +65,7 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-[100] bg-bg/90 dark:bg-indigo-dark/90 backdrop-blur-md border-b-2 border-line dark:border-white/10 transition-colors">
-      <div className="max-w-[1180px] mx-auto flex items-center gap-6 px-6 py-3.5">
+      <div className="max-w-[1180px] mx-auto flex items-center justify-between gap-6 px-6 py-3.5">
         <Link
           to="/"
           className="flex items-center gap font-display font-extrabold text-[1.3rem] text-indigo-dark dark:text-white"
@@ -73,7 +73,7 @@ export default function Navbar() {
           <img className="w-10" src={siteLogo} alt="" />
           CodeLingo
         </Link>
-        <nav className="hidden sm:flex gap-1 ml-2 flex-1">
+        <nav className="hidden desktop:flex gap-1 ml-2 flex-1">
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} end={l.end} className={navLinkClass}>
               {l.label}
@@ -91,7 +91,7 @@ export default function Navbar() {
             title={
               theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
             }
-            className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line bg-indigo-dark dark:bg-white dark:text-indigo-dark dark:border-white/15 text-white transition-colors"
+            className="hidden desktop:flex items-center justify-center w-10 h-10 rounded-full border-2 border-line bg-indigo-dark dark:bg-white dark:text-indigo-dark dark:border-white/15 text-white transition-colors"
           >
             {theme === "dark" ? (
               <svg
@@ -116,7 +116,7 @@ export default function Navbar() {
             )}
           </button>
           {currentUser ? (
-            <div className="relative" ref={menuRef}>
+            <div className="relative hidden desktop:block" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
                 aria-haspopup="menu"
@@ -183,7 +183,7 @@ export default function Navbar() {
           ) : (
             <button
               onClick={() => navigate("/account")}
-              className="btn btn-sm bg-indigo-dark dark:bg-white dark:text-indigo-dark text-white"
+              className="btn btn-sm hidden desktop:block  bg-indigo-dark dark:bg-white dark:text-indigo-dark text-white"
             >
               Log in / Sign up
             </button>
@@ -193,7 +193,7 @@ export default function Navbar() {
             onClick={() => setNavOpen((o) => !o)}
             aria-label={navOpen ? "Close menu" : "Open menu"}
             aria-expanded={navOpen}
-            className="sm:hidden flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors"
+            className="desktop:hidden flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +216,7 @@ export default function Navbar() {
         </div>
       </div>
       {navOpen && (
-        <nav className="sm:hidden flex flex-col gap-1 px-6 pb-4">
+        <nav className="desktop:hidden flex flex-col gap-1 px-6 pb-4">
           {links.map((l) => (
             <NavLink
               key={l.to}

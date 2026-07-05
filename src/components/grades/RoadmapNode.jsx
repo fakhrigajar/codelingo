@@ -34,8 +34,24 @@ export default function RoadmapNode({
             </p>
           </div>
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-indigo-dark/70">
-            <span className="font-bold text-[.85rem] text-ink-soft dark:text-white/70 text-center px-5">
-              🔒 Finish the previous level to unlock
+            <span className="font-bold flex items-center gap-1 text-[.85rem] text-ink-soft dark:text-white/70 text-center px-5">
+              <span>
+                <svg
+                  className="-mt-1"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.25 8V6C7.25 3.37665 9.37665 1.25 12 1.25C14.6234 1.25 16.75 3.37665 16.75 6V8H17C19.2091 8 21 9.79086 21 12V18C21 20.2091 19.2091 22 17 22H7C4.79086 22 3 20.2091 3 18V12C3 9.79086 4.79086 8 7 8H7.25ZM8.75 6C8.75 4.20507 10.2051 2.75 12 2.75C13.7949 2.75 15.25 4.20507 15.25 6V8H8.75V6Z"
+                    fill="#4A5578"
+                  />
+                </svg>
+              </span>
+              Finish the previous level to unlock
             </span>
           </div>
         </div>

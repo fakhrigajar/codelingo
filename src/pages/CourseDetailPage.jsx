@@ -165,7 +165,12 @@ export default function CourseDetailPage() {
         <div>
           <div id="lesson-panel" className="scroll-mt-24">
             {activeLessonId === ABOUT_ID ? (
-              <AboutPanel course={course} />
+              <AboutPanel
+                course={course}
+                currentUser={currentUser}
+                badges={badges}
+                onStart={handleOpenLesson}
+              />
             ) : (
               activeLesson && (
                 <LessonPanel
