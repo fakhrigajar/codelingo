@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function HeroRight({ size = 300 }) {
+export default function HeroRight() {
   return (
     <div
       style={{
@@ -13,13 +13,11 @@ export default function HeroRight({ size = 300 }) {
       }}
     >
       <svg
-        // className="bg-red-700"
         viewBox="80 20 300 480"
-        width={size}
-        height={size * (480 / 300)}
         role="img"
         aria-label="Cheerful 3D robot holding an open book with a glowing lightbulb idea"
-        style={{ overflow: "visible", maxWidth: "100%", height: "auto" }}
+        className="w-[120px] sm:w-[240px] md:w-[280px] lg:w-[320px] xl:w-[360px] h-auto"
+        style={{ overflow: "visible" }}
       >
         <style>{`
           @keyframes floatBob {

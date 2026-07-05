@@ -185,23 +185,23 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="py-10">
-        <div className="relative overflow-hidden rounded-[28px] dark:bg-transparent grid desktop:grid-cols-2 gap-10 items-center">
+      <section className="pt-20 pb-10">
+        <div className="relative overflow-hidden rounded-[28px] dark:bg-transparent grid desktop:grid-cols-2 gap-8 desktop:gap-10 items-center">
           <div
             className={`hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]`}
           />
-          <div className="relative z-10">
-            <h1 className="text-[2.9rem] font-bold text-indigo-dark">
+          <div className="relative z-10 text-center desktop:text-left flex flex-col items-center desktop:items-start">
+            <h1 className="text-[2rem] sm:text-[2.4rem] desktop:text-[2.9rem] leading-tight font-bold text-indigo-dark">
               Boot up your brain.
               <br />
               Learn tech by doing.
             </h1>
-            <p className="text-[1.15rem] dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7">
+            <p className="text-base sm:text-[1.15rem] max-w-[600px] dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7">
               Bite-sized courses in computers, coding, typing, internet safety,
               digital art and robotics — built for kids, guided by badges, and
               backed by a friendly community.
             </p>
-            <div className="flex gap-3.5 flex-wrap mb-5">
+            <div className="flex gap-3.5 flex-wrap justify-center desktop:justify-start mb-5">
               <button
                 className="btn btn-primary"
                 onClick={() => navigate("/courses")}
@@ -215,7 +215,7 @@ export default function HomePage() {
                 Create free account
               </button>
             </div>
-            <div className="flex gap-7 mt-6 flex-wrap font-mono">
+            <div className="flex gap-5 sm:gap-7 mt-6 flex-wrap justify-center desktop:justify-start font-mono">
               <div>
                 <b className="block text-2xl dark:text-white">
                   {courses.length}
@@ -238,7 +238,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="relative hidden sm:block z-10">
+          <div className="relative z-10">
             <HeroRight />
           </div>
         </div>
