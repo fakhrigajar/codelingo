@@ -72,7 +72,7 @@ export default function ProfilePage() {
       </div>
 
       <h3 className="mt-9">Course progress</h3>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+      <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
         {courses.map((c) => (
           <CourseCard key={c.id} course={c} currentUser={currentUser} showProgress />
         ))}

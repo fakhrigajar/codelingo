@@ -13,12 +13,15 @@ export default function CourseCard({
   return (
     <div
       onClick={() => navigate(`/courses/${course.id}`)}
+      style={minWidth ? { minWidth } : undefined}
       className="bg-white dark:bg-white/5 rounded-2xl border-2 h-[250px] border-line dark:border-white/10 overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
     >
       <div className="w-full h-2.5" style={{ background: course.color }} />
       <div className="p-5 flex-1 flex flex-col">
         <h3 className="text-[1.5rem] font-bold mb-1.5">{course.title}</h3>
-        <p className="text-ink-soft dark:text-white/60 text-[.9rem] flex-1">{course.blurb}</p>
+        <p className="text-ink-soft dark:text-white/60 text-[.9rem] flex-1">
+          {course.blurb}
+        </p>
         <div className="flex justify-between items-center mt-4 font-mono text-[.72rem] text-ink-soft dark:text-white/60">
           <span
             className="px-2.5 py-1 rounded-md font-bold"

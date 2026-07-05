@@ -71,7 +71,7 @@ export default function CommunityPage() {
 
   return (
     <div>
-      <div className="grid md:grid-cols-[220px_1fr] gap-6 pt-11">
+      <div className="grid desktop:grid-cols-[220px_1fr] gap-6 pt-11">
         <div className="flex flex-col gap-2">
           {rooms.map((r) => (
             <button
@@ -85,7 +85,7 @@ export default function CommunityPage() {
             </button>
           ))}
         </div>
-        <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] flex flex-col h-[560px] overflow-hidden">
+        <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] flex flex-col h-[420px] sm:h-[480px] desktop:h-[560px] overflow-hidden">
           <div className="px-5 py-4 border-b-2 border-line dark:border-white/10 flex justify-between items-center">
             <h3 className="m-0 text-[1.05rem]"># {room.name}</h3>
             <span className="font-mono text-xs text-ink-soft dark:text-white/60">{room.sub}</span>

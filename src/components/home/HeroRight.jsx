@@ -14,7 +14,7 @@ export default function HeroRight({ size = 300 }) {
     >
       <svg
         // className="bg-red-700"
-        viewBox="100 20 300 480"
+        viewBox="80 20 300 480"
         width={size}
         height={size * (480 / 300)}
         role="img"

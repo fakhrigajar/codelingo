@@ -26,7 +26,7 @@ export default function CoursesPage() {
           onChange={setFilter}
         />
       </div>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6">
         {list.map((c) => (
           <CourseCard key={c.id} course={c} currentUser={currentUser} />
         ))}

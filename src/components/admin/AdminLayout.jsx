@@ -22,11 +22,11 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="max-w-[1180px] mx-auto px-6 py-8 grid md:grid-cols-[220px_1fr] gap-8">
-        <aside className="md:sticky md:top-8 h-fit">
+      <div className="max-w-[1180px] mx-auto px-6 py-8 grid desktop:grid-cols-[220px_1fr] gap-8">
+        <aside className="desktop:sticky desktop:top-8 h-fit">
           <div className="font-display font-extrabold text-lg text-indigo-dark mb-1">CodeLingo</div>
           <div className="font-mono text-xs text-ink-soft mb-5">Admin panel</div>
-          <nav className="flex md:flex-col gap-1.5 flex-wrap">
+          <nav className="flex desktop:flex-col gap-1.5 flex-wrap">
             {links.map((l) => (
               <NavLink
                 key={l.to}
@@ -42,7 +42,7 @@ export default function AdminLayout() {
               </NavLink>
             ))}
           </nav>
-          <div className="flex md:flex-col gap-2 mt-6">
+          <div className="flex desktop:flex-col gap-2 mt-6">
             <button onClick={() => navigate('/')} className="btn btn-outline btn-sm w-full">
               ← Back to site
             </button>

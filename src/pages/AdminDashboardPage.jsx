@@ -24,7 +24,7 @@ export default function AdminDashboardPage() {
     <div>
       <h1 className="text-2xl mb-1">Dashboard</h1>
       <p className="text-ink-soft mb-6">A quick look at everything living inside CodeLingo right now.</p>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-4">
         {stats.map((s) => (
           <AdminCard key={s.label}>
             <b className="block font-mono text-2xl text-indigo-dark">{s.value}</b>

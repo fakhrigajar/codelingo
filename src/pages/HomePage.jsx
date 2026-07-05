@@ -1,8 +1,8 @@
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
-import CourseCard from "../components/courses/CourseCard";
-import { Carousel } from "antd";
+import CourseCarousel, { ArrowIcon } from "../components/home/CourseCarousel";
 import HeroRight from "../components/home/HeroRight";
 
 const FEATURES = [
@@ -173,14 +173,12 @@ const STEPS = [
   },
 ];
 
-const onChange = (currentSlide) => {
-  console.log(currentSlide);
-};
-
 export default function HomePage() {
   const { courses } = useContent();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const carouselRef = useRef(null);
+  const [edges, setEdges] = useState({ atStart: true, atEnd: false });
 
   const goAccountOrProfile = () =>
     navigate(currentUser ? "/profile" : "/account");
@@ -188,16 +186,17 @@ export default function HomePage() {
   return (
     <div>
       <section className="py-10">
-        <div className="relative overflow-hidden rounded-[28px] bg-[#05070C] dark:bg-transparent p-8 md:p-12 grid md:grid-cols-[1.05fr_.95fr] gap-10 items-center">
-          <div className="hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]" />
-          <div className="absolute inset-0 z-0 pointer-events-none dark:bg-none [background:radial-gradient(circle_at_15%_100%,rgba(140,122,230,.25),transparent_50%),radial-gradient(circle_at_90%_0%,rgba(255,201,60,.14),transparent_45%)]" />
+        <div className="relative overflow-hidden rounded-[28px] dark:bg-transparent grid desktop:grid-cols-2 gap-10 items-center">
+          <div
+            className={`hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]`}
+          />
           <div className="relative z-10">
-            <h1 className="text-[2.9rem] font-bold text-white">
+            <h1 className="text-[2.9rem] font-bold text-indigo-dark">
               Boot up your brain.
               <br />
               Learn tech by doing.
             </h1>
-            <p className="text-[1.15rem] text-[#C4CCEB] my-4 mb-7">
+            <p className="text-[1.15rem] dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7">
               Bite-sized courses in computers, coding, typing, internet safety,
               digital art and robotics — built for kids, guided by badges, and
               backed by a friendly community.
@@ -209,19 +208,24 @@ export default function HomePage() {
               >
                 Start learning →
               </button>
-              <button className="btn btn-outline" onClick={goAccountOrProfile}>
+              <button
+                className="btn bg-white text-indigo-dark"
+                onClick={goAccountOrProfile}
+              >
                 Create free account
               </button>
             </div>
             <div className="flex gap-7 mt-6 flex-wrap font-mono">
               <div>
-                <b className="block text-2xl text-white">{courses.length}</b>
+                <b className="block text-2xl dark:text-white">
+                  {courses.length}
+                </b>
                 <span className="text-[.78rem] text-[#8891C4]">
                   course modules
                 </span>
               </div>
               <div>
-                <b className="block text-2xl text-white">
+                <b className="block text-2xl dark:text-white">
                   {courses.reduce((a, c) => a + c.lessons.length, 0)}+
                 </b>
                 <span className="text-[.78rem] text-[#8891C4]">
@@ -229,12 +233,12 @@ export default function HomePage() {
                 </span>
               </div>
               <div>
-                <b className="block text-2xl text-white">3</b>
+                <b className="block text-2xl dark:text-white">3</b>
                 <span className="text-[.78rem] text-[#8891C4]">chat rooms</span>
               </div>
             </div>
           </div>
-          <div className="relative z-10">
+          <div className="relative hidden sm:block z-10">
             <HeroRight />
           </div>
         </div>
@@ -251,7 +255,7 @@ export default function HomePage() {
             course or community pages.
           </p>
         </div>
-        <div className="relative z-10 grid md:grid-cols-3 gap-6">
+        <div className="relative z-10 sm:grid-cols-3 grid gap-6">
           {FEATURES.map((f) => (
             <div
               key={f.pad}
@@ -280,7 +284,7 @@ export default function HomePage() {
           <div className="eyebrow mx-auto">🚀 how it works</div>
           <h2 className="text-[2.1rem]">Four steps to your first badge</h2>
         </div>
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-4 gap-5">
           {STEPS.map((s) => (
             <div
               key={s.num}
@@ -301,30 +305,43 @@ export default function HomePage() {
       <section className="py-16">
         <div className="max-w-[640px] mx-auto mb-10 text-center">
           <div className="eyebrow mx-auto">📚 courses</div>
-          <h2 className="text-[2.1rem]">Peek at the course library</h2>
+          <h2 className="text-[1.6rem] sm:text-[1.9rem] desktop:text-[2.1rem]">
+            Peek at the course library
+          </h2>
         </div>
-        <div className="flex gap-5 pb-3 w-full">
-          <div className="w-full">
-            <Carousel
-              slidesToShow={3}
-              arrows={true}
-              dots={true}
-              draggable={true}
-              afterChange={onChange}
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => carouselRef.current?.scrollPrev()}
+              disabled={edges.atStart}
+              aria-label="Previous courses"
+              className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors disabled:opacity-30 disabled:pointer-events-none"
             >
-              {courses.map((c) => (
-                <div className="p-1">
-                  <CourseCard
-                    key={c.id}
-                    course={c}
-                    currentUser={null}
-                    minWidth={230}
-                  />
-                </div>
-              ))}
-            </Carousel>
+              <ArrowIcon direction="prev" />
+            </button>
+            <button
+              type="button"
+              onClick={() => carouselRef.current?.scrollNext()}
+              disabled={edges.atEnd}
+              aria-label="Next courses"
+              className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <ArrowIcon direction="next" />
+            </button>
           </div>
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={() => navigate("/courses")}
+          >
+            Explore courses →
+          </button>
         </div>
+        <CourseCarousel
+          ref={carouselRef}
+          courses={courses}
+          onEdgeChange={setEdges}
+        />
       </section>
 
       <section>

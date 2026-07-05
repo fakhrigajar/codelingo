@@ -24,6 +24,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [theme, setTheme] = useState(getInitialTheme);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -55,6 +56,13 @@ export default function Navbar() {
     logout();
   };
 
+  const navLinkClass = ({ isActive }) =>
+    `px-4 py-2.5 rounded-xl font-bold text-[.98rem] transition-colors ${
+      isActive
+        ? "bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark"
+        : "text-ink-soft hover:bg-[#EAF1FD] hover:text-indigo-dark dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+    }`;
+
   return (
     <div className="sticky top-0 z-[100] bg-bg/90 dark:bg-indigo-dark/90 backdrop-blur-md border-b-2 border-line dark:border-white/10 transition-colors">
       <div className="max-w-[1180px] mx-auto flex items-center gap-6 px-6 py-3.5">
@@ -67,18 +75,7 @@ export default function Navbar() {
         </Link>
         <nav className="hidden sm:flex gap-1 ml-2 flex-1">
           {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.end}
-              className={({ isActive }) =>
-                `px-4 py-2.5 rounded-xl font-bold text-[.98rem] transition-colors ${
-                  isActive
-                    ? "bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark"
-                    : "text-ink-soft hover:bg-[#EAF1FD] hover:text-indigo-dark dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
-                }`
-              }
-            >
+            <NavLink key={l.to} to={l.to} end={l.end} className={navLinkClass}>
               {l.label}
             </NavLink>
           ))}
@@ -91,8 +88,10 @@ export default function Navbar() {
               theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
             }
             aria-pressed={theme === "dark"}
-            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors"
+            title={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
+            className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line bg-indigo-dark dark:bg-white dark:text-indigo-dark dark:border-white/15 text-white transition-colors"
           >
             {theme === "dark" ? (
               <svg
@@ -122,13 +121,15 @@ export default function Navbar() {
                 onClick={() => setMenuOpen((o) => !o)}
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
-                className="flex items-center gap-2 bg-panel dark:bg-white/10 border-2 border-line dark:border-white/15 pl-1.5 pr-3.5 py-1.5 rounded-full font-bold text-ink dark:text-white"
+                className="flex items-center gap-2 bg-panel dark:bg-white/10 border-2 border-line dark:border-white/15 pl-1.5 pr-2 sm:pr-3.5 py-1.5 rounded-full font-bold text-ink dark:text-white"
               >
-                <span className="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[.85rem] font-extrabold">
+                <span className="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[.85rem] font-extrabold shrink-0">
                   {initials(currentUser.displayName)}
                 </span>
-                {currentUser.displayName.split(" ")[0]} ·{" "}
-                <span className="font-mono text-xs">{currentUser.xp} XP</span>
+                <span className="hidden sm:inline whitespace-nowrap">
+                  {currentUser.displayName.split(" ")[0]} ·{" "}
+                  <span className="font-mono text-xs">{currentUser.xp} XP</span>
+                </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
@@ -182,13 +183,53 @@ export default function Navbar() {
           ) : (
             <button
               onClick={() => navigate("/account")}
-              className="btn btn-dark btn-sm"
+              className="btn btn-sm bg-indigo-dark dark:bg-white dark:text-indigo-dark text-white"
             >
               Log in / Sign up
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => setNavOpen((o) => !o)}
+            aria-label={navOpen ? "Close menu" : "Open menu"}
+            aria-expanded={navOpen}
+            className="sm:hidden flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-5 h-5"
+              aria-hidden="true"
+            >
+              {navOpen ? (
+                <path d="M6 6l12 12M18 6L6 18" />
+              ) : (
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
+      {navOpen && (
+        <nav className="sm:hidden flex flex-col gap-1 px-6 pb-4">
+          {links.map((l) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              end={l.end}
+              onClick={() => setNavOpen(false)}
+              className={navLinkClass}
+            >
+              {l.label}
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }

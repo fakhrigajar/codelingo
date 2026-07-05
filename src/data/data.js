@@ -1,70 +1,4 @@
-// Default/seed content for CodeLingo.
-// This is the initial data used the very first time the app runs.
-// After that, everything the admin edits lives in localStorage
-// (see src/context/ContentContext.jsx) and this file is only the
-// "factory reset" fallback.
-
 export const DEFAULT_COURSES = [
-  {
-    id: "computer-basics",
-    title: "Computer Basics",
-    icon: "🖥️",
-    level: "Beginner",
-    color: "red",
-    blurb: "Meet the machine: parts, keyboard, mouse and files.",
-    lessons: [
-      {
-        id: "l1",
-        type: "lesson",
-        title: "What is a Computer?",
-        body: "A computer is a machine that takes in information (input), works with it (processing), and shows you a result (output). The keyboard and mouse send input, the box or chip inside does the processing, and the screen shows the output. Every phone, tablet and laptop works this way!",
-        fact: "The first electronic computers filled an entire room and were slower than a modern calculator.",
-      },
-      {
-        id: "l2",
-        type: "lesson",
-        title: "Meet the Keyboard",
-        body: "The keyboard is how you type letters, numbers and symbols. The middle row — A, S, D, F, J, K, L — is called the 'home row' because your fingers rest there. The space bar makes gaps between words, and Enter starts a new line.",
-        fact: "QWERTY keyboards are named after the first six letters on the top row.",
-      },
-      {
-        id: "l3",
-        type: "lesson",
-        title: "Mouse Moves",
-        body: "A mouse lets you point, click and drag things on the screen. A single click selects something, a double-click opens it, and dragging while holding the button moves it. On a laptop, the trackpad does the same job with your fingers.",
-        fact: "The computer mouse got its name because the cord looked like a little tail.",
-      },
-      {
-        id: "l4",
-        type: "lesson",
-        title: "Files & Folders",
-        body: "Files are like digital pieces of paper — a picture, a document, a song. Folders are like boxes that keep files organised. Giving files clear names (like 'homework_maths') makes them easy to find again later.",
-        fact: "A folder can hold other folders inside it — these are called subfolders.",
-      },
-      {
-        id: "q1",
-        type: "quiz",
-        title: "Quiz: Computer Parts",
-        questions: [
-          {
-            q: "Which part shows you the output?",
-            options: ["Keyboard", "Screen", "Mouse"],
-            correct: 1,
-          },
-          {
-            q: "What is the middle row of keys called?",
-            options: ["Home row", "Top row", "Number row"],
-            correct: 0,
-          },
-          {
-            q: "What do folders help you do?",
-            options: ["Play games", "Organise files", "Connect to internet"],
-            correct: 1,
-          },
-        ],
-      },
-    ],
-  },
   {
     id: "typing-ninjas",
     title: "Typing Ninjas",
@@ -445,12 +379,12 @@ export const DEFAULT_GRADES = [
       {
         title: "Meet the Computer",
         desc: "What a computer actually does with the things you type and click.",
-        source: { courseId: "computer-basics", lessonId: "l1" },
+        source: { courseId: "code-sparks", lessonId: "l1" },
       },
       {
         title: "Mouse Moves",
         desc: "Point, click, double-click and drag — the four moves you'll use forever.",
-        source: { courseId: "computer-basics", lessonId: "l3" },
+        source: { courseId: "code-sparks", lessonId: "l3" },
       },
       {
         title: "Meet the Canvas",
@@ -472,12 +406,12 @@ export const DEFAULT_GRADES = [
       {
         title: "Meet the Keyboard",
         desc: "Home row, space bar and Enter — getting comfortable with the keys.",
-        source: { courseId: "computer-basics", lessonId: "l2" },
+        source: { courseId: "code-sparks", lessonId: "l2" },
       },
       {
         title: "Files & Folders",
         desc: "Keeping digital work organised, the same way you'd tidy a desk.",
-        source: { courseId: "computer-basics", lessonId: "l4" },
+        source: { courseId: "code-sparks", lessonId: "l4" },
       },
       {
         title: "Home Row Heroes",
