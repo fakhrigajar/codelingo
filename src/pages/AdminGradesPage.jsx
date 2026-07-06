@@ -101,7 +101,7 @@ export default function AdminGradesPage() {
                 <div>
                   <span className="font-extrabold">{grade.label || 'Untitled grade'}</span>
                   <span className="text-ink-soft text-sm ml-2">
-                    · ages {grade.age || '—'} · {grade.topics.length} topics
+                    · {grade.age || '—'} · {grade.topics.length} topics
                   </span>
                 </div>
                 <span className="text-ink-soft">{open ? '▲' : '▼'}</span>
@@ -116,10 +116,10 @@ export default function AdminGradesPage() {
                       onChange={(e) => updateGrade(grade.id, { label: e.target.value })}
                     />
                     <AdminInput
-                      label="Age range"
+                      label="Stage"
                       value={grade.age}
                       onChange={(e) => updateGrade(grade.id, { age: e.target.value })}
-                      placeholder="e.g. 6–7"
+                      placeholder="e.g. New to code"
                     />
                   </div>
 

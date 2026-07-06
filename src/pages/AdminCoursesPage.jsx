@@ -28,7 +28,7 @@ export default function AdminCoursesPage() {
       icon: '🆕',
       level: 'Beginner',
       color: '#8C7AE6',
-      blurb: 'Describe this course.',
+      about: 'Describe this course.',
       lessons: [],
     }
     setCourses([...courses, newCourse])

@@ -101,8 +101,8 @@ const FEATURES = [
         />
       </svg>
     ),
-    title: "Real ICT skills",
-    body: "Computers, typing, block coding, internet safety, digital art and robotics logic — all in one place.",
+    title: "Real dev skills",
+    body: "JavaScript, React, backend development, AI and more — all in one place, taught in bite-sized steps.",
   },
   {
     pad: "05",
@@ -159,7 +159,7 @@ const STEPS = [
   {
     num: "STEP 2",
     title: "Pick a course",
-    body: "Choose from computers, coding, typing, safety, art or robotics.",
+    body: "Choose from JavaScript, React, backend dev, AI and more.",
   },
   {
     num: "STEP 3",
@@ -197,9 +197,8 @@ export default function HomePage() {
               Learn tech by doing.
             </h1>
             <p className="text-base sm:text-[1.15rem] max-w-[600px] dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7">
-              Bite-sized courses in computers, coding, typing, internet safety,
-              digital art and robotics — built for kids, guided by badges, and
-              backed by a friendly community.
+              Bite-sized courses in JavaScript, React, backend development, AI
+              and more — guided by badges, and backed by a friendly community.
             </p>
             <div className="flex gap-3.5 flex-wrap justify-center desktop:justify-start mb-5">
               <button

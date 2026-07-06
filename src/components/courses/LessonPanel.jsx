@@ -1,4 +1,5 @@
 import QuizPanel from "./QuizPanel";
+import LessonDiscussion from "./LessonDiscussion";
 
 function BackToAbout({ onBack }) {
   return (
@@ -30,19 +31,20 @@ export default function LessonPanel({
 
   if (lesson.type === "quiz") {
     return (
-      <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7 mt-6">
+      <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
         {onBack && <BackToAbout onBack={onBack} />}
         <QuizPanel
           lesson={lesson}
           done={done}
           onComplete={(xp, isQuiz) => onComplete(course, lesson, xp, isQuiz)}
         />
+        <LessonDiscussion course={course} lesson={lesson} />
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7 mt-6">
+    <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
       {onBack && <BackToAbout onBack={onBack} />}
       <span className="eyebrow">📖 lesson</span>
       <h2>{lesson.title}</h2>
@@ -62,6 +64,7 @@ export default function LessonPanel({
           Log in to save your progress.
         </p>
       )}
+      <LessonDiscussion course={course} lesson={lesson} />
     </div>
   );
 }

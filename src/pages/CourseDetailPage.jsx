@@ -4,13 +4,15 @@ import {
   useNavigate,
   useSearchParams,
   Navigate,
+  Link,
 } from "react-router-dom";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
-import { courseById, lessonById, progressPct } from "../lib/helpers";
+import { courseById, lessonById } from "../lib/helpers";
 import LessonPanel from "../components/courses/LessonPanel";
 import AboutPanel from "../components/courses/AboutPanel";
+import CourseSidebar from "../components/courses/CourseSidebar";
 
 const ABOUT_ID = "about";
 
@@ -49,7 +51,6 @@ export default function CourseDetailPage() {
     activeLessonId && activeLessonId !== ABOUT_ID
       ? lessonById(course, activeLessonId)
       : null;
-  const pct = progressPct(currentUser, course);
 
   const handleOpenLesson = (lessonId) => {
     setActiveLessonId(lessonId);
@@ -108,26 +109,61 @@ export default function CourseDetailPage() {
   };
 
   return (
-    <div>
-      <div id="lesson-panel" className="scroll-mt-24">
+    <div className="pt-8">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center flex-wrap gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 mb-4"
+      >
+        <Link to="/courses" className="hover:text-violet dark:hover:text-violet">
+          Courses
+        </Link>
+        <span className="text-line dark:text-white/20">/</span>
         {activeLessonId === ABOUT_ID ? (
-          <AboutPanel
-            course={course}
-            currentUser={currentUser}
-            badges={badges}
-            onStart={handleOpenLesson}
-          />
+          <span className="text-ink dark:text-white">{course.title}</span>
         ) : (
-          activeLesson && (
-            <LessonPanel
-              course={course}
-              lesson={activeLesson}
-              currentUser={currentUser}
-              onComplete={handleComplete}
-              onBack={() => handleOpenLesson(ABOUT_ID)}
-            />
-          )
+          <>
+            <Link
+              to={`/courses/${course.id}`}
+              className="hover:text-violet dark:hover:text-violet"
+            >
+              {course.title}
+            </Link>
+            <span className="text-line dark:text-white/20">/</span>
+            <span className="text-ink dark:text-white truncate max-w-[240px]">
+              {activeLesson?.title}
+            </span>
+          </>
         )}
+      </nav>
+
+      <div className="grid desktop:grid-cols-[340px_1fr] gap-6 items-start">
+        <CourseSidebar
+          course={course}
+          currentUser={currentUser}
+          activeLessonId={activeLessonId}
+          onSelect={handleOpenLesson}
+        />
+
+        <div id="lesson-panel" className="scroll-mt-24 min-w-0">
+          {activeLessonId === ABOUT_ID ? (
+            <AboutPanel
+              course={course}
+              currentUser={currentUser}
+              badges={badges}
+              onStart={handleOpenLesson}
+            />
+          ) : (
+            activeLesson && (
+              <LessonPanel
+                course={course}
+                lesson={activeLesson}
+                currentUser={currentUser}
+                onComplete={handleComplete}
+                onBack={() => handleOpenLesson(ABOUT_ID)}
+              />
+            )
+          )}
+        </div>
       </div>
     </div>
   );

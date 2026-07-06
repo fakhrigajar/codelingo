@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { progressPct } from "../../lib/helpers";
+import CourseCover from "./CourseCover";
 
 export default function CourseCard({
   course,
@@ -14,14 +15,11 @@ export default function CourseCard({
     <div
       onClick={() => navigate(`/courses/${course.id}`)}
       style={minWidth ? { minWidth } : undefined}
-      className="bg-white dark:bg-white/5 rounded-2xl border-2 h-[250px] border-line dark:border-white/10 overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
+      className="bg-white dark:bg-white/5 rounded-2xl border-2 h-[272px] border-line dark:border-white/10 overflow-hidden cursor-pointer transition-all hover:scale-[0.98] flex flex-col"
     >
-      <div className="w-full h-2.5" style={{ background: course.color }} />
+      <CourseCover course={course} className="h-28 shrink-0" iconSize={52} />
       <div className="p-5 flex-1 flex flex-col">
-        <h3 className="text-[1.5rem] font-bold mb-1.5">{course.title}</h3>
-        <p className="text-ink-soft dark:text-white/60 text-[.9rem] flex-1">
-          {course.blurb}
-        </p>
+        <h3 className="text-[1.5rem] font-bold mb-1.5 flex-1">{course.title}</h3>
         <div className="flex justify-between items-center mt-4 font-mono text-[.72rem] text-ink-soft dark:text-white/60">
           <span
             className="px-2.5 py-1 rounded-md font-bold"

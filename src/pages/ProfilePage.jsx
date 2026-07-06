@@ -14,6 +14,7 @@ export default function ProfilePage() {
   if (!currentUser) return null
 
   const totalCompleted = Object.values(currentUser.completed).reduce((a, arr) => a + arr.length, 0)
+  const studyingCourses = courses.filter((c) => (currentUser.completed[c.id] || []).length > 0)
 
   const handleLogout = () => {
     navigate('/')
@@ -72,11 +73,21 @@ export default function ProfilePage() {
       </div>
 
       <h3 className="mt-9">Course progress</h3>
-      <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
-        {courses.map((c) => (
-          <CourseCard key={c.id} course={c} currentUser={currentUser} showProgress />
-        ))}
-      </div>
+      {studyingCourses.length === 0 ? (
+        <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
+          You haven't started any courses yet.{' '}
+          <button className="text-violet font-bold hover:underline" onClick={() => navigate('/courses')}>
+            Browse courses
+          </button>{' '}
+          to get going.
+        </p>
+      ) : (
+        <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
+          {studyingCourses.map((c) => (
+            <CourseCard key={c.id} course={c} currentUser={currentUser} showProgress />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

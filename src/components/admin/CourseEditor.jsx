@@ -50,7 +50,7 @@ export default function CourseEditor({ course, onChange, onRemove }) {
           className="h-[42px] p-1"
         />
       </div>
-      <AdminTextarea label="Short blurb" value={course.blurb} onChange={(e) => onChange({ blurb: e.target.value })} />
+      <AdminTextarea label="About" value={course.about} onChange={(e) => onChange({ about: e.target.value })} />
 
       <div className="mt-3">
         <span className="block font-bold text-[.85rem] mb-2 text-ink-soft">

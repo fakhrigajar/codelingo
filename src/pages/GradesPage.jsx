@@ -59,7 +59,7 @@ export default function GradesPage() {
       </div>
       <div className="mt-2.5">
         <p className="text-ink-soft dark:text-white/60 text-[.95rem] mb-7">
-          Ages {grade.age} · complete each stop to reveal the next
+          {grade.age} · complete each stop to reveal the next
         </p>
         <div className="relative ml-[22px] border-l-[3px] border-dashed border-line dark:border-white/15 pl-[38px]">
           {visibleStops.map((s, i) => (
