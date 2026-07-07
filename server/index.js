@@ -4,6 +4,19 @@ import express from 'express'
 const app = express()
 app.use(express.json({ limit: '2mb' }))
 
+// Frontend (Netlify) and this API (Railway) live on different domains, so
+// the browser needs an explicit CORS allowance. Restrict via ALLOWED_ORIGIN
+// in production if you want to stop other sites from burning your Gemini
+// quota — defaults to "*" so it works out of the box.
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*'
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', ALLOWED_ORIGIN)
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Content-Type')
+  if (req.method === 'OPTIONS') return res.sendStatus(204)
+  next()
+})
+
 const PORT = process.env.PORT || 3001
 const MODEL = 'gemini-2.5-flash'
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`

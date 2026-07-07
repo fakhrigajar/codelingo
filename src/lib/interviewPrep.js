@@ -1,7 +1,9 @@
+import { API_BASE } from './apiBase'
+
 export async function generateInterviewQuestions({ role, count = 8 }) {
   let res
   try {
-    res = await fetch('/api/interview-questions', {
+    res = await fetch(`${API_BASE}/api/interview-questions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role, count }),
