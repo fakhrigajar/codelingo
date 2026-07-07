@@ -17,6 +17,7 @@ import CommunityPage from './pages/CommunityPage'
 import ToolsPage from './pages/tools/ToolsPage'
 import CvAnalyzerPage from './pages/tools/CvAnalyzerPage'
 import InterviewPrepPage from './pages/tools/InterviewPrepPage'
+import ProjectIdeasPage from './pages/tools/ProjectIdeasPage'
 import AccountPage from './pages/AccountPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
@@ -47,8 +48,30 @@ export default function App() {
                 <Route path="/grades" element={<GradesPage />} />
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/tools" element={<ToolsPage />} />
-                <Route path="/tools/cv-analyzer" element={<CvAnalyzerPage />} />
-                <Route path="/tools/interview-prep" element={<InterviewPrepPage />} />
+                <Route
+                  path="/tools/cv-analyzer"
+                  element={
+                    <RequireAuth>
+                      <CvAnalyzerPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/tools/interview-prep"
+                  element={
+                    <RequireAuth>
+                      <InterviewPrepPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/tools/project-ideas"
+                  element={
+                    <RequireAuth>
+                      <ProjectIdeasPage />
+                    </RequireAuth>
+                  }
+                />
                 <Route path="/account" element={<AccountPage />} />
                 <Route
                   path="/profile"

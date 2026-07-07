@@ -1,8 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useContent } from '../context/ContentContext'
 import { useToast } from '../context/ToastContext'
 import { initials } from '../lib/helpers'
+import { getSignificantGaps } from '../lib/interviewGaps'
 import CourseCard from '../components/courses/CourseCard'
 
 export default function ProfilePage() {
@@ -15,6 +16,7 @@ export default function ProfilePage() {
 
   const totalCompleted = Object.values(currentUser.completed).reduce((a, arr) => a + arr.length, 0)
   const studyingCourses = courses.filter((c) => (currentUser.completed[c.id] || []).length > 0)
+  const significantGaps = getSignificantGaps(currentUser.username)
 
   const handleLogout = () => {
     navigate('/')
@@ -87,6 +89,34 @@ export default function ProfilePage() {
             <CourseCard key={c.id} course={c} currentUser={currentUser} showProgress />
           ))}
         </div>
+      )}
+
+      {significantGaps.length > 0 && (
+        <>
+          <h3 className="mt-9">Significant gaps</h3>
+          <p className="text-ink-soft dark:text-white/50 text-[.85rem] mt-1 mb-3">
+            Topics you've missed most in{' '}
+            <Link to="/tools/interview-prep" className="text-violet font-bold hover:underline">
+              Interview Prep
+            </Link>{' '}
+            quizzes.
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            {significantGaps.map((gap) => (
+              <div
+                key={gap.title}
+                className="flex items-center gap-2 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-xl px-3.5 py-2"
+              >
+                <span className="font-bold text-[.85rem]">{gap.title}</span>
+                {gap.count > 1 && (
+                  <span className="font-mono text-[.7rem] font-bold text-coral bg-coral/10 px-1.5 py-0.5 rounded-md">
+                    ×{gap.count}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

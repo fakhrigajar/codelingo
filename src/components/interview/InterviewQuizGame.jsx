@@ -1,6 +1,9 @@
 import { useState } from 'react'
+import { useAuth } from '../../context/AuthContext'
+import { recordGap } from '../../lib/interviewGaps'
 
 export default function InterviewQuizGame({ role, questions, onRestart }) {
+  const { currentUser } = useAuth()
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [score, setScore] = useState(0)
@@ -11,7 +14,15 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
   const handleSelect = (oi) => {
     if (selected !== null) return
     setSelected(oi)
-    if (oi === current.correctIndex) setScore((s) => s + 1)
+    if (oi === current.correctIndex) {
+      setScore((s) => s + 1)
+    } else if (currentUser) {
+      recordGap(currentUser.username, {
+        title: current.topic || current.question,
+        question: current.question,
+        role,
+      })
+    }
   }
 
   const handleNext = () => {

@@ -122,7 +122,7 @@ app.post('/api/analyze-cv', async (req, res) => {
   }
 })
 
-const INTERVIEW_SYSTEM_PROMPT = `You are an expert technical interviewer and career coach. Given a job role or topic, generate common interview FAQ questions to help a candidate practice, framed as multiple-choice quiz questions. Mix conceptual and practical/scenario questions appropriate for the role. Each question must have exactly 4 answer options, exactly one correct (0-indexed correctIndex), and a short explanation of why that answer is correct. Return JSON only matching the schema.`
+const INTERVIEW_SYSTEM_PROMPT = `You are an expert technical interviewer and career coach. Given a job role or topic, generate common interview FAQ questions to help a candidate practice, framed as multiple-choice quiz questions. Mix conceptual and practical/scenario questions appropriate for the role. Each question must have exactly 4 answer options, exactly one correct (0-indexed correctIndex), a short explanation of why that answer is correct, and a short "topic" tag (2-4 words, e.g. "React Hooks", "Big-O Notation") naming the specific concept the question tests — this is used to track a candidate's knowledge gaps. Return JSON only matching the schema.`
 
 const INTERVIEW_SCHEMA = {
   type: 'OBJECT',
@@ -136,8 +136,9 @@ const INTERVIEW_SCHEMA = {
           options: { type: 'ARRAY', items: { type: 'STRING' } },
           correctIndex: { type: 'NUMBER' },
           explanation: { type: 'STRING' },
+          topic: { type: 'STRING' },
         },
-        required: ['question', 'options', 'correctIndex', 'explanation'],
+        required: ['question', 'options', 'correctIndex', 'explanation', 'topic'],
       },
     },
   },
@@ -168,6 +169,7 @@ app.post('/api/interview-questions', async (req, res) => {
         options: q.options,
         correctIndex: Math.min(Math.max(Math.round(q.correctIndex ?? 0), 0), 3),
         explanation: q.explanation || '',
+        topic: q.topic || q.question,
       }))
 
     if (!questions.length) {
@@ -175,6 +177,85 @@ app.post('/api/interview-questions', async (req, res) => {
     }
 
     res.json({ questions })
+  } catch (err) {
+    sendError(res, err)
+  }
+})
+
+const WIREFRAME_BLOCK_TYPES = ['header', 'nav', 'hero', 'sidebar', 'form', 'list', 'grid', 'chart', 'footer']
+
+const PROJECT_SYSTEM_PROMPT = `You are a programming mentor who helps developers find their next build. Given a programming language and a skill level, generate exactly 10 distinct project ideas suited to that level. Vary the domains (web, CLI, games, data, automation, etc.) so ideas don't feel repetitive. Each idea needs a short punchy title, a description, a short array of key skills/concepts it practices, an estimated time to build, and a "wireframe": a list of 3-6 blocks (top to bottom) sketching the main screen so a beginner can visualize what to actually build. Each wireframe block has a "block" field that MUST be one of exactly: ${WIREFRAME_BLOCK_TYPES.join(', ')} — and a short "label" describing what goes there (e.g. block "hero", label "Welcome message + call-to-action button"). For non-visual projects (CLI tools, scripts), sketch the terminal/output flow instead using "list" and "form" blocks (e.g. label "Prompts user for input", "Prints formatted result"). Return JSON only matching the schema.`
+
+const PROJECT_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    ideas: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          title: { type: 'STRING' },
+          description: { type: 'STRING' },
+          skills: { type: 'ARRAY', items: { type: 'STRING' } },
+          estimatedTime: { type: 'STRING' },
+          wireframe: {
+            type: 'ARRAY',
+            items: {
+              type: 'OBJECT',
+              properties: {
+                block: { type: 'STRING' },
+                label: { type: 'STRING' },
+              },
+              required: ['block', 'label'],
+            },
+          },
+        },
+        required: ['title', 'description', 'skills', 'estimatedTime', 'wireframe'],
+      },
+    },
+  },
+  required: ['ideas'],
+}
+
+app.post('/api/project-ideas', async (req, res) => {
+  const { language, level, detailed } = req.body || {}
+  if (!language || !language.trim()) {
+    return res.status(400).json({ error: 'language is required.' })
+  }
+  const lvl = ['basic', 'medium', 'advanced'].includes(level) ? level : 'basic'
+
+  const userContent = `Programming language: ${language.trim()}\nSkill level: ${lvl}\n${
+    detailed
+      ? 'Write a detailed description for each idea (4-6 sentences) covering the core features to build and why it is good practice.'
+      : 'Write a brief description for each idea (1-2 sentences).'
+  }\nGenerate exactly 10 project ideas.`
+
+  try {
+    const parsed = await callGemini({
+      systemPrompt: PROJECT_SYSTEM_PROMPT,
+      userContent,
+      schema: PROJECT_SCHEMA,
+      temperature: 0.8,
+    })
+
+    const ideas = (Array.isArray(parsed.ideas) ? parsed.ideas : [])
+      .filter((i) => i && i.title && i.description)
+      .map((i) => ({
+        title: i.title,
+        description: i.description,
+        skills: Array.isArray(i.skills) ? i.skills : [],
+        estimatedTime: i.estimatedTime || '',
+        wireframe: (Array.isArray(i.wireframe) ? i.wireframe : [])
+          .filter((b) => b && WIREFRAME_BLOCK_TYPES.includes(b.block))
+          .map((b) => ({ block: b.block, label: b.label || '' }))
+          .slice(0, 6),
+      }))
+
+    if (!ideas.length) {
+      return res.status(502).json({ error: 'Gemini did not return any usable project ideas.' })
+    }
+
+    res.json({ ideas })
   } catch (err) {
     sendError(res, err)
   }
