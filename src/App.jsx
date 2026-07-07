@@ -14,6 +14,9 @@ import CoursesPage from './pages/CoursesPage'
 import CourseDetailPage from './pages/CourseDetailPage'
 import GradesPage from './pages/GradesPage'
 import CommunityPage from './pages/CommunityPage'
+import ToolsPage from './pages/tools/ToolsPage'
+import CvAnalyzerPage from './pages/tools/CvAnalyzerPage'
+import InterviewPrepPage from './pages/tools/InterviewPrepPage'
 import AccountPage from './pages/AccountPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
@@ -43,6 +46,9 @@ export default function App() {
                 <Route path="/courses/:courseId" element={<CourseDetailPage />} />
                 <Route path="/grades" element={<GradesPage />} />
                 <Route path="/community" element={<CommunityPage />} />
+                <Route path="/tools" element={<ToolsPage />} />
+                <Route path="/tools/cv-analyzer" element={<CvAnalyzerPage />} />
+                <Route path="/tools/interview-prep" element={<InterviewPrepPage />} />
                 <Route path="/account" element={<AccountPage />} />
                 <Route
                   path="/profile"

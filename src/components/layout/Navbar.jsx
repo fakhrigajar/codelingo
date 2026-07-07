@@ -9,6 +9,7 @@ const links = [
   { to: "/courses", label: "Courses" },
   { to: "/grades", label: "Grades" },
   { to: "/community", label: "Community" },
+  { to: "/tools", label: "Tools" },
 ];
 
 function getInitialTheme() {
