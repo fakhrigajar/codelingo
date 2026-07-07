@@ -27,7 +27,11 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MO
 async function callGemini({ systemPrompt, userContent, schema, temperature = 0.4 }) {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
-    throw { status: 500, message: 'Server is missing GEMINI_API_KEY — add it to .env.' }
+    throw {
+      status: 500,
+      message:
+        'Server is missing GEMINI_API_KEY — set it in your environment variables (e.g. Railway\'s Variables tab, or a local .env file).',
+    }
   }
 
   let geminiRes
