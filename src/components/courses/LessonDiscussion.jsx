@@ -2,12 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import { storageGet, storageSet } from "../../lib/storage";
+import { listComments, postComment as postCommentApi } from "../../lib/discussionApi";
 import { initials } from "../../lib/helpers";
-
-function discussionKey(courseId, lessonId) {
-  return `lesson-comments:${courseId}:${lessonId}`;
-}
 
 export default function LessonDiscussion({ course, lesson }) {
   const { currentUser } = useAuth();
@@ -18,13 +14,13 @@ export default function LessonDiscussion({ course, lesson }) {
   const [input, setInput] = useState("");
   const boxRef = useRef(null);
 
-  const key = discussionKey(course.id, lesson.id);
-
   useEffect(() => {
-    setComments(storageGet(key, []));
-  }, [key]);
+    listComments(course.id, lesson.id)
+      .then(setComments)
+      .catch(() => {});
+  }, [course.id, lesson.id]);
 
-  const postComment = () => {
+  const postComment = async () => {
     const text = input.trim();
     if (!text) return;
     if (!currentUser) {
@@ -32,20 +28,20 @@ export default function LessonDiscussion({ course, lesson }) {
       navigate("/account");
       return;
     }
-    const existing = storageGet(key, []);
-    existing.push({
-      username: currentUser.username,
-      displayName: currentUser.displayName,
-      text,
-      time: Date.now(),
-    });
-    const trimmed = existing.slice(-150);
-    storageSet(key, trimmed);
-    setComments(trimmed);
     setInput("");
-    setTimeout(() => {
-      if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
-    }, 0);
+    try {
+      const saved = await postCommentApi(course.id, lesson.id, {
+        username: currentUser.username,
+        displayName: currentUser.displayName,
+        text,
+      });
+      setComments((prev) => [...prev, saved]);
+      setTimeout(() => {
+        if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
+      }, 0);
+    } catch {
+      toast("Could not post your comment — try again.");
+    }
   };
 
   return (

@@ -1,14 +1,20 @@
+import { useEffect, useState } from 'react'
 import { useContent } from '../context/ContentContext'
 import { getAllUsers } from '../context/AuthContext'
-import { storageList, storageGet } from '../lib/storage'
+import { listAllMessages } from '../lib/chatApi'
 import AdminCard from '../components/admin/AdminCard'
 
 export default function AdminDashboardPage() {
   const { courses, badges, grades, rooms } = useContent()
-  const users = Object.values(getAllUsers())
+  const [users, setUsers] = useState([])
+  const [totalMessages, setTotalMessages] = useState(0)
+
+  useEffect(() => {
+    getAllUsers().then(setUsers)
+    listAllMessages().then((msgs) => setTotalMessages(msgs.length))
+  }, [])
+
   const totalLessons = courses.reduce((a, c) => a + c.lessons.length, 0)
-  const chatKeys = storageList('chat:')
-  const totalMessages = chatKeys.reduce((sum, k) => sum + (storageGet(k, []) || []).length, 0)
 
   const stats = [
     { label: 'Courses', value: courses.length },

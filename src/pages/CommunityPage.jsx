@@ -3,12 +3,8 @@ import { useContent } from '../context/ContentContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useNavigate } from 'react-router-dom'
-import { storageGet, storageSet } from '../lib/storage'
+import { listRoomMessages, postMessage as postMessageApi } from '../lib/chatApi'
 import { initials } from '../lib/helpers'
-
-function chatKey(roomId) {
-  return `chat:${roomId}`
-}
 
 export default function CommunityPage() {
   const { rooms } = useContent()
@@ -26,7 +22,9 @@ export default function CommunityPage() {
 
   const loadMessages = () => {
     if (!room) return
-    setMessages(storageGet(chatKey(room.id), []))
+    listRoomMessages(room.id)
+      .then(setMessages)
+      .catch(() => {})
   }
 
   useEffect(() => {
@@ -49,7 +47,7 @@ export default function CommunityPage() {
     )
   }
 
-  const sendChat = () => {
+  const sendChat = async () => {
     const text = input.trim()
     if (!text) return
     if (!currentUser) {
@@ -57,12 +55,18 @@ export default function CommunityPage() {
       navigate('/account')
       return
     }
-    const existing = storageGet(chatKey(room.id), [])
-    existing.push({ username: currentUser.username, displayName: currentUser.displayName, text, time: Date.now() })
-    const trimmed = existing.slice(-150)
-    storageSet(chatKey(room.id), trimmed)
     setInput('')
-    setMessages(trimmed)
+    try {
+      const saved = await postMessageApi(room.id, {
+        username: currentUser.username,
+        displayName: currentUser.displayName,
+        text,
+      })
+      setMessages((prev) => [...prev, saved])
+    } catch {
+      toast('Could not send that — try again.')
+      return
+    }
     if (!currentUser.badges.includes('chatterbox')) {
       saveCurrentUser({ ...currentUser, badges: [...currentUser.badges, 'chatterbox'] })
       toast('New badge: Chatterbox 💬')

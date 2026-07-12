@@ -40,7 +40,7 @@ export default function AdminDataPage() {
   }
 
   const handleReset = () => {
-    if (!confirm('Reset all courses, grades, badges and rooms back to the original demo content? Learner accounts are not affected.')) return
+    if (!confirm('Reset badges and rooms back to the original demo content? Courses, grades and learner accounts are not affected — edit or restore those from a backup instead.')) return
     resetToDefault()
     toast('Content reset to defaults')
   }
@@ -67,7 +67,8 @@ export default function AdminDataPage() {
 
       <AdminCard title="Reset to defaults">
         <p className="text-ink-soft text-[.9rem] mb-3">
-          Wipe all admin edits and restore the six original demo courses, grades, badges and rooms.
+          Wipe admin edits to badges and rooms and restore the original demo content. Courses and grades live in the
+          database now — restore those from a backup file above instead.
         </p>
         <AdminButton variant="danger" onClick={handleReset}>
           Reset content to defaults

@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
-import { ContentProvider } from './context/ContentContext'
+import { ContentProvider, useContent } from './context/ContentContext'
 import { AuthProvider } from './context/AuthContext'
 import { AdminAuthProvider } from './context/AdminAuthContext'
 import { ToastProvider } from './context/ToastContext'
@@ -18,6 +18,8 @@ import ToolsPage from './pages/tools/ToolsPage'
 import CvAnalyzerPage from './pages/tools/CvAnalyzerPage'
 import InterviewPrepPage from './pages/tools/InterviewPrepPage'
 import ProjectIdeasPage from './pages/tools/ProjectIdeasPage'
+import LearningPathPage from './pages/tools/LearningPathPage'
+import DailyChallengePage from './pages/tools/DailyChallengePage'
 import AccountPage from './pages/AccountPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
@@ -33,84 +35,114 @@ import AdminRoomsPage from './pages/AdminRoomsPage'
 import AdminUsersPage from './pages/AdminUsersPage'
 import AdminDataPage from './pages/AdminDataPage'
 
+// Courses and grades now load from the server on mount (see ContentContext),
+// so routes wait for that first fetch instead of briefly rendering with
+// empty lists.
+function AppRoutes() {
+  const { ready } = useContent()
+  if (!ready) return null
+
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+          <Route path="/grades" element={<GradesPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/tools" element={<ToolsPage />} />
+          <Route
+            path="/tools/cv-analyzer"
+            element={
+              <RequireAuth>
+                <CvAnalyzerPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/tools/interview-prep"
+            element={
+              <RequireAuth>
+                <InterviewPrepPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/tools/project-ideas"
+            element={
+              <RequireAuth>
+                <ProjectIdeasPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/tools/learning-path"
+            element={
+              <RequireAuth>
+                <LearningPathPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/tools/daily-challenge"
+            element={
+              <RequireAuth>
+                <DailyChallengePage />
+              </RequireAuth>
+            }
+          />
+          <Route path="/account" element={<AccountPage />} />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <RequireAuth>
+                <SettingsPage />
+              </RequireAuth>
+            }
+          />
+        </Route>
+
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <RequireAdmin>
+              <AdminLayout />
+            </RequireAdmin>
+          }
+        >
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="grades" element={<AdminGradesPage />} />
+          <Route path="courses" element={<AdminCoursesPage />} />
+          <Route path="badges" element={<AdminBadgesPage />} />
+          <Route path="rooms" element={<AdminRoomsPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="data" element={<AdminDataPage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
+  )
+}
+
 export default function App() {
   return (
     <ContentProvider>
       <AuthProvider>
         <AdminAuthProvider>
           <ToastProvider>
-            <ScrollToTop />
-            <Routes>
-              <Route element={<Layout />}>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/courses" element={<CoursesPage />} />
-                <Route path="/courses/:courseId" element={<CourseDetailPage />} />
-                <Route path="/grades" element={<GradesPage />} />
-                <Route path="/community" element={<CommunityPage />} />
-                <Route path="/tools" element={<ToolsPage />} />
-                <Route
-                  path="/tools/cv-analyzer"
-                  element={
-                    <RequireAuth>
-                      <CvAnalyzerPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/tools/interview-prep"
-                  element={
-                    <RequireAuth>
-                      <InterviewPrepPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/tools/project-ideas"
-                  element={
-                    <RequireAuth>
-                      <ProjectIdeasPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route path="/account" element={<AccountPage />} />
-                <Route
-                  path="/profile"
-                  element={
-                    <RequireAuth>
-                      <ProfilePage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <RequireAuth>
-                      <SettingsPage />
-                    </RequireAuth>
-                  }
-                />
-              </Route>
-
-              <Route path="/admin/login" element={<AdminLoginPage />} />
-              <Route
-                path="/admin"
-                element={
-                  <RequireAdmin>
-                    <AdminLayout />
-                  </RequireAdmin>
-                }
-              >
-                <Route index element={<AdminDashboardPage />} />
-                <Route path="grades" element={<AdminGradesPage />} />
-                <Route path="courses" element={<AdminCoursesPage />} />
-                <Route path="badges" element={<AdminBadgesPage />} />
-                <Route path="rooms" element={<AdminRoomsPage />} />
-                <Route path="users" element={<AdminUsersPage />} />
-                <Route path="data" element={<AdminDataPage />} />
-              </Route>
-
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            <AppRoutes />
           </ToastProvider>
         </AdminAuthProvider>
       </AuthProvider>

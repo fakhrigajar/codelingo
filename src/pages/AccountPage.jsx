@@ -26,9 +26,9 @@ export default function AccountPage() {
     setError('')
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    const res = login(loginUsername, loginPassword)
+    const res = await login(loginUsername, loginPassword)
     if (!res.ok) {
       setError(res.error)
       return
@@ -37,9 +37,9 @@ export default function AccountPage() {
     navigate('/profile')
   }
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault()
-    const res = signup({ displayName: suName, username: suUsername, age: suAge, password: suPassword })
+    const res = await signup({ displayName: suName, username: suUsername, age: suAge, password: suPassword })
     if (!res.ok) {
       setError(res.error)
       return

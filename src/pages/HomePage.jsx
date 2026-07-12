@@ -205,10 +205,10 @@ export default function HomePage() {
                 className="btn btn-primary"
                 onClick={() => navigate("/courses")}
               >
-                Start learning →
+                Start learning
               </button>
               <button
-                className="btn bg-white text-indigo-dark"
+                className="btn btn-outline bg-white text-indigo-dark"
                 onClick={goAccountOrProfile}
               >
                 Create free account
@@ -343,21 +343,19 @@ export default function HomePage() {
         />
       </section>
 
-      <section>
-        <div className="bg-indigo-dark rounded-[22px] p-12 flex justify-between items-center gap-6 flex-wrap [background-image:radial-gradient(circle_at_90%_10%,rgba(255,201,60,.18),transparent_45%),radial-gradient(circle_at_10%_90%,rgba(140,122,230,.22),transparent_45%)]">
-          <div>
-            <h2 className="text-white text-[1.8rem] max-w-[460px]">
-              Ready to power on?
-            </h2>
-            <p className="text-[#C4CCEB] max-w-[420px]">
-              Create your free account and start your first lesson today.
-            </p>
-          </div>
-          <button className="btn btn-primary" onClick={goAccountOrProfile}>
-            Get started free →
-          </button>
+      <div className="bg-indigo-dark rounded-[22px] p-12 flex justify-between items-center gap-6 flex-wrap [background-image:radial-gradient(circle_at_90%_10%,rgba(255,201,60,.18),transparent_45%),radial-gradient(circle_at_10%_90%,rgba(140,122,230,.22),transparent_45%)]">
+        <div>
+          <h2 className="text-white text-[1.8rem] max-w-[460px]">
+            Ready to power on?
+          </h2>
+          <p className="text-[#C4CCEB] max-w-[420px]">
+            Create your free account and start your first lesson today.
+          </p>
         </div>
-      </section>
+        <button className="btn btn-primary" onClick={goAccountOrProfile}>
+          Get started free →
+        </button>
+      </div>
     </div>
   );
 }

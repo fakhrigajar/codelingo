@@ -20,6 +20,18 @@ const TOOLS = [
     title: 'Project Ideas',
     description: 'Pick a language and a level, and get 10 AI-generated project ideas to build.',
   },
+  {
+    to: '/tools/learning-path',
+    icon: '🗺️',
+    title: 'Learning Path',
+    description: 'Share your age, experience, and goal — get a personalized step-by-step path.',
+  },
+  {
+    to: '/tools/daily-challenge',
+    icon: '🔥',
+    title: 'Daily Coding Challenge',
+    description: 'A new challenge every day — build streaks, earn XP, and climb the leaderboard.',
+  },
 ]
 
 export default function ToolsPage() {
@@ -49,7 +61,7 @@ export default function ToolsPage() {
           <Link
             key={tool.to}
             to={tool.to}
-            className="relative bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-6 hover:border-violet transition-colors"
+            className="relative block h-full bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-6 hover:border-violet hover:-translate-y-1 transition-all"
           >
             {!currentUser && (
               <span
@@ -65,7 +77,7 @@ export default function ToolsPage() {
           </Link>
         ))}
 
-        <div className="border-2 border-dashed border-line dark:border-white/15 rounded-[18px] p-6 flex flex-col items-center justify-center text-center">
+        <div className="border-2 border-dashed border-line dark:border-white/15 rounded-[18px] p-6 flex flex-col items-center justify-center text-center h-full">
           <span className="text-3xl">✨</span>
           <h3 className="text-[1.15rem] mt-3 mb-1.5 text-ink-soft dark:text-white/60">More coming soon</h3>
           <p className="text-ink-soft dark:text-white/50 text-[.88rem]">

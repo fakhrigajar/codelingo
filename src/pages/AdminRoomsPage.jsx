@@ -1,13 +1,23 @@
+import { useEffect, useState } from 'react'
 import { useContent } from '../context/ContentContext'
 import { useToast } from '../context/ToastContext'
 import { uid } from '../lib/helpers'
-import { storageRemove, storageGet } from '../lib/storage'
+import { listRoomMessages, clearRoomMessages } from '../lib/chatApi'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminInput, AdminButton } from '../components/admin/AdminFields'
 
 export default function AdminRoomsPage() {
   const { rooms, setRooms } = useContent()
   const toast = useToast()
+  const [counts, setCounts] = useState({})
+
+  useEffect(() => {
+    rooms.forEach((r) => {
+      listRoomMessages(r.id)
+        .then((msgs) => setCounts((prev) => ({ ...prev, [r.id]: msgs.length })))
+        .catch(() => {})
+    })
+  }, [rooms])
 
   const updateRoom = (id, patch) => {
     setRooms(rooms.map((r) => (r.id === id ? { ...r, ...patch } : r)))
@@ -16,13 +26,15 @@ export default function AdminRoomsPage() {
   const removeRoom = (id) => {
     if (!confirm('Delete this room and its message history?')) return
     setRooms(rooms.filter((r) => r.id !== id))
-    storageRemove(`chat:${id}`)
+    clearRoomMessages(id).catch(() => {})
     toast('Room deleted')
   }
 
   const clearMessages = (id) => {
     if (!confirm('Clear all messages in this room?')) return
-    storageRemove(`chat:${id}`)
+    clearRoomMessages(id)
+      .then(() => setCounts((prev) => ({ ...prev, [id]: 0 })))
+      .catch(() => toast('Could not clear messages — try again.'))
     toast('Messages cleared')
   }
 
@@ -41,7 +53,7 @@ export default function AdminRoomsPage() {
 
       <div className="grid sm:grid-cols-2 gap-4">
         {rooms.map((r) => {
-          const count = (storageGet(`chat:${r.id}`, []) || []).length
+          const count = counts[r.id] ?? 0
           return (
             <AdminCard key={r.id}>
               <AdminInput label="Room name" value={r.name} onChange={(e) => updateRoom(r.id, { name: e.target.value })} />

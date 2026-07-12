@@ -1,39 +1,44 @@
-import { useState } from 'react'
-import { getAllUsers, saveAllUsers, deleteUser } from '../context/AuthContext'
+import { useEffect, useState } from 'react'
+import { getAllUsers, saveUser, deleteUser } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminButton } from '../components/admin/AdminFields'
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState(getAllUsers())
+  const [users, setUsers] = useState([])
+  const [ready, setReady] = useState(false)
   const toast = useToast()
-  const list = Object.values(users).sort((a, b) => new Date(b.joined) - new Date(a.joined))
+  const list = [...users].sort((a, b) => new Date(b.joined) - new Date(a.joined))
 
-  const refresh = () => setUsers(getAllUsers())
+  const refresh = () => getAllUsers().then(setUsers)
 
-  const handleDelete = (username) => {
+  useEffect(() => {
+    refresh().finally(() => setReady(true))
+  }, [])
+
+  const handleDelete = async (username) => {
     if (!confirm(`Delete the account "${username}"? This cannot be undone.`)) return
-    deleteUser(username)
+    await deleteUser(username)
     refresh()
     toast('Account deleted')
   }
 
-  const handleResetProgress = (username) => {
+  const handleResetProgress = async (username) => {
     if (!confirm(`Reset all XP, badges and lesson progress for "${username}"?`)) return
-    const all = getAllUsers()
-    const user = all[username]
+    const user = users.find((u) => u.username === username)
     if (!user) return
-    all[username] = { ...user, xp: 0, badges: [], completed: {} }
-    saveAllUsers(all)
+    await saveUser({ ...user, xp: 0, badges: [], completed: {} })
     refresh()
     toast('Progress reset')
   }
+
+  if (!ready) return null
 
   return (
     <div>
       <h1 className="text-2xl mb-1">Users</h1>
       <p className="text-ink-soft mb-6">
-        {list.length} registered learner{list.length === 1 ? '' : 's'}. Accounts are stored locally in this browser.
+        {list.length} registered learner{list.length === 1 ? '' : 's'}. Accounts are stored on the server.
       </p>
 
       {list.length === 0 && (

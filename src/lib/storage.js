@@ -33,15 +33,3 @@ export function storageRemove(key) {
     return false
   }
 }
-
-// List all keys (without the app prefix) that start with the given prefix.
-export function storageList(prefix = '') {
-  const keys = []
-  for (let i = 0; i < localStorage.length; i++) {
-    const fullKey = localStorage.key(i)
-    if (fullKey && fullKey.startsWith(PREFIX + prefix)) {
-      keys.push(fullKey.slice(PREFIX.length))
-    }
-  }
-  return keys
-}

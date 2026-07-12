@@ -33,19 +33,38 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-[22px] py-3 rounded-xl font-extrabold text-base transition-transform duration-150 ease-out active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    @apply relative overflow-hidden inline-flex items-center justify-center gap-2 px-[22px] py-3 rounded-full font-extrabold text-base active:translate-y-px hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    transition: 0.2s;
+    --btn-shine: rgba(255, 255, 255, 0.55);
+  }
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 42%,
+      var(--btn-shine) 50%,
+      transparent 58%
+    );
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .btn:hover::after {
+    animation: btnShine 0.85s ease forwards;
   }
   .btn-primary {
-    @apply bg-coral text-white shadow-coral hover:shadow-coral-lg hover:-translate-y-0.5;
+    @apply bg-coral text-white shadow-coral hover:shadow-coral-lg;
   }
   .btn-dark {
-    @apply bg-indigo-dark text-white shadow-dark hover:shadow-dark-lg hover:-translate-y-0.5;
+    @apply bg-indigo-dark text-white shadow-dark hover:shadow-dark-lg;
   }
   .btn-outline {
-    @apply bg-white text-indigo-dark border-2 border-line hover:border-indigo-dark dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:border-white/40;
+    @apply bg-white text-indigo-dark shadow-[0_4px_0_rgba(43,58,103,.25)] hover:shadow-[0_6px_0_rgba(43,58,103,.25)] dark:bg-white/10 dark:text-white dark:shadow-[0_4px_0_rgba(255,255,255,.25)] dark:hover:shadow-[0_6px_0_rgba(255,255,255,.25)];
+    --btn-shine: rgba(140, 122, 230, 0.55);
   }
   .btn-sm {
-    @apply px-3.5 py-2 text-sm rounded-[10px];
+    @apply px-3.5 py-2 text-sm;
   }
   .eyebrow {
     @apply inline-flex items-center gap-2 bg-[#FFF3D6] text-[#9A6B00] dark:bg-white/10 dark:text-[#FFD98A] font-mono text-xs font-bold px-3 py-1.5 rounded-full tracking-wide mb-4;
@@ -94,3 +113,37 @@
   }
 }
 
+@keyframes btnShine {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0;
+    border: none;
+    padding: 24px;
+  }
+  .path-step {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .path-step .relative {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

@@ -10,57 +10,42 @@ function emptyTopic() {
 }
 
 export default function AdminGradesPage() {
-  const { grades, setGrades, courses, pageText, setPageText } = useContent()
+  const { grades, addGrade, updateGrade, removeGrade, courses, pageText, setPageText } = useContent()
   const toast = useToast()
   const [openGradeId, setOpenGradeId] = useState(grades[0]?.id || null)
 
-  const updateGrade = (id, patch) => {
-    setGrades(grades.map((g) => (g.id === id ? { ...g, ...patch } : g)))
-  }
+  const gradeTopics = (gradeId) => grades.find((g) => g.id === gradeId)?.topics || []
 
   const updateTopic = (gradeId, index, patch) => {
-    setGrades(
-      grades.map((g) =>
-        g.id === gradeId
-          ? { ...g, topics: g.topics.map((t, i) => (i === index ? { ...t, ...patch } : t)) }
-          : g
-      )
-    )
+    const topics = gradeTopics(gradeId).map((t, i) => (i === index ? { ...t, ...patch } : t))
+    updateGrade(gradeId, { topics })
   }
 
   const updateTopicSource = (gradeId, index, sourcePatch) => {
-    setGrades(
-      grades.map((g) =>
-        g.id === gradeId
-          ? {
-              ...g,
-              topics: g.topics.map((t, i) => (i === index ? { ...t, source: { ...t.source, ...sourcePatch } } : t)),
-            }
-          : g
-      )
+    const topics = gradeTopics(gradeId).map((t, i) =>
+      i === index ? { ...t, source: { ...t.source, ...sourcePatch } } : t,
     )
+    updateGrade(gradeId, { topics })
   }
 
   const addTopic = (gradeId) => {
-    setGrades(grades.map((g) => (g.id === gradeId ? { ...g, topics: [...g.topics, emptyTopic()] } : g)))
+    updateGrade(gradeId, { topics: [...gradeTopics(gradeId), emptyTopic()] })
   }
 
   const removeTopic = (gradeId, index) => {
-    setGrades(
-      grades.map((g) => (g.id === gradeId ? { ...g, topics: g.topics.filter((_, i) => i !== index) } : g))
-    )
+    updateGrade(gradeId, { topics: gradeTopics(gradeId).filter((_, i) => i !== index) })
   }
 
-  const addGrade = () => {
+  const handleAddGrade = () => {
     const newGrade = { id: uid('grade'), label: `Grade ${grades.length + 1}`, age: '', topics: [] }
-    setGrades([...grades, newGrade])
+    addGrade(newGrade)
     setOpenGradeId(newGrade.id)
     toast('Grade added')
   }
 
-  const removeGrade = (id) => {
+  const handleRemoveGrade = (id) => {
     if (!confirm('Delete this grade and its whole roadmap? This cannot be undone.')) return
-    setGrades(grades.filter((g) => g.id !== id))
+    removeGrade(id)
     toast('Grade deleted')
   }
 
@@ -86,7 +71,7 @@ export default function AdminGradesPage() {
 
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-lg m-0">Grade roadmaps</h2>
-        <AdminButton onClick={addGrade}>+ Add grade</AdminButton>
+        <AdminButton onClick={handleAddGrade}>+ Add grade</AdminButton>
       </div>
 
       <div className="space-y-4">
@@ -181,7 +166,7 @@ export default function AdminGradesPage() {
                     <AdminButton variant="outline" onClick={() => addTopic(grade.id)}>
                       + Add topic
                     </AdminButton>
-                    <AdminButton variant="danger" onClick={() => removeGrade(grade.id)}>
+                    <AdminButton variant="danger" onClick={() => handleRemoveGrade(grade.id)}>
                       Delete this grade
                     </AdminButton>
                   </div>

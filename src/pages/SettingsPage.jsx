@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
@@ -25,7 +25,7 @@ export default function SettingsPage() {
       return
     }
 
-    const res = updateAccount({ displayName, username, email, currentPassword, newPassword })
+    const res = await updateAccount({ displayName, username, email, currentPassword, newPassword })
     if (!res.ok) {
       setError(res.error)
       return

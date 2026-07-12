@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import { MongoClient } from 'mongodb'
 
 const app = express()
 app.use(express.json({ limit: '2mb' }))
@@ -11,7 +12,7 @@ app.use(express.json({ limit: '2mb' }))
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*'
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', ALLOWED_ORIGIN)
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') return res.sendStatus(204)
   next()
@@ -20,6 +21,148 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 3001
 const MODEL = 'gemini-2.5-flash'
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
+
+// GET /api/health — check in Postman that the server is actually running and
+// configured correctly (never returns the key itself, just whether it's set).
+app.get('/api/health', async (req, res) => {
+  const dbConnected = await mongoClient
+    .db('codelingo')
+    .command({ ping: 1 })
+    .then(() => true)
+    .catch(() => false)
+
+  res.json({
+    status: 'ok',
+    uptimeSeconds: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+    model: MODEL,
+    geminiKeyConfigured: Boolean(process.env.GEMINI_API_KEY),
+    allowedOrigin: ALLOWED_ORIGIN,
+    dbConnected,
+  })
+})
+
+// This is now the app's actual database (courses, grades and users no
+// longer live in the browser's localStorage) — persisted in MongoDB so it
+// survives restarts and redeploys, not just kept in server memory.
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'
+const mongoClient = new MongoClient(MONGODB_URI)
+
+const NO_ID_PROJECTION = { projection: { _id: 0 } }
+
+function makeCrudRoutes(basePath, collection, { idField = 'id', requiredFields = ['id'] } = {}) {
+  app.get(basePath, async (req, res) => {
+    res.json(await collection.find({}, NO_ID_PROJECTION).sort({ _id: 1 }).toArray())
+  })
+
+  app.get(`${basePath}/:id`, async (req, res) => {
+    const item = await collection.findOne({ [idField]: req.params.id }, NO_ID_PROJECTION)
+    if (!item) return res.status(404).json({ error: `Not found: ${req.params.id}` })
+    res.json(item)
+  })
+
+  app.post(basePath, async (req, res) => {
+    const item = req.body
+    const missing = requiredFields.filter((f) => !item?.[f])
+    if (missing.length) return res.status(400).json({ error: `Missing required field(s): ${missing.join(', ')}` })
+    const existing = await collection.findOne({ [idField]: item[idField] })
+    if (existing) return res.status(409).json({ error: `Already exists: ${item[idField]}` })
+    await collection.insertOne({ ...item })
+    res.status(201).json(item)
+  })
+
+  // Upsert by id: updates the item if it exists, creates it otherwise. This
+  // is what admin edits and lesson-progress saves use, since those are
+  // frequent partial updates rather than one-time creation.
+  app.put(`${basePath}/:id`, async (req, res) => {
+    const incoming = { ...(req.body || {}) }
+    delete incoming[idField] // the URL is the source of truth for the id
+    const existing = await collection.findOne({ [idField]: req.params.id })
+    if (!existing) {
+      const missing = requiredFields.filter((f) => f !== idField && !incoming[f])
+      if (missing.length) return res.status(400).json({ error: `Missing required field(s): ${missing.join(', ')}` })
+    }
+    const updated = await collection.findOneAndUpdate(
+      { [idField]: req.params.id },
+      { $set: { ...incoming, [idField]: req.params.id } },
+      { upsert: true, returnDocument: 'after', ...NO_ID_PROJECTION },
+    )
+    res.status(existing ? 200 : 201).json(updated)
+  })
+
+  app.delete(`${basePath}/:id`, async (req, res) => {
+    const removed = await collection.findOneAndDelete({ [idField]: req.params.id }, NO_ID_PROJECTION)
+    if (!removed) return res.status(404).json({ error: `Not found: ${req.params.id}` })
+    res.json(removed)
+  })
+
+  app.delete(basePath, async (req, res) => {
+    await collection.deleteMany({})
+    res.json({ removed: true })
+  })
+}
+
+// Community chat and lesson discussions don't fit the id-based CRUD shape
+// above (no single record is ever fetched/edited/deleted by id — messages
+// are only ever listed per room/lesson and appended to), so they get their
+// own small scoped routes instead of makeCrudRoutes.
+function makeThreadRoutes(basePath, collection, scopeFields) {
+  app.get(basePath, async (req, res) => {
+    res.json(await collection.find({}, NO_ID_PROJECTION).sort({ time: 1 }).toArray())
+  })
+
+  const scopedPath = `${basePath}/${scopeFields.map((f) => `:${f}`).join('/')}`
+
+  app.get(scopedPath, async (req, res) => {
+    const scope = Object.fromEntries(scopeFields.map((f) => [f, req.params[f]]))
+    res.json(await collection.find(scope, NO_ID_PROJECTION).sort({ time: 1 }).toArray())
+  })
+
+  app.post(scopedPath, async (req, res) => {
+    const { username, displayName, text } = req.body || {}
+    if (!username || !displayName || !text || !text.trim()) {
+      return res.status(400).json({ error: 'username, displayName and text are required.' })
+    }
+    const scope = Object.fromEntries(scopeFields.map((f) => [f, req.params[f]]))
+    const message = { ...scope, username, displayName, text: text.trim(), time: Date.now() }
+    await collection.insertOne({ ...message })
+    res.status(201).json(message)
+  })
+
+  app.delete(scopedPath, async (req, res) => {
+    const scope = Object.fromEntries(scopeFields.map((f) => [f, req.params[f]]))
+    await collection.deleteMany(scope)
+    res.json({ removed: true })
+  })
+}
+
+async function start() {
+  await mongoClient.connect()
+  const db = mongoClient.db('codelingo')
+  const coursesCollection = db.collection('courses')
+  const gradesCollection = db.collection('grades')
+  const usersCollection = db.collection('users')
+  const messagesCollection = db.collection('messages')
+  const discussionsCollection = db.collection('discussions')
+
+  // courses and grades no longer have hardcoded defaults in the frontend
+  // bundle — MongoDB is the sole source of truth for all three resources.
+  makeCrudRoutes('/api/courses', coursesCollection)
+  makeCrudRoutes('/api/grades', gradesCollection, { idField: 'id', requiredFields: ['id', 'label'] })
+  makeCrudRoutes('/api/users', usersCollection, { idField: 'username', requiredFields: ['username', 'displayName'] })
+  makeThreadRoutes('/api/messages', messagesCollection, ['roomId'])
+  makeThreadRoutes('/api/discussions', discussionsCollection, ['courseId', 'lessonId'])
+
+  app.listen(PORT, () => {
+    console.log(`AI tools proxy listening on http://localhost:${PORT}`)
+  })
+}
+
+start().catch((err) => {
+  console.error('Failed to start server:', err.message)
+  console.error(`Could not connect to MongoDB at ${MONGODB_URI} — is it running? Set MONGODB_URI to point elsewhere.`)
+  process.exit(1)
+})
 
 // Shared helper: calls Gemini with a system prompt + schema, forcing JSON
 // output, and normalizes error responses (missing key, bad request, rate
@@ -261,6 +404,52 @@ app.post('/api/project-ideas', async (req, res) => {
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`AI tools proxy listening on http://localhost:${PORT}`)
+const LEARNING_PATH_SYSTEM_PROMPT = `You are an expert curriculum designer and career mentor. Given a learner's age, experience level, and stated goal, design a personalized step-by-step learning path from foundational skills up to that goal, in the correct learning order (fundamentals first, the goal itself or a capstone like "Portfolio" last). Return 6-10 steps. Each step needs a short title (1-3 words, e.g. "HTML", "Flexbox", "Portfolio") and a one-sentence description of what to do at that step and why it matters, tailored to the learner's age and experience level. Return JSON only matching the schema.`
+
+const LEARNING_PATH_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    steps: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          title: { type: 'STRING' },
+          description: { type: 'STRING' },
+        },
+        required: ['title', 'description'],
+      },
+    },
+  },
+  required: ['steps'],
+}
+
+app.post('/api/learning-path', async (req, res) => {
+  const { age, experience, goal } = req.body || {}
+  if (!goal || !goal.trim()) {
+    return res.status(400).json({ error: 'goal is required.' })
+  }
+
+  const userContent = `Age: ${age || 'not specified'}\nExperience level: ${experience || 'not specified'}\nGoal: ${goal.trim()}\nDesign a personalized step-by-step learning path to reach this goal.`
+
+  try {
+    const parsed = await callGemini({
+      systemPrompt: LEARNING_PATH_SYSTEM_PROMPT,
+      userContent,
+      schema: LEARNING_PATH_SCHEMA,
+      temperature: 0.6,
+    })
+
+    const steps = (Array.isArray(parsed.steps) ? parsed.steps : [])
+      .filter((s) => s && s.title)
+      .map((s) => ({ title: s.title, description: s.description || '' }))
+
+    if (!steps.length) {
+      return res.status(502).json({ error: 'Gemini did not return a usable learning path.' })
+    }
+
+    res.json({ steps })
+  } catch (err) {
+    sendError(res, err)
+  }
 })
