@@ -10,6 +10,8 @@ import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { courseById, lessonById } from "../lib/helpers";
+import { getLessonBlocks } from "../lib/lessonBlocks";
+import { probeVideoDuration } from "../lib/probeVideoDuration";
 import LessonPanel from "../components/courses/LessonPanel";
 import AboutPanel from "../components/courses/AboutPanel";
 import CourseSidebar from "../components/courses/CourseSidebar";
@@ -134,6 +136,34 @@ export default function CourseDetailPage() {
     if (!target || target.videoMinutes === minutes) return;
     patchLesson(course.id, lessonId, { videoMinutes: minutes });
   };
+
+  // The sidebar/about page can only show an accurate estimated time once a
+  // video's real duration is known, and that's normally only learned by
+  // actually playing it. Rather than making every lesson but the one you've
+  // opened look like it has no time estimate, quietly probe every lesson's
+  // video in the background (once each, ever — the result is cached on the
+  // lesson) so the full course shows real numbers immediately.
+  useEffect(() => {
+    let cancelled = false;
+    const pending = course.lessons
+      .filter((l) => l.id !== activeLesson?.id && l.videoMinutes == null)
+      .map((l) => ({ id: l.id, videoUrl: getLessonBlocks(l).find((b) => b.type === "video" && b.value)?.value }))
+      .filter((l) => l.videoUrl);
+
+    (async () => {
+      for (const { id, videoUrl } of pending) {
+        if (cancelled) return;
+        const seconds = await probeVideoDuration(videoUrl);
+        if (cancelled || !seconds) continue;
+        handleVideoDuration(id, Math.ceil(seconds / 60));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course.id]);
 
   return (
     <div className="pt-8">

@@ -37,6 +37,7 @@ export default function AdminCoursesPage() {
       lessons: [],
     }
     addCourse(newCourse)
+    setDrafts((prev) => ({ ...prev, [newCourse.id]: newCourse }))
     setOpenId(newCourse.id)
     toast('Course added')
   }
