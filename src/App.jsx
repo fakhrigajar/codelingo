@@ -1,45 +1,42 @@
-import { Routes, Route } from 'react-router-dom'
-import { ContentProvider, useContent } from './context/ContentContext'
-import { AuthProvider } from './context/AuthContext'
-import { ToastProvider } from './context/ToastContext'
+import { Routes, Route } from "react-router-dom";
+import { ContentProvider, useContent } from "./context/ContentContext";
+import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 
-import ScrollToTop from './components/common/ScrollToTop'
-import Layout from './components/layout/Layout'
-import RequireAuth from './routes/RequireAuth'
-import RequireAdmin from './routes/RequireAdmin'
+import ScrollToTop from "./components/common/ScrollToTop";
+import Layout from "./components/layout/Layout";
+import RequireAuth from "./routes/RequireAuth";
+import RequireAdmin from "./routes/RequireAdmin";
 
-import HomePage from './pages/HomePage'
-import CoursesPage from './pages/CoursesPage'
-import CourseDetailPage from './pages/CourseDetailPage'
-import PathsPage from './pages/PathsPage'
-import PathDetailPage from './pages/PathDetailPage'
-import CommunityPage from './pages/CommunityPage'
-import ToolsPage from './pages/tools/ToolsPage'
-import CvAnalyzerPage from './pages/tools/CvAnalyzerPage'
-import InterviewPrepPage from './pages/tools/InterviewPrepPage'
-import ProjectIdeasPage from './pages/tools/ProjectIdeasPage'
-import LearningPathPage from './pages/tools/LearningPathPage'
-import DailyChallengePage from './pages/tools/DailyChallengePage'
-import AccountPage from './pages/AccountPage'
-import ProfilePage from './pages/ProfilePage'
-import SettingsPage from './pages/SettingsPage'
-import NotFoundPage from './pages/NotFoundPage'
+import HomePage from "./pages/HomePage";
+import CoursesPage from "./pages/CoursesPage";
+import CourseDetailPage from "./pages/CourseDetailPage";
+import PathsPage from "./pages/PathsPage";
+import PathDetailPage from "./pages/PathDetailPage";
+import CommunityPage from "./pages/CommunityPage";
+import ToolsPage from "./pages/tools/ToolsPage";
+import CvAnalyzerPage from "./pages/tools/CvAnalyzerPage";
+import InterviewPrepPage from "./pages/tools/InterviewPrepPage";
+import ProjectIdeasPage from "./pages/tools/ProjectIdeasPage";
+import LearningPathPage from "./pages/tools/LearningPathPage";
+import DailyChallengePage from "./pages/tools/DailyChallengePage";
+import AccountPage from "./pages/AccountPage";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
-import AdminLayout from './components/admin/AdminLayout'
-import AdminDashboardPage from './pages/AdminDashboardPage'
-import AdminPathsPage from './pages/AdminPathsPage'
-import AdminCoursesPage from './pages/AdminCoursesPage'
-import AdminBadgesPage from './pages/AdminBadgesPage'
-import AdminRoomsPage from './pages/AdminRoomsPage'
-import AdminUsersPage from './pages/AdminUsersPage'
-import AdminDataPage from './pages/AdminDataPage'
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminPathsPage from "./pages/AdminPathsPage";
+import AdminCoursesPage from "./pages/AdminCoursesPage";
+import AdminBadgesPage from "./pages/AdminBadgesPage";
+import AdminRoomsPage from "./pages/AdminRoomsPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminDataPage from "./pages/AdminDataPage";
 
-// Courses and paths now load from the server on mount (see ContentContext),
-// so routes wait for that first fetch instead of briefly rendering with
-// empty lists.
 function AppRoutes() {
-  const { ready } = useContent()
-  if (!ready) return null
+  const { ready } = useContent();
+  if (!ready) return null;
 
   return (
     <>
@@ -132,7 +129,7 @@ function AppRoutes() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
-  )
+  );
 }
 
 export default function App() {
@@ -144,5 +141,5 @@ export default function App() {
         </ToastProvider>
       </AuthProvider>
     </ContentProvider>
-  )
+  );
 }
