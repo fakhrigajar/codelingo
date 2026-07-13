@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Bot } from 'lucide-react'
 import InterviewSetupForm from '../../components/interview/InterviewSetupForm'
 import InterviewQuizGame from '../../components/interview/InterviewQuizGame'
 
@@ -19,7 +20,9 @@ export default function InterviewPrepPage() {
         <span className="text-ink dark:text-white">Interview Prep</span>
       </nav>
 
-      <span className="eyebrow">🤖 AI career tools</span>
+      <span className="eyebrow">
+        <Bot size={13} /> AI career tools
+      </span>
       <h1 className="text-[2rem]">Interview Prep</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
         Get AI-generated interview FAQs for any role, then quiz yourself game-style to check your

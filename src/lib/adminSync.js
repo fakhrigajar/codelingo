@@ -1,6 +1,6 @@
 import { API_BASE } from './apiBase'
 
-// Client for the server's /api/courses, /api/grades and /api/users routes —
+// Client for the server's /api/courses, /api/paths and /api/users routes —
 // these are now the actual data store for the app (no localStorage fallback).
 async function request(method, path, body) {
   const res = await fetch(`${API_BASE}${path}`, {

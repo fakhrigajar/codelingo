@@ -1,31 +1,31 @@
 export const DEFAULT_BADGES = [
   {
     id: "first-steps",
-    icon: "🌱",
+    icon: "sprout",
     name: "First Steps",
     desc: "Complete your first lesson",
   },
   {
     id: "course-champion",
-    icon: "🏆",
+    icon: "trophy",
     name: "Course Champion",
     desc: "Finish an entire course",
   },
   {
     id: "quiz-whiz",
-    icon: "🧠",
+    icon: "brain",
     name: "Quiz Whiz",
     desc: "Pass your first quiz",
   },
   {
     id: "chatterbox",
-    icon: "💬",
+    icon: "message-circle",
     name: "Chatterbox",
     desc: "Send your first community message",
   },
   {
     id: "triple-threat",
-    icon: "⚡",
+    icon: "zap",
     name: "Triple Threat",
     desc: "Make progress in 3 different courses",
   },
@@ -42,9 +42,7 @@ export const DEFAULT_ROOMS = [
 ];
 
 export const DEFAULT_PAGE_TEXT = {
-  gradesTitle: "Grade roadmaps",
-  gradesSubtitle:
-    "Pick a grade to see its learning path. Tap any stop to read about it and jump to its source lesson.",
+  pathsTitle: "Learning paths",
+  pathsSubtitle:
+    "Follow a path from first course to last — complete one to unlock the next.",
 };
-
-export const ADMIN_PASSWORD = "codelingo-admin";

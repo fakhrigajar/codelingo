@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Flag, CheckCircle2, XCircle, PartyPopper } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { recordGap } from '../../lib/interviewGaps'
 
@@ -38,12 +39,18 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
 
   if (finished) {
     const pct = Math.round((score / questions.length) * 100)
-    const message =
-      pct >= 80 ? "You're interview-ready! 🎉" : pct >= 50 ? 'Solid start — keep practicing!' : "Let's review and try again."
+    const ready = pct >= 80
+    const message = ready
+      ? "You're interview-ready!"
+      : pct >= 50
+        ? 'Solid start — keep practicing!'
+        : "Let's review and try again."
 
     return (
       <div className="max-w-[560px] mx-auto bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-8 text-center">
-        <span className="text-4xl">🏁</span>
+        <div className="flex justify-center text-violet">
+          {ready ? <PartyPopper size={40} /> : <Flag size={40} />}
+        </div>
         <h2 className="text-[1.4rem] mt-3 mb-1">
           You scored {score}/{questions.length}
         </h2>
@@ -104,9 +111,17 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
 
         {selected !== null && (
           <div className="bg-bg dark:bg-white/10 rounded-xl px-4 py-3.5 mt-4 text-[.88rem]">
-            <span className="font-extrabold">
-              {selected === current.correctIndex ? '✓ Correct! ' : '✗ Not quite. '}
-            </span>
+            <span className="font-extrabold inline-flex items-center gap-1.5">
+              {selected === current.correctIndex ? (
+                <>
+                  <CheckCircle2 size={15} className="text-mint" /> Correct!
+                </>
+              ) : (
+                <>
+                  <XCircle size={15} className="text-coral" /> Not quite.
+                </>
+              )}
+            </span>{' '}
             {current.explanation}
           </div>
         )}

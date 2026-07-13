@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Zap, Rocket, BookOpen } from "lucide-react";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
 import CourseCarousel, { ArrowIcon } from "../components/home/CourseCarousel";
@@ -186,7 +187,7 @@ export default function HomePage() {
   return (
     <div>
       <section className="pt-20 pb-10">
-        <div className="relative overflow-hidden rounded-[28px] dark:bg-transparent grid desktop:grid-cols-2 gap-8 desktop:gap-10 items-center">
+        <div className="relative overflow-hidden dark:bg-transparent grid desktop:grid-cols-2 gap-8 desktop:gap-10 items-center">
           <div
             className={`hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]`}
           />
@@ -245,7 +246,9 @@ export default function HomePage() {
 
       <section className="py-16 relative">
         <div className="max-w-[640px] mx-auto mb-10 text-center">
-          <div className="eyebrow mx-auto">⚡ what you get</div>
+          <div className="eyebrow mx-auto">
+            <Zap size={13} /> what you get
+          </div>
           <h2 className="text-[2.1rem]">
             Everything a young technologist needs
           </h2>
@@ -280,7 +283,9 @@ export default function HomePage() {
 
       <section className="py-16">
         <div className="max-w-[640px] mx-auto mb-10 text-center">
-          <div className="eyebrow mx-auto">🚀 how it works</div>
+          <div className="eyebrow mx-auto">
+            <Rocket size={13} /> how it works
+          </div>
           <h2 className="text-[2.1rem]">Four steps to your first badge</h2>
         </div>
         <div className="grid sm:grid-cols-4 gap-5">
@@ -303,7 +308,9 @@ export default function HomePage() {
 
       <section className="py-16">
         <div className="max-w-[640px] mx-auto mb-10 text-center">
-          <div className="eyebrow mx-auto">📚 courses</div>
+          <div className="eyebrow mx-auto">
+            <BookOpen size={13} /> courses
+          </div>
           <h2 className="text-[1.6rem] sm:text-[1.9rem] desktop:text-[2.1rem]">
             Peek at the course library
           </h2>

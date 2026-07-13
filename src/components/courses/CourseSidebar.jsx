@@ -40,29 +40,7 @@ function ChevronIcon({ open }) {
   );
 }
 
-function ItemIcon({ item, isDone, isLocked }) {
-  if (isLocked) {
-    return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <rect
-          x="5"
-          y="11"
-          width="14"
-          height="9"
-          rx="2.2"
-          fill="currentColor"
-          opacity="0.5"
-        />
-        <path
-          d="M8 11V8a4 4 0 0 1 8 0v3"
-          stroke="currentColor"
-          strokeOpacity="0.5"
-          strokeWidth="1.8"
-          fill="none"
-        />
-      </svg>
-    );
-  }
+function ItemIcon({ item, isDone }) {
   if (isDone) {
     return (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -190,24 +168,16 @@ export default function CourseSidebar({
                 <div className="border-t-2 border-line dark:border-white/10">
                   {u.items.map((item) => {
                     const isDone = doneIds.includes(item.id);
-                    const flatIndex = course.lessons.indexOf(item);
-                    const isLocked =
-                      !isDone &&
-                      flatIndex > 0 &&
-                      !doneIds.includes(course.lessons[flatIndex - 1].id);
                     const isActive = activeLessonId === item.id;
                     return (
                       <button
                         key={item.id}
                         type="button"
-                        disabled={isLocked}
-                        onClick={() => !isLocked && onSelect(item.id)}
+                        onClick={() => onSelect(item.id)}
                         className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left border-t-2 first:border-t-0 border-line dark:border-white/10 transition-colors ${
-                          isLocked ? "cursor-not-allowed opacity-50" : ""
-                        } ${
                           isActive
                             ? "bg-violet/15"
-                            : !isLocked && "hover:bg-bg dark:hover:bg-white/5"
+                            : "hover:bg-bg dark:hover:bg-white/5"
                         }`}
                       >
                         <span
@@ -217,11 +187,7 @@ export default function CourseSidebar({
                               : "text-ink-soft dark:text-white/50"
                           }
                         >
-                          <ItemIcon
-                            item={item}
-                            isDone={isDone}
-                            isLocked={isLocked}
-                          />
+                          <ItemIcon item={item} isDone={isDone} />
                         </span>
                         <span
                           className={`flex-1 min-w-0 truncate text-[.82rem] font-bold ${

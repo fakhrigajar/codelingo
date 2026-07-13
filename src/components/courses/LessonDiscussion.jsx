@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { listComments, postComment as postCommentApi } from "../../lib/discussionApi";
@@ -46,8 +47,8 @@ export default function LessonDiscussion({ course, lesson }) {
 
   return (
     <div className="mt-6 pt-6 border-t-2 border-line dark:border-white/10">
-      <h3 className="text-[1.05rem] font-bold mb-3">
-        💬 Discussion{comments.length > 0 ? ` (${comments.length})` : ""}
+      <h3 className="text-[1.05rem] font-bold mb-3 inline-flex items-center gap-1.5">
+        <MessageCircle size={16} /> Discussion{comments.length > 0 ? ` (${comments.length})` : ""}
       </h3>
 
       <div

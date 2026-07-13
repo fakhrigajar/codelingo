@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { FileText } from 'lucide-react'
 import AiFeedbackCard from './AiFeedbackCard'
 import AiFeedbackDetails from './AiFeedbackDetails'
 import { extractTextFromFile } from '../../lib/cvFileParser'
@@ -90,7 +91,7 @@ export default function CvAnalyzer({ text, fileName, targetRole, onChange }) {
               className="hidden"
               onChange={(e) => handleFile(e.target.files?.[0])}
             />
-            <span className="text-3xl">📄</span>
+            <FileText size={30} className="text-violet" />
             {fileStatus === 'parsing' ? (
               <span className="font-bold text-[.92rem]">Reading your CV...</span>
             ) : fileName ? (

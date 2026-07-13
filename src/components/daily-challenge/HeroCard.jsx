@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Flame } from 'lucide-react'
+import { Flame, CheckCircle2 } from 'lucide-react'
 import CountUp from './CountUp'
 
 export default function HeroCard({ streak, todayXp, todayCoins, completedToday, onStart }) {
@@ -15,7 +15,7 @@ export default function HeroCard({ streak, todayXp, todayCoins, completedToday, 
 
       <div className="relative">
         <span className="inline-flex items-center gap-2 bg-white/10 text-white font-mono text-xs font-bold px-3 py-1.5 rounded-full tracking-wide mb-4">
-          🔥 Daily Coding Challenge
+          <Flame size={14} /> Daily Coding Challenge
         </span>
 
         <p className="text-white/60 max-w-[520px] mb-7 text-[.95rem]">
@@ -35,9 +35,15 @@ export default function HeroCard({ streak, todayXp, todayCoins, completedToday, 
           whileTap={{ y: 0 }}
           onClick={onStart}
           disabled={completedToday}
-          className="btn btn-primary text-[1.05rem] px-8 py-4 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
+          className="btn btn-primary text-[1.05rem] px-8 py-4 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 inline-flex items-center justify-center gap-2"
         >
-          {completedToday ? "✓ Today's Challenge Completed" : "Start Today's Challenge"}
+          {completedToday ? (
+            <>
+              <CheckCircle2 size={18} /> Today's Challenge Completed
+            </>
+          ) : (
+            "Start Today's Challenge"
+          )}
         </motion.button>
       </div>
     </motion.div>

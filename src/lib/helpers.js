@@ -25,6 +25,18 @@ export function progressPct(user, course) {
   return Math.round((completedCount(user, course) / course.lessons.length) * 100)
 }
 
+export function pathCourses(path, courses) {
+  return path.courseIds.map((id) => courseById(courses, id)).filter(Boolean)
+}
+
+export function pathStats(path, courses) {
+  const linked = pathCourses(path, courses)
+  const lessons = linked.flatMap((c) => c.lessons)
+  const points = lessons.reduce((sum, l) => sum + (l.type === 'quiz' ? 20 : 10), 0)
+  const hours = Math.round(lessons.reduce((sum, l) => sum + (l.estimatedMinutes || 0), 0) / 60)
+  return { courseCount: linked.length, points, hours }
+}
+
 export function uid(prefix = 'id') {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 }

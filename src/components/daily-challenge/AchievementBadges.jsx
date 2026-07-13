@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { BADGES } from '../../lib/dailyChallengeProgress'
+import { getBadgeIcon } from '../../lib/badgeIcons'
 
 export default function AchievementBadges({ unlockedIds }) {
   return (
@@ -14,6 +15,7 @@ export default function AchievementBadges({ unlockedIds }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {BADGES.map((badge, i) => {
           const unlocked = unlockedIds.has(badge.id)
+          const Icon = getBadgeIcon(badge.icon)
           return (
             <motion.div
               key={badge.id}
@@ -29,8 +31,8 @@ export default function AchievementBadges({ unlockedIds }) {
                   : 'border-line dark:border-white/5 bg-bg/60 dark:bg-white/[0.02]',
               ].join(' ')}
             >
-              <span className={`text-[1.8rem] block mb-2 ${unlocked ? '' : 'blur-[3px] opacity-40 grayscale'}`}>
-                {badge.icon}
+              <span className={`flex justify-center text-violet mb-2 ${unlocked ? '' : 'blur-[3px] opacity-40 grayscale'}`}>
+                <Icon size={28} />
               </span>
               <p className={`text-[.8rem] font-bold ${unlocked ? 'text-ink dark:text-white' : 'text-ink-soft/50 dark:text-white/30'}`}>{badge.name}</p>
               {!unlocked && <p className="text-[.68rem] text-ink-soft/40 dark:text-white/25 mt-1">{badge.desc}</p>}

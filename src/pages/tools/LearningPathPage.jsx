@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Bot } from 'lucide-react'
 import LearningPathForm from '../../components/learning-path/LearningPathForm'
 import LearningPathDiagram from '../../components/learning-path/LearningPathDiagram'
 import { generateLearningPath } from '../../lib/learningPath'
@@ -37,7 +38,9 @@ export default function LearningPathPage() {
         <span className="text-ink dark:text-white">Learning Path</span>
       </nav>
 
-      <span className="eyebrow">🤖 AI career tools</span>
+      <span className="eyebrow">
+        <Bot size={13} /> AI career tools
+      </span>
       <h1 className="text-[2rem]">Learning Path</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
         Tell us your age, experience, and goal — AI builds a personalized step-by-step path to get

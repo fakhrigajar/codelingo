@@ -15,14 +15,14 @@ const DEFAULT_PROGRESS = {
 }
 
 export const BADGES = [
-  { id: 'first-challenge', icon: '🏅', name: 'First Challenge', desc: 'Complete your first daily challenge.', check: (p) => p.history.length >= 1 },
-  { id: 'streak-7', icon: '🔥', name: '7 Day Streak', desc: 'Reach a 7-day streak.', check: (p) => p.maxStreak >= 7 },
-  { id: 'xp-1000', icon: '⚡', name: '1000 XP', desc: 'Earn 1,000 total challenge XP.', check: (p) => p.xp >= 1000 },
-  { id: 'python-beginner', icon: '🐍', name: 'Python Beginner', desc: 'Complete a Python challenge.', check: (p) => p.history.some((h) => h.language === 'Python') },
-  { id: 'js-ninja', icon: '⚙️', name: 'JS Ninja', desc: 'Complete 5 JavaScript challenges.', check: (p) => p.history.filter((h) => h.language === 'JavaScript').length >= 5 },
-  { id: 'streak-30', icon: '🌟', name: '30 Day Streak', desc: 'Reach a 30-day streak.', check: (p) => p.maxStreak >= 30 },
-  { id: 'century', icon: '🏆', name: '100 Challenges', desc: 'Complete 100 daily challenges.', check: (p) => p.history.length >= 100 },
-  { id: 'streak-365', icon: '👑', name: '365 Day Streak', desc: 'Reach a 365-day streak.', check: (p) => p.maxStreak >= 365 },
+  { id: 'first-challenge', icon: 'award', name: 'First Challenge', desc: 'Complete your first daily challenge.', check: (p) => p.history.length >= 1 },
+  { id: 'streak-7', icon: 'flame', name: '7 Day Streak', desc: 'Reach a 7-day streak.', check: (p) => p.maxStreak >= 7 },
+  { id: 'xp-1000', icon: 'zap', name: '1000 XP', desc: 'Earn 1,000 total challenge XP.', check: (p) => p.xp >= 1000 },
+  { id: 'python-beginner', icon: 'code', name: 'Python Beginner', desc: 'Complete a Python challenge.', check: (p) => p.history.some((h) => h.language === 'Python') },
+  { id: 'js-ninja', icon: 'braces', name: 'JS Ninja', desc: 'Complete 5 JavaScript challenges.', check: (p) => p.history.filter((h) => h.language === 'JavaScript').length >= 5 },
+  { id: 'streak-30', icon: 'sparkles', name: '30 Day Streak', desc: 'Reach a 30-day streak.', check: (p) => p.maxStreak >= 30 },
+  { id: 'century', icon: 'trophy', name: '100 Challenges', desc: 'Complete 100 daily challenges.', check: (p) => p.history.length >= 100 },
+  { id: 'streak-365', icon: 'crown', name: '365 Day Streak', desc: 'Reach a 365-day streak.', check: (p) => p.maxStreak >= 365 },
 ]
 
 export const REWARD_MILESTONES = [

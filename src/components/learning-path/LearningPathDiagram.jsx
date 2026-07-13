@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { Download } from 'lucide-react'
 import PathArrow from './PathArrow'
 
 // A4 at 96 CSS px/in, matching the `@page { size: A4 }` rule in index.css.
@@ -78,8 +79,8 @@ export default function LearningPathDiagram({ goal, steps }) {
   return (
     <div>
       <div className="flex justify-center mb-5 print:hidden">
-        <button type="button" className="btn btn-outline btn-sm" onClick={handlePrint}>
-          ⬇ Download as PDF
+        <button type="button" className="btn btn-outline btn-sm inline-flex items-center gap-1.5" onClick={handlePrint}>
+          <Download size={14} /> Download as PDF
         </button>
       </div>
 

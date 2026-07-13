@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Bot } from 'lucide-react'
 import ProjectIdeaForm from '../../components/projects/ProjectIdeaForm'
 import ProjectIdeaList from '../../components/projects/ProjectIdeaList'
 import { generateProjectIdeas } from '../../lib/projectIdeas'
@@ -37,7 +38,9 @@ export default function ProjectIdeasPage() {
         <span className="text-ink dark:text-white">Project Ideas</span>
       </nav>
 
-      <span className="eyebrow">🤖 AI career tools</span>
+      <span className="eyebrow">
+        <Bot size={13} /> AI career tools
+      </span>
       <h1 className="text-[2rem]">Project Ideas</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
         Pick a language and a level, and AI will generate 10 project ideas to build your skills.

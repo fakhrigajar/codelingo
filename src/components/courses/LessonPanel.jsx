@@ -1,3 +1,4 @@
+import { BookOpen, Lightbulb, Check } from "lucide-react";
 import QuizPanel from "./QuizPanel";
 import LessonDiscussion from "./LessonDiscussion";
 
@@ -46,18 +47,26 @@ export default function LessonPanel({
   return (
     <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
       {onBack && <BackToAbout onBack={onBack} />}
-      <span className="eyebrow">📖 lesson</span>
+      <span className="eyebrow inline-flex items-center gap-1.5">
+        <BookOpen size={13} /> lesson
+      </span>
       <h2>{lesson.title}</h2>
       <p className="text-[1.02rem]">{lesson.body}</p>
-      <div className="bg-[#FFF3D6] text-[#8A5B00] dark:bg-[#3A2E12] dark:text-[#FFD98A] rounded-xl px-4 py-3.5 mb-4">
-        💡 Fun fact: {lesson.fact}
+      <div className="bg-[#FFF3D6] text-[#8A5B00] dark:bg-[#3A2E12] dark:text-[#FFD98A] rounded-xl px-4 py-3.5 mb-4 flex items-start gap-2">
+        <Lightbulb size={16} className="shrink-0 mt-0.5" /> Fun fact: {lesson.fact}
       </div>
       <button
-        className={`btn ${done ? "btn-outline" : "btn-primary"}`}
+        className={`btn ${done ? "btn-outline" : "btn-primary"} inline-flex items-center justify-center gap-1.5`}
         disabled={done}
         onClick={() => !done && onComplete(course, lesson, 10, false)}
       >
-        {done ? "✓ Completed" : "Mark as complete (+10 XP)"}
+        {done ? (
+          <>
+            <Check size={16} /> Completed
+          </>
+        ) : (
+          "Mark as complete (+10 XP)"
+        )}
       </button>
       {!currentUser && (
         <p className="text-[.82rem] text-ink-soft dark:text-white/50 mt-3">

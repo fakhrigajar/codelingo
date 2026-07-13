@@ -40,7 +40,7 @@ export default function AdminDataPage() {
   }
 
   const handleReset = () => {
-    if (!confirm('Reset badges and rooms back to the original demo content? Courses, grades and learner accounts are not affected — edit or restore those from a backup instead.')) return
+    if (!confirm('Reset badges and rooms back to the original demo content? Courses, paths and learner accounts are not affected — edit or restore those from a backup instead.')) return
     resetToDefault()
     toast('Content reset to defaults')
   }
@@ -48,26 +48,30 @@ export default function AdminDataPage() {
   return (
     <div>
       <h1 className="text-2xl mb-1">Backup &amp; reset</h1>
-      <p className="text-ink-soft mb-6">Save your edits to a file, restore from a file, or start over.</p>
+      <p className="text-ink-soft dark:text-white/60 mb-6">Save your edits to a file, restore from a file, or start over.</p>
 
       <AdminCard title="Export content" className="mb-4">
-        <p className="text-ink-soft text-[.9rem] mb-3">
-          Download all courses, grades, badges and rooms as a JSON file you can keep as a backup.
+        <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
+          Download all courses, paths, badges and rooms as a JSON file you can keep as a backup.
         </p>
         <AdminButton onClick={handleExport}>Download backup (.json)</AdminButton>
       </AdminCard>
 
       <AdminCard title="Import content" className="mb-4">
-        <p className="text-ink-soft text-[.9rem] mb-3">
+        <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
           Restore content from a previously exported JSON file. This replaces everything currently on the site.
         </p>
-        {error && <div className="bg-[#FFEDEB] text-[#B23B2C] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-3">{error}</div>}
+        {error && (
+          <div className="bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-3">
+            {error}
+          </div>
+        )}
         <input ref={fileRef} type="file" accept="application/json" onChange={handleImportFile} className="text-sm" />
       </AdminCard>
 
       <AdminCard title="Reset to defaults">
-        <p className="text-ink-soft text-[.9rem] mb-3">
-          Wipe admin edits to badges and rooms and restore the original demo content. Courses and grades live in the
+        <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
+          Wipe admin edits to badges and rooms and restore the original demo content. Courses and paths live in the
           database now — restore those from a backup file above instead.
         </p>
         <AdminButton variant="danger" onClick={handleReset}>

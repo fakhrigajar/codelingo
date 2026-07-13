@@ -52,6 +52,7 @@ export function AuthProvider({ children }) {
         displayName: displayName.trim(),
         age,
         password,
+        role: "community",
         xp: 0,
         badges: [],
         completed: {},

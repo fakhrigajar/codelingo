@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Clock, Sparkles, Coins, Lock, CheckCircle2 } from 'lucide-react'
+import { Clock, Sparkles, Coins, Lock, CheckCircle2, Lightbulb } from 'lucide-react'
 
 const DIFFICULTY_STYLES = {
   Easy: 'bg-mint/15 text-mint border-mint/30',
@@ -70,9 +70,9 @@ export default function TodayChallengeCard({ challenge, status, onStart, onCompl
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden text-violet text-[.9rem] leading-relaxed bg-violet/10 border border-violet/20 rounded-2xl p-4 mb-4"
+                  className="overflow-hidden text-violet text-[.9rem] leading-relaxed bg-violet/10 border border-violet/20 rounded-2xl p-4 mb-4 flex items-start gap-2"
                 >
-                  💡 {challenge.solution}
+                  <Lightbulb size={16} className="shrink-0 mt-0.5" /> {challenge.solution}
                 </motion.p>
               )}
             </AnimatePresence>
@@ -92,8 +92,8 @@ export default function TodayChallengeCard({ challenge, status, onStart, onCompl
             {started ? 'Mark as Complete' : 'Start Challenge'}
           </motion.button>
         ) : (
-          <button type="button" disabled className="btn btn-primary opacity-60 cursor-not-allowed">
-            ✓ Challenge Completed
+          <button type="button" disabled className="btn btn-primary opacity-60 cursor-not-allowed inline-flex items-center gap-1.5">
+            <CheckCircle2 size={16} /> Challenge Completed
           </button>
         )}
 

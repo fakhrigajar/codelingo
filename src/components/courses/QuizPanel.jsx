@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Brain, Check } from "lucide-react";
 
 export default function QuizPanel({ lesson, done, onComplete }) {
   const [answers, setAnswers] = useState(() =>
@@ -9,10 +10,12 @@ export default function QuizPanel({ lesson, done, onComplete }) {
   if (done) {
     return (
       <>
-        <span className="eyebrow">🧠 quiz</span>
+        <span className="eyebrow inline-flex items-center gap-1.5">
+          <Brain size={13} /> quiz
+        </span>
         <h2>{lesson.title}</h2>
-        <p className="text-mint font-extrabold">
-          ✓ Quiz already completed — nice work!
+        <p className="text-mint font-extrabold inline-flex items-center gap-1.5">
+          <Check size={16} /> Quiz already completed — nice work!
         </p>
       </>
     );
@@ -31,7 +34,9 @@ export default function QuizPanel({ lesson, done, onComplete }) {
 
   return (
     <>
-      <span className="eyebrow">🧠 quiz</span>
+      <span className="eyebrow inline-flex items-center gap-1.5">
+        <Brain size={13} /> quiz
+      </span>
       <h2 className="">{lesson.title}</h2>
       {lesson.questions.map((q, qi) => (
         <div key={qi} className="mb-5">

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Mic } from 'lucide-react'
 import { generateInterviewQuestions } from '../../lib/interviewPrep'
 
 const SUGGESTIONS = ['Frontend Developer', 'Backend Developer', 'Data Analyst', 'Product Manager']
@@ -23,7 +24,9 @@ export default function InterviewSetupForm({ onReady }) {
 
   return (
     <div className="max-w-[560px] mx-auto bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7 text-center">
-      <span className="text-3xl">🎤</span>
+      <div className="flex justify-center text-violet">
+        <Mic size={32} />
+      </div>
       <h2 className="text-[1.3rem] mt-2 mb-1.5">What role are you interviewing for?</h2>
       <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-5">
         AI will generate a set of common interview questions so you can quiz yourself.

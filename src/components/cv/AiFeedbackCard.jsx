@@ -1,3 +1,4 @@
+import { Target, CheckCircle2, Wrench, KeyRound } from "lucide-react";
 import ScoreRing from "./ScoreRing";
 
 export default function AiFeedbackCard({
@@ -44,19 +45,19 @@ export default function AiFeedbackCard({
           </p>
           <ul className="space-y-2.5">
             <li className="flex gap-2.5 text-[.86rem] text-ink-soft dark:text-white/60">
-              <span>🎯</span>
+              <Target size={16} className="shrink-0" />
               <span>An overall ATS score out of 100</span>
             </li>
             <li className="flex gap-2.5 text-[.86rem] text-ink-soft dark:text-white/60">
-              <span>✅</span>
+              <CheckCircle2 size={16} className="shrink-0" />
               <span>What's already working well</span>
             </li>
             <li className="flex gap-2.5 text-[.86rem] text-ink-soft dark:text-white/60">
-              <span>🛠️</span>
+              <Wrench size={16} className="shrink-0" />
               <span>Specific, actionable improvements</span>
             </li>
             <li className="flex gap-2.5 text-[.86rem] text-ink-soft dark:text-white/60">
-              <span>🔑</span>
+              <KeyRound size={16} className="shrink-0" />
               <span>Keywords missing for your target role</span>
             </li>
           </ul>

@@ -1,6 +1,6 @@
 export default function AdminCard({ title, actions, children, className = '' }) {
   return (
-    <div className={`bg-white border-2 border-line rounded-2xl p-5 ${className}`}>
+    <div className={`bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 ${className}`}>
       {(title || actions) && (
         <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
           {title && <h3 className="m-0 text-[1.1rem]">{title}</h3>}

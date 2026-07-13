@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import AiFeedbackSummary from './AiFeedbackSummary'
 
 export default function AiFeedbackDetails({ result }) {
@@ -18,7 +19,7 @@ export default function AiFeedbackDetails({ result }) {
               <ul className="space-y-1.5">
                 {strengths.map((s, i) => (
                   <li key={i} className="flex gap-2 text-[.86rem]">
-                    <span className="text-mint shrink-0">✓</span>
+                    <Check size={14} className="text-mint shrink-0 mt-0.5" />
                     <span>{s}</span>
                   </li>
                 ))}

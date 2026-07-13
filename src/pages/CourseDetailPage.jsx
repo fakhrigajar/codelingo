@@ -98,7 +98,7 @@ export default function CourseDetailPage() {
 
     saveCurrentUser(updated);
     const badgeMsg = newBadges.length
-      ? ` New badge: ${badges.find((b) => b.id === newBadges[0])?.name} 🎉`
+      ? ` New badge: ${badges.find((b) => b.id === newBadges[0])?.name}`
       : "";
     toast(`+${xp} XP earned!${badgeMsg}`);
 

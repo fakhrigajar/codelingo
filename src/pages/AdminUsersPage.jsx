@@ -32,18 +32,28 @@ export default function AdminUsersPage() {
     toast('Progress reset')
   }
 
+  const handleToggleRole = async (username) => {
+    const user = users.find((u) => u.username === username)
+    if (!user) return
+    const nextRole = user.role === 'admin' ? 'community' : 'admin'
+    if (!confirm(`${nextRole === 'admin' ? 'Grant' : 'Remove'} admin access ${nextRole === 'admin' ? 'to' : 'from'} "${username}"?`)) return
+    await saveUser({ ...user, role: nextRole })
+    refresh()
+    toast(nextRole === 'admin' ? 'User is now an admin' : 'Admin access removed')
+  }
+
   if (!ready) return null
 
   return (
     <div>
       <h1 className="text-2xl mb-1">Users</h1>
-      <p className="text-ink-soft mb-6">
+      <p className="text-ink-soft dark:text-white/60 mb-6">
         {list.length} registered learner{list.length === 1 ? '' : 's'}. Accounts are stored on the server.
       </p>
 
       {list.length === 0 && (
         <AdminCard>
-          <p className="text-ink-soft m-0">No one has signed up yet.</p>
+          <p className="text-ink-soft dark:text-white/60 m-0">No one has signed up yet.</p>
         </AdminCard>
       )}
 
@@ -55,14 +65,22 @@ export default function AdminUsersPage() {
               <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <div className="font-extrabold">
-                    {u.displayName} <span className="text-ink-soft font-mono text-[.8rem]">@{u.username}</span>
+                    {u.displayName} <span className="text-ink-soft dark:text-white/50 font-mono text-[.8rem]">@{u.username}</span>
+                    {u.role === 'admin' && (
+                      <span className="ml-2 align-middle text-[.7rem] font-bold bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark rounded-full px-2 py-0.5">
+                        Admin
+                      </span>
+                    )}
                   </div>
-                  <div className="text-ink-soft text-[.85rem] mt-0.5">
+                  <div className="text-ink-soft dark:text-white/50 text-[.85rem] mt-0.5">
                     Age {u.age} · {u.xp} XP · {totalCompleted} lessons done · {u.badges.length} badges · joined{' '}
                     {new Date(u.joined).toLocaleDateString()}
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <AdminButton variant="outline" onClick={() => handleToggleRole(u.username)}>
+                    {u.role === 'admin' ? 'Remove admin' : 'Make admin'}
+                  </AdminButton>
                   <AdminButton variant="outline" onClick={() => handleResetProgress(u.username)}>
                     Reset progress
                   </AdminButton>

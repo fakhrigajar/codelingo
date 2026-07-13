@@ -5,12 +5,12 @@ import { DEFAULT_BADGES, DEFAULT_ROOMS, DEFAULT_PAGE_TEXT } from '../data/data'
 
 const ContentContext = createContext(null)
 
-// Courses and grades now live entirely on the server/MongoDB (see
+// Courses and paths now live entirely on the server/MongoDB (see
 // server/index.js) — there are no hardcoded defaults for them anymore.
 // Badges, rooms and page text have no API yet, so they still live here.
 const CONTENT_KEY = 'content'
 const coursesApi = createResourceSync('courses')
-const gradesApi = createResourceSync('grades')
+const pathsApi = createResourceSync('paths')
 
 function loadInitialLocalContent() {
   const saved = storageGet(CONTENT_KEY)
@@ -21,7 +21,7 @@ function loadInitialLocalContent() {
 export function ContentProvider({ children }) {
   const [local, setLocal] = useState(loadInitialLocalContent)
   const [courses, setCoursesState] = useState([])
-  const [grades, setGradesState] = useState([])
+  const [paths, setPathsState] = useState([])
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -29,10 +29,10 @@ export function ContentProvider({ children }) {
   }, [local])
 
   useEffect(() => {
-    Promise.all([coursesApi.list(), gradesApi.list()])
-      .then(([c, g]) => {
+    Promise.all([coursesApi.list(), pathsApi.list()])
+      .then(([c, p]) => {
         setCoursesState(c)
-        setGradesState(g)
+        setPathsState(p)
       })
       .finally(() => setReady(true))
   }, [])
@@ -42,7 +42,7 @@ export function ContentProvider({ children }) {
   }, [])
 
   // Single-document operations — each maps to exactly one API call for
-  // exactly the course/grade being touched. This matters: an earlier version
+  // exactly the course/path being touched. This matters: an earlier version
   // synced the *entire* array on every edit (diffing the browser's copy
   // against the server and deleting anything missing), which silently wiped
   // out unrelated courses whenever the local copy was ever stale — e.g. two
@@ -63,19 +63,31 @@ export function ContentProvider({ children }) {
     coursesApi.remove(id).catch(() => {})
   }, [])
 
-  const addGrade = useCallback((grade) => {
-    setGradesState((prev) => [...prev, grade])
-    gradesApi.create(grade).catch(() => {})
+  // Stamps a fresh sequential `order` on every course to match the given
+  // arrangement, so the new order survives a refresh (the server sorts
+  // courses by `order`) — a plain reorder wouldn't otherwise change any
+  // single course's own fields, so nothing would be diffable to persist.
+  const reorderCourses = useCallback((ordered) => {
+    const stamped = ordered.map((c, i) => ({ ...c, order: i }))
+    setCoursesState(stamped)
+    stamped.forEach((c) => {
+      coursesApi.update(c.id, { order: c.order }).catch(() => {})
+    })
   }, [])
 
-  const updateGrade = useCallback((id, patch) => {
-    setGradesState((prev) => prev.map((g) => (g.id === id ? { ...g, ...patch } : g)))
-    gradesApi.update(id, patch).catch(() => {})
+  const addPath = useCallback((path) => {
+    setPathsState((prev) => [...prev, path])
+    pathsApi.create(path).catch(() => {})
   }, [])
 
-  const removeGrade = useCallback((id) => {
-    setGradesState((prev) => prev.filter((g) => g.id !== id))
-    gradesApi.remove(id).catch(() => {})
+  const updatePath = useCallback((id, patch) => {
+    setPathsState((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)))
+    pathsApi.update(id, patch).catch(() => {})
+  }, [])
+
+  const removePath = useCallback((id) => {
+    setPathsState((prev) => prev.filter((p) => p.id !== id))
+    pathsApi.remove(id).catch(() => {})
   }, [])
 
   // Deliberate whole-collection replacements (reset to defaults, restore a
@@ -86,9 +98,9 @@ export function ContentProvider({ children }) {
     coursesApi.replaceAll(next).catch(() => {})
   }, [])
 
-  const replaceGrades = useCallback((next) => {
-    setGradesState(next)
-    gradesApi.replaceAll(next).catch(() => {})
+  const replacePaths = useCallback((next) => {
+    setPathsState(next)
+    pathsApi.replaceAll(next).catch(() => {})
   }, [])
 
   const setBadges = useCallback((badges) => updateLocal((prev) => ({ ...prev, badges })), [updateLocal])
@@ -98,26 +110,26 @@ export function ContentProvider({ children }) {
     [updateLocal],
   )
 
-  // Courses and grades have no hardcoded defaults to reset to anymore — this
+  // Courses and paths have no hardcoded defaults to reset to anymore — this
   // only resets the locally-stored slice (badges, rooms, page text).
   const resetToDefault = useCallback(() => {
     updateLocal({ badges: DEFAULT_BADGES, rooms: DEFAULT_ROOMS, pageText: DEFAULT_PAGE_TEXT })
   }, [updateLocal])
 
   const exportData = useCallback(
-    () => JSON.stringify({ courses, grades, ...local }, null, 2),
-    [courses, grades, local],
+    () => JSON.stringify({ courses, paths, ...local }, null, 2),
+    [courses, paths, local],
   )
 
   const importData = useCallback(
     (json) => {
       try {
         const parsed = JSON.parse(json)
-        if (!parsed.courses || !parsed.badges || !parsed.grades || !parsed.rooms) {
-          throw new Error('Missing required keys: courses, badges, grades, rooms')
+        if (!parsed.courses || !parsed.badges || !parsed.paths || !parsed.rooms) {
+          throw new Error('Missing required keys: courses, badges, paths, rooms')
         }
         replaceCourses(parsed.courses)
-        replaceGrades(parsed.grades)
+        replacePaths(parsed.paths)
         updateLocal({
           badges: parsed.badges,
           rooms: parsed.rooms,
@@ -128,20 +140,21 @@ export function ContentProvider({ children }) {
         return { ok: false, error: e.message }
       }
     },
-    [replaceCourses, replaceGrades, updateLocal],
+    [replaceCourses, replacePaths, updateLocal],
   )
 
   const value = {
     ...local,
     courses,
-    grades,
+    paths,
     ready,
     addCourse,
     updateCourse,
     removeCourse,
-    addGrade,
-    updateGrade,
-    removeGrade,
+    reorderCourses,
+    addPath,
+    updatePath,
+    removePath,
     setBadges,
     setRooms,
     setPageText,

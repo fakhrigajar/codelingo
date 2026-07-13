@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
-import { Flame } from 'lucide-react'
+import { Flame, Medal } from 'lucide-react'
+
+const MEDAL_STYLES = ['text-sun', 'text-ink-soft dark:text-white/50', 'text-coral']
 
 function initials(name) {
   return (name || '?')
@@ -46,7 +48,7 @@ export default function LeaderboardTable({ entries }) {
                 ].join(' ')}
               >
                 <td className="px-2 py-3 font-mono font-bold text-ink-soft dark:text-white/60 rounded-l-xl">
-                  {entry.rank <= 3 ? ['🥇', '🥈', '🥉'][entry.rank - 1] : `#${entry.rank}`}
+                  {entry.rank <= 3 ? <Medal size={16} className={MEDAL_STYLES[entry.rank - 1]} /> : `#${entry.rank}`}
                 </td>
                 <td className="px-2 py-3">
                   <div className="flex items-center gap-2.5">

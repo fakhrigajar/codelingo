@@ -1,31 +1,35 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useAdminAuth } from '../../context/AdminAuthContext'
+import { LayoutDashboard, Route, BookOpen, Award, MessageCircle, Users, Database, ArrowLeft } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../lib/useTheme'
+import ThemeToggle from '../common/ThemeToggle'
 
 const links = [
-  { to: '/admin', label: '📊 Dashboard', end: true },
-  { to: '/admin/grades', label: '🗺️ Grades' },
-  { to: '/admin/courses', label: '📚 Courses' },
-  { to: '/admin/badges', label: '🏅 Badges' },
-  { to: '/admin/rooms', label: '💬 Chat rooms' },
-  { to: '/admin/users', label: '👤 Users' },
-  { to: '/admin/data', label: '🗄️ Backup & reset' },
+  { to: '/admin', label: 'Dashboard', Icon: LayoutDashboard, end: true },
+  { to: '/admin/paths', label: 'Paths', Icon: Route },
+  { to: '/admin/courses', label: 'Courses', Icon: BookOpen },
+  { to: '/admin/badges', label: 'Badges', Icon: Award },
+  { to: '/admin/rooms', label: 'Chat rooms', Icon: MessageCircle },
+  { to: '/admin/users', label: 'Users', Icon: Users },
+  { to: '/admin/data', label: 'Backup & reset', Icon: Database },
 ]
 
 export default function AdminLayout() {
-  const { logout } = useAdminAuth()
+  const { logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleLogout = () => {
     logout()
-    navigate('/admin/login')
+    navigate('/account')
   }
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg dark:bg-indigo-dark">
       <div className="max-w-[1180px] mx-auto px-6 py-8 grid desktop:grid-cols-[220px_1fr] gap-8">
         <aside className="desktop:sticky desktop:top-8 h-fit">
-          <div className="font-display font-extrabold text-lg text-indigo-dark mb-1">CodeLingo</div>
-          <div className="font-mono text-xs text-ink-soft mb-5">Admin panel</div>
+          <div className="font-display font-extrabold text-lg text-indigo-dark dark:text-white mb-1">CodeLingo</div>
+          <div className="font-mono text-xs text-ink-soft dark:text-white/50 mb-5">Admin panel</div>
           <nav className="flex desktop:flex-col gap-1.5 flex-wrap">
             {links.map((l) => (
               <NavLink
@@ -33,18 +37,27 @@ export default function AdminLayout() {
                 to={l.to}
                 end={l.end}
                 className={({ isActive }) =>
-                  `px-3.5 py-2.5 rounded-xl font-bold text-[.9rem] transition-colors ${
-                    isActive ? 'bg-indigo-dark text-white' : 'text-ink-soft hover:bg-[#EAF1FD]'
+                  `flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-[.9rem] transition-colors ${
+                    isActive
+                      ? 'bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark'
+                      : 'text-ink-soft hover:bg-[#EAF1FD] dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white'
                   }`
                 }
               >
+                <l.Icon size={16} />
                 {l.label}
               </NavLink>
             ))}
           </nav>
           <div className="flex desktop:flex-col gap-2 mt-6">
-            <button onClick={() => navigate('/')} className="btn btn-outline btn-sm w-full">
-              ← Back to site
+            <ThemeToggle
+              theme={theme}
+              onToggle={toggleTheme}
+              showLabel
+              className="btn btn-outline btn-sm w-full justify-center"
+            />
+            <button onClick={() => navigate('/')} className="btn btn-outline btn-sm w-full inline-flex items-center justify-center gap-1.5">
+              <ArrowLeft size={14} /> Back to site
             </button>
             <button onClick={handleLogout} className="btn btn-outline btn-sm w-full">
               Log out

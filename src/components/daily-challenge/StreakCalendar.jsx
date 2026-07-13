@@ -20,9 +20,9 @@ export default function StreakCalendar({ days, firstWeekday, monthLabel, streak 
           <motion.span
             animate={{ scale: [1, 1.15, 1] }}
             transition={{ duration: 1.4, repeat: Infinity }}
-            className="text-lg"
+            className="text-coral"
           >
-            🔥
+            <Flame size={18} />
           </motion.span>
           <span className="font-mono font-bold text-ink-soft dark:text-white/70 text-[.9rem]">{streak} day streak</span>
         </div>

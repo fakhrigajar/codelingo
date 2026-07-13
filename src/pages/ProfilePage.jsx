@@ -4,6 +4,7 @@ import { useContent } from '../context/ContentContext'
 import { useToast } from '../context/ToastContext'
 import { initials } from '../lib/helpers'
 import { getSignificantGaps } from '../lib/interviewGaps'
+import { getBadgeIcon } from '../lib/badgeIcons'
 import CourseCard from '../components/courses/CourseCard'
 
 export default function ProfilePage() {
@@ -61,13 +62,16 @@ export default function ProfilePage() {
       <div className="flex gap-3.5 flex-wrap mt-2.5">
         {badges.map((b) => {
           const has = currentUser.badges.includes(b.id)
+          const Icon = getBadgeIcon(b.icon)
           return (
             <div
               key={b.id}
               title={b.desc}
               className={`bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl px-4 py-3.5 text-center w-[110px] ${!has ? 'opacity-35' : ''}`}
             >
-              <div className="text-2xl">{b.icon}</div>
+              <div className="flex justify-center text-violet">
+                <Icon size={26} />
+              </div>
               <div className="text-[.72rem] font-bold mt-1.5 text-ink-soft dark:text-white/60">{b.name}</div>
             </div>
           )

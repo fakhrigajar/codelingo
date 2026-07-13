@@ -69,7 +69,7 @@ export default function CommunityPage() {
     }
     if (!currentUser.badges.includes('chatterbox')) {
       saveCurrentUser({ ...currentUser, badges: [...currentUser.badges, 'chatterbox'] })
-      toast('New badge: Chatterbox 💬')
+      toast('New badge: Chatterbox')
     }
   }
 
@@ -96,7 +96,7 @@ export default function CommunityPage() {
           </div>
           <div ref={boxRef} className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3.5">
             {messages.length === 0 && (
-              <p className="text-ink-soft dark:text-white/60 text-center mt-10">No messages yet — be the first to say hi! 👋</p>
+              <p className="text-ink-soft dark:text-white/60 text-center mt-10">No messages yet — be the first to say hi!</p>
             )}
             {messages.slice(-100).map((m, i) => {
               const mine = currentUser && m.username === currentUser.username

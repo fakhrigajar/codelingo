@@ -42,7 +42,7 @@ app.get('/api/health', async (req, res) => {
   })
 })
 
-// This is now the app's actual database (courses, grades and users no
+// This is now the app's actual database (courses, paths and users no
 // longer live in the browser's localStorage) — persisted in MongoDB so it
 // survives restarts and redeploys, not just kept in server memory.
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'
@@ -50,9 +50,9 @@ const mongoClient = new MongoClient(MONGODB_URI)
 
 const NO_ID_PROJECTION = { projection: { _id: 0 } }
 
-function makeCrudRoutes(basePath, collection, { idField = 'id', requiredFields = ['id'] } = {}) {
+function makeCrudRoutes(basePath, collection, { idField = 'id', requiredFields = ['id'], sort = { _id: 1 } } = {}) {
   app.get(basePath, async (req, res) => {
-    res.json(await collection.find({}, NO_ID_PROJECTION).sort({ _id: 1 }).toArray())
+    res.json(await collection.find({}, NO_ID_PROJECTION).sort(sort).toArray())
   })
 
   app.get(`${basePath}/:id`, async (req, res) => {
@@ -140,15 +140,28 @@ async function start() {
   await mongoClient.connect()
   const db = mongoClient.db('codelingo')
   const coursesCollection = db.collection('courses')
-  const gradesCollection = db.collection('grades')
+  const pathsCollection = db.collection('paths')
   const usersCollection = db.collection('users')
   const messagesCollection = db.collection('messages')
   const discussionsCollection = db.collection('discussions')
 
-  // courses and grades no longer have hardcoded defaults in the frontend
+  // One-time migration from the old lesson-linking "grades" model to
+  // "paths" (an ordered list of whole courses) — the two shapes aren't
+  // compatible, so this only carries over the label as an empty path for
+  // the admin to fill in. Leaves the old "grades" collection untouched.
+  if ((await pathsCollection.countDocuments()) === 0) {
+    const legacyGrades = await db.collection('grades').find({}).toArray()
+    if (legacyGrades.length) {
+      await pathsCollection.insertMany(
+        legacyGrades.map((g) => ({ id: g.id, label: g.label, level: 'Beginner', courseIds: [] })),
+      )
+    }
+  }
+
+  // courses and paths no longer have hardcoded defaults in the frontend
   // bundle — MongoDB is the sole source of truth for all three resources.
-  makeCrudRoutes('/api/courses', coursesCollection)
-  makeCrudRoutes('/api/grades', gradesCollection, { idField: 'id', requiredFields: ['id', 'label'] })
+  makeCrudRoutes('/api/courses', coursesCollection, { sort: { order: 1, _id: 1 } })
+  makeCrudRoutes('/api/paths', pathsCollection, { idField: 'id', requiredFields: ['id', 'label'] })
   makeCrudRoutes('/api/users', usersCollection, { idField: 'username', requiredFields: ['username', 'displayName'] })
   makeThreadRoutes('/api/messages', messagesCollection, ['roomId'])
   makeThreadRoutes('/api/discussions', discussionsCollection, ['courseId', 'lessonId'])
