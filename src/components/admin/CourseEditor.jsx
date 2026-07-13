@@ -27,7 +27,7 @@ export default function CourseEditor({ course, onChange, onRemove }) {
     onChange({
       lessons: [
         ...course.lessons,
-        { id, type: 'lesson', title: 'New lesson', body: '', fact: '' },
+        { id, type: 'lesson', title: 'New lesson', blocks: [] },
       ],
     })
     setOpenLessonId(id)

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { completedCount, progressPct } from "../../lib/helpers";
+import { getLessonMinutes } from "../../lib/lessonBlocks";
 
 const ABOUT_ID = "about";
 
@@ -136,7 +137,7 @@ export default function CourseSidebar({
         {units.map((u) => {
           const isOpen = !!openUnits[u.unit];
           const unitMinutes = u.items.reduce(
-            (a, i) => a + (i.estimatedMinutes || 0),
+            (a, i) => a + getLessonMinutes(i),
             0,
           );
           return (
@@ -196,9 +197,9 @@ export default function CourseSidebar({
                         >
                           {item.subUnit} {item.title}
                         </span>
-                        {item.estimatedMinutes && (
+                        {getLessonMinutes(item) > 0 && (
                           <span className="font-mono text-[.66rem] text-ink-soft dark:text-white/40 shrink-0">
-                            {item.estimatedMinutes}m
+                            {getLessonMinutes(item)}m
                           </span>
                         )}
                       </button>

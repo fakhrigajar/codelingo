@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { storageGet, storageSet } from '../lib/storage'
-import { createResourceSync } from '../lib/adminSync'
+import { createResourceSync, patchLessonFields } from '../lib/adminSync'
 import { DEFAULT_BADGES, DEFAULT_ROOMS, DEFAULT_PAGE_TEXT } from '../data/data'
 
 const ContentContext = createContext(null)
@@ -61,6 +61,21 @@ export function ContentProvider({ children }) {
   const removeCourse = useCallback((id) => {
     setCoursesState((prev) => prev.filter((c) => c.id !== id))
     coursesApi.remove(id).catch(() => {})
+  }, [])
+
+  // Scoped to exactly one lesson (not the whole course), for the same
+  // reason updateCourse is scoped to exactly one course: a full lessons-array
+  // PUT computed from a possibly-stale local copy could silently overwrite
+  // an unrelated edit made to the course in the meantime.
+  const patchLesson = useCallback((courseId, lessonId, patch) => {
+    setCoursesState((prev) =>
+      prev.map((c) =>
+        c.id === courseId
+          ? { ...c, lessons: c.lessons.map((l) => (l.id === lessonId ? { ...l, ...patch } : l)) }
+          : c,
+      ),
+    )
+    patchLessonFields(courseId, lessonId, patch).catch(() => {})
   }, [])
 
   // Stamps a fresh sequential `order` on every course to match the given
@@ -151,6 +166,7 @@ export function ContentProvider({ children }) {
     addCourse,
     updateCourse,
     removeCourse,
+    patchLesson,
     reorderCourses,
     addPath,
     updatePath,

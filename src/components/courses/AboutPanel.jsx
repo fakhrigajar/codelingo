@@ -1,4 +1,6 @@
 import { completedCount, progressPct } from "../../lib/helpers";
+import { getBadgeIcon } from "../../lib/badgeIcons";
+import { getLessonMinutes } from "../../lib/lessonBlocks";
 import CourseCover from "./CourseCover";
 
 export default function AboutPanel({ course, currentUser, badges, onStart }) {
@@ -12,7 +14,7 @@ export default function AboutPanel({ course, currentUser, badges, onStart }) {
     0,
   );
   const totalMinutes = course.lessons.reduce(
-    (a, l) => a + (l.estimatedMinutes || 0),
+    (a, l) => a + getLessonMinutes(l),
     0,
   );
   const earnedXp = course.lessons.reduce(
@@ -22,6 +24,7 @@ export default function AboutPanel({ course, currentUser, badges, onStart }) {
   const firstIncomplete =
     course.lessons.find((l) => !doneIds.includes(l.id)) || course.lessons[0];
   const championBadge = badges?.find((b) => b.id === "course-champion");
+  const ChampionIcon = championBadge && getBadgeIcon(championBadge.icon);
   const ctaLabel =
     pct === 0
       ? "Start course"
@@ -31,7 +34,11 @@ export default function AboutPanel({ course, currentUser, badges, onStart }) {
 
   return (
     <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
-      <CourseCover course={course} className="h-40 sm:h-48 rounded-2xl" iconSize={84} />
+      <CourseCover
+        course={course}
+        className="h-40 sm:h-48 rounded-2xl"
+        iconSize={84}
+      />
       <h2 className="text-[2rem] font-bold mt-6">{course.title}</h2>
       <p className="text-[1.02rem] mb-3">{course.about}</p>
       <div className="flex flex-wrap gap-2.5 font-mono text-[.78rem] text-ink-soft dark:text-white/60 mb-5">
@@ -90,11 +97,11 @@ export default function AboutPanel({ course, currentUser, badges, onStart }) {
         {championBadge && (
           <div className="flex items-center gap-2 font-mono text-[.78rem] text-ink-soft dark:text-white/60">
             <span
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-base bg-bg dark:bg-white/10 ${
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-violet bg-bg dark:bg-white/10 ${
                 pct === 100 ? "" : "opacity-50"
               }`}
             >
-              {championBadge.icon}
+              <ChampionIcon size={16} />
             </span>
             Earn "{championBadge.name}" by finishing this course
           </div>

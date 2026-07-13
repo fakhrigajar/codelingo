@@ -36,7 +36,7 @@ export function AdminSelect({ label, className = '', children, ...props }) {
   )
 }
 
-export function AdminImageUpload({ label, value, onChange, preview, buttonLabel = 'Upload image' }) {
+export function AdminImageUpload({ label, value, onChange, preview, buttonLabel = 'Upload image', disabled = false }) {
   const handleFile = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -51,12 +51,14 @@ export function AdminImageUpload({ label, value, onChange, preview, buttonLabel 
       {label && <span className="block font-bold text-[.8rem] mb-1 text-ink-soft dark:text-white/60">{label}</span>}
       <div className="flex items-center gap-3">
         {preview}
-        <label className="px-3.5 py-2 rounded-[10px] font-bold text-[.85rem] bg-white text-indigo-dark border-2 border-line dark:bg-white/10 dark:text-white dark:border-white/15 cursor-pointer hover:opacity-85">
+        <label
+          className={`px-3.5 py-2 rounded-[10px] font-bold text-[.85rem] bg-white text-indigo-dark border-2 border-line dark:bg-white/10 dark:text-white dark:border-white/15 cursor-pointer hover:opacity-85 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+        >
           {buttonLabel}
-          <input type="file" accept="image/*" className="hidden" onChange={handleFile} />
+          <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={disabled} />
         </label>
         {value && (
-          <AdminButton type="button" variant="ghost" onClick={() => onChange('')}>
+          <AdminButton type="button" variant="ghost" onClick={() => onChange('')} disabled={disabled}>
             Remove
           </AdminButton>
         )}

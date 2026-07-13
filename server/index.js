@@ -1,9 +1,23 @@
 import 'dotenv/config'
 import express from 'express'
 import { MongoClient } from 'mongodb'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import crypto from 'node:crypto'
+import { fileURLToPath } from 'node:url'
 
 const app = express()
-app.use(express.json({ limit: '2mb' }))
+// Bumped from the previous 2mb: lesson images arrive as base64 data URLs
+// (about a third larger than the raw file), so this needs headroom for a
+// real photo, not just small course-icon-sized images.
+app.use(express.json({ limit: '8mb' }))
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const UPLOADS_DIR = path.join(__dirname, 'uploads')
+// Served at /uploads — persisted to local disk. Fine for local dev; on a
+// host without a persistent volume (e.g. a default Railway deploy) this
+// directory is wiped on every redeploy, so uploaded images won't survive.
+app.use('/uploads', express.static(UPLOADS_DIR))
 
 // Frontend (Netlify) and this API (Railway) live on different domains, so
 // the browser needs an explicit CORS allowance. Restrict via ALLOWED_ORIGIN
@@ -21,6 +35,36 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 3001
 const MODEL = 'gemini-2.5-flash'
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
+
+const IMAGE_EXT_BY_MIME = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+  'image/svg+xml': 'svg',
+}
+
+// POST /api/uploads — takes a base64 data URL (what AdminImageUpload's
+// FileReader already produces) and writes it to disk, returning a real URL.
+// Used for lesson images so the course document in Mongo stores a short
+// string instead of the image's full base64 bytes.
+app.post('/api/uploads', async (req, res) => {
+  const { dataUrl } = req.body || {}
+  const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(dataUrl || '')
+  if (!match) {
+    return res.status(400).json({ error: 'Expected a base64 image data URL.' })
+  }
+  const [, mime, base64] = match
+  const ext = IMAGE_EXT_BY_MIME[mime] || 'bin'
+  const filename = `${crypto.randomUUID()}.${ext}`
+  try {
+    await fs.mkdir(UPLOADS_DIR, { recursive: true })
+    await fs.writeFile(path.join(UPLOADS_DIR, filename), Buffer.from(base64, 'base64'))
+  } catch {
+    return res.status(500).json({ error: 'Could not save the uploaded image.' })
+  }
+  res.status(201).json({ url: `${req.protocol}://${req.get('host')}/uploads/${filename}` })
+})
 
 // GET /api/health — check in Postman that the server is actually running and
 // configured correctly (never returns the key itself, just whether it's set).
@@ -143,7 +187,6 @@ async function start() {
   const pathsCollection = db.collection('paths')
   const usersCollection = db.collection('users')
   const messagesCollection = db.collection('messages')
-  const discussionsCollection = db.collection('discussions')
 
   // One-time migration from the old lesson-linking "grades" model to
   // "paths" (an ordered list of whole courses) — the two shapes aren't
@@ -164,7 +207,53 @@ async function start() {
   makeCrudRoutes('/api/paths', pathsCollection, { idField: 'id', requiredFields: ['id', 'label'] })
   makeCrudRoutes('/api/users', usersCollection, { idField: 'username', requiredFields: ['username', 'displayName'] })
   makeThreadRoutes('/api/messages', messagesCollection, ['roomId'])
-  makeThreadRoutes('/api/discussions', discussionsCollection, ['courseId', 'lessonId'])
+
+  // Atomically patches fields on one lesson nested inside a course (a Mongo
+  // positional update) instead of requiring the caller to read the whole
+  // course, edit it in memory and PUT the entire lessons array back — that
+  // read-modify-write shape would silently clobber any other edit made to
+  // the course between the read and the write.
+  app.patch('/api/courses/:courseId/lessons/:lessonId', async (req, res) => {
+    const patch = { ...(req.body || {}) }
+    delete patch.id // the URL is the source of truth for the lesson's id
+    const setDoc = Object.fromEntries(Object.entries(patch).map(([k, v]) => [`lessons.$.${k}`, v]))
+    if (!Object.keys(setDoc).length) return res.status(400).json({ error: 'No fields to update.' })
+    // A plain updateOne — the Mongo driver rejects findOneAndUpdate when a
+    // positional ('lessons.$') projection is combined with returning the
+    // post-update document, and the caller here only needs to know it
+    // succeeded (ContentContext already updates its local copy optimistically).
+    const result = await coursesCollection.updateOne(
+      { id: req.params.courseId, 'lessons.id': req.params.lessonId },
+      { $set: setDoc },
+    )
+    if (!result.matchedCount) return res.status(404).json({ error: 'Course or lesson not found.' })
+    res.json({ id: req.params.lessonId, ...patch })
+  })
+
+  // Lesson discussions live embedded on the lesson itself (course.lessons[].discussions)
+  // rather than a separate collection, so they travel with the course document.
+  app.get('/api/courses/:courseId/lessons/:lessonId/discussions', async (req, res) => {
+    const course = await coursesCollection.findOne(
+      { id: req.params.courseId, 'lessons.id': req.params.lessonId },
+      { projection: { _id: 0, 'lessons.$': 1 } },
+    )
+    if (!course) return res.status(404).json({ error: 'Course or lesson not found.' })
+    res.json(course.lessons[0].discussions || [])
+  })
+
+  app.post('/api/courses/:courseId/lessons/:lessonId/discussions', async (req, res) => {
+    const { username, displayName, text } = req.body || {}
+    if (!username || !displayName || !text || !text.trim()) {
+      return res.status(400).json({ error: 'username, displayName and text are required.' })
+    }
+    const message = { username, displayName, text: text.trim(), time: Date.now() }
+    const result = await coursesCollection.findOneAndUpdate(
+      { id: req.params.courseId, 'lessons.id': req.params.lessonId },
+      { $push: { 'lessons.$.discussions': message } },
+    )
+    if (!result) return res.status(404).json({ error: 'Course or lesson not found.' })
+    res.status(201).json(message)
+  })
 
   app.listen(PORT, () => {
     console.log(`AI tools proxy listening on http://localhost:${PORT}`)

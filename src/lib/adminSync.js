@@ -7,10 +7,27 @@ async function request(method, path, body) {
     method,
     headers: body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    // Lets a request started right as the tab is closing/backgrounding
+    // (e.g. flushing video watch-time on pagehide) still complete instead
+    // of being cancelled mid-flight.
+    keepalive: true,
   })
   const data = await res.json().catch(() => null)
   if (!res.ok) throw new Error(data?.error || `Request failed (${res.status}).`)
   return data
+}
+
+// Patches fields on a single lesson nested inside a course, atomically on
+// the server (a MongoDB positional update) rather than reading the whole
+// course, editing it locally and PUTing it all back — that read-modify-write
+// pattern would silently clobber any other change made to the course between
+// the read and the write (e.g. an admin editing it in another tab).
+export function patchLessonFields(courseId, lessonId, patch) {
+  return request(
+    'PATCH',
+    `/api/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`,
+    patch,
+  )
 }
 
 export function createResourceSync(resource, idField = 'id') {

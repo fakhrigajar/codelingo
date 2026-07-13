@@ -1,3 +1,5 @@
+import { getLessonMinutes } from './lessonBlocks'
+
 export function initials(name) {
   return (name || '?')
     .trim()
@@ -33,7 +35,7 @@ export function pathStats(path, courses) {
   const linked = pathCourses(path, courses)
   const lessons = linked.flatMap((c) => c.lessons)
   const points = lessons.reduce((sum, l) => sum + (l.type === 'quiz' ? 20 : 10), 0)
-  const hours = Math.round(lessons.reduce((sum, l) => sum + (l.estimatedMinutes || 0), 0) / 60)
+  const hours = Math.round(lessons.reduce((sum, l) => sum + getLessonMinutes(l), 0) / 60)
   return { courseCount: linked.length, points, hours }
 }
 

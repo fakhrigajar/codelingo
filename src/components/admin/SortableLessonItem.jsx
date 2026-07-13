@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, ChevronDown, ChevronUp } from 'lucide-react'
+import { GripVertical, ChevronDown, ChevronUp, BookOpen, ClipboardList } from 'lucide-react'
 import { AdminButton } from './AdminFields'
 import LessonEditor from './LessonEditor'
 
@@ -30,8 +30,8 @@ export default function SortableLessonItem({ lesson, isOpen, onToggleEdit, onCha
           >
             <GripVertical size={18} />
           </button>
-          <span className="font-mono text-[.65rem] font-bold uppercase text-ink-soft dark:text-white/50 shrink-0">
-            {lesson.type}
+          <span className="text-ink-soft dark:text-white/50 shrink-0" title={lesson.type === 'quiz' ? 'Quiz' : 'Lesson'}>
+            {lesson.type === 'quiz' ? <ClipboardList size={16} /> : <BookOpen size={16} />}
           </span>
           <span className="font-bold truncate">{lesson.title}</span>
         </div>

@@ -29,6 +29,8 @@ export default {
       boxShadow: {
         coral: "0 4px 0 #C8503F",
         "coral-lg": "0 6px 0 #C8503F",
+        mint: "0 4px 0 #1F9A73",
+        "mint-lg": "0 6px 0 #1F9A73",
         dark: "0 4px 0 #0E1730",
         "dark-lg": "0 6px 0 #0E1730",
         card: "0 16px 30px -18px rgba(43,58,103,.35)",

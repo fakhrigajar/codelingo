@@ -13,7 +13,7 @@ export default function QuizPanel({ lesson, done, onComplete }) {
         <span className="eyebrow inline-flex items-center gap-1.5">
           <Brain size={13} /> quiz
         </span>
-        <h2>{lesson.title}</h2>
+        <h2 className="text-[1.4rem] sm:text-[1.6rem] desktop:text-[1.8rem]">{lesson.title}</h2>
         <p className="text-mint font-extrabold inline-flex items-center gap-1.5">
           <Check size={16} /> Quiz already completed — nice work!
         </p>
@@ -37,7 +37,7 @@ export default function QuizPanel({ lesson, done, onComplete }) {
       <span className="eyebrow inline-flex items-center gap-1.5">
         <Brain size={13} /> quiz
       </span>
-      <h2 className="">{lesson.title}</h2>
+      <h2 className="text-[1.4rem] sm:text-[1.6rem] desktop:text-[1.8rem]">{lesson.title}</h2>
       {lesson.questions.map((q, qi) => (
         <div key={qi} className="mb-5">
           <p className="font-extrabold mb-5">

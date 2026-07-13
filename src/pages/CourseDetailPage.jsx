@@ -18,7 +18,7 @@ const ABOUT_ID = "about";
 
 export default function CourseDetailPage() {
   const { courseId } = useParams();
-  const { courses, badges } = useContent();
+  const { courses, badges, patchLesson } = useContent();
   const { currentUser, saveCurrentUser } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
@@ -51,10 +51,17 @@ export default function CourseDetailPage() {
     activeLessonId && activeLessonId !== ABOUT_ID
       ? lessonById(course, activeLessonId)
       : null;
+  const nextLesson = activeLesson
+    ? course.lessons[course.lessons.indexOf(activeLesson) + 1]
+    : null;
 
   const handleOpenLesson = (lessonId) => {
     setActiveLessonId(lessonId);
     scrollToPanel();
+  };
+
+  const handleNext = () => {
+    handleOpenLesson(nextLesson ? nextLesson.id : ABOUT_ID);
   };
 
   const handleComplete = (course, lesson, xp, isQuiz) => {
@@ -101,11 +108,31 @@ export default function CourseDetailPage() {
       ? ` New badge: ${badges.find((b) => b.id === newBadges[0])?.name}`
       : "";
     toast(`+${xp} XP earned!${badgeMsg}`);
+  };
 
-    const nextLesson = course.lessons[course.lessons.indexOf(lesson) + 1];
-    setTimeout(() => {
-      setActiveLessonId(nextLesson ? nextLesson.id : ABOUT_ID);
-    }, 1200);
+  // Cumulative watch time is per user, per lesson, so it lives on the user
+  // record (mirrors how `completed` is namespaced by course id) rather than
+  // anywhere on the course/lesson itself.
+  const handleVideoProgress = (lessonId, seconds) => {
+    if (!currentUser) return;
+    const prevForCourse = currentUser.videoProgress?.[course.id] || {};
+    if (prevForCourse[lessonId] === seconds) return;
+    saveCurrentUser({
+      ...currentUser,
+      videoProgress: {
+        ...(currentUser.videoProgress || {}),
+        [course.id]: { ...prevForCourse, [lessonId]: seconds },
+      },
+    });
+  };
+
+  // A video's real duration is only known once it's actually played — once
+  // learned, cache it on the lesson so the sidebar/about page's estimated
+  // time reflects reality instead of just the admin's written guess.
+  const handleVideoDuration = (lessonId, minutes) => {
+    const target = lessonById(course, lessonId);
+    if (!target || target.videoMinutes === minutes) return;
+    patchLesson(course.id, lessonId, { videoMinutes: minutes });
   };
 
   return (
@@ -159,7 +186,10 @@ export default function CourseDetailPage() {
                 lesson={activeLesson}
                 currentUser={currentUser}
                 onComplete={handleComplete}
-                onBack={() => handleOpenLesson(ABOUT_ID)}
+                nextLesson={nextLesson}
+                onNext={handleNext}
+                onVideoProgress={handleVideoProgress}
+                onVideoDuration={handleVideoDuration}
               />
             )
           )}

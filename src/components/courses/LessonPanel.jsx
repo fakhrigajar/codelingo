@@ -1,21 +1,199 @@
-import { BookOpen, Lightbulb, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { BookOpen, Lightbulb, Check, ArrowRight, Video } from "lucide-react";
+import { getLessonBlocks } from "../../lib/lessonBlocks";
+import { getYouTubeVideoId, getVideoEmbedUrl } from "../../lib/videoEmbed";
+import { loadYouTubeIframeApi } from "../../lib/youtubeApi";
 import QuizPanel from "./QuizPanel";
 import LessonDiscussion from "./LessonDiscussion";
 
-function BackToAbout({ onBack }) {
+// Keeps a ref in sync with the latest prop/value on every render, so a
+// long-lived callback (a setInterval tick, a YouTube player event) can call
+// `ref.current` and always run the newest version instead of the stale
+// closure it was created with.
+function useLatestRef(value) {
+  const ref = useRef(value);
+  ref.current = value;
+  return ref;
+}
+
+// Renders via the YouTube IFrame Player API (rather than a plain embed
+// iframe) so we can read the video's real duration and detect play/pause —
+// that's what lets us gate the Submit button on actual watch time. Falls
+// back to a plain embed (untracked) if the API fails to load or the video
+// errors out (e.g. embedding disabled).
+function YouTubePlayer({
+  videoId,
+  value,
+  onReady,
+  onDuration,
+  onPlay,
+  onPause,
+  onEnded,
+}) {
+  const [frameId] = useState(
+    () => `yt-${videoId}-${Math.random().toString(36).slice(2, 8)}`,
+  );
+  const [apiFailed, setApiFailed] = useState(false);
+  const playerRef = useRef(null);
+  const onReadyRef = useLatestRef(onReady);
+  const onDurationRef = useLatestRef(onDuration);
+  const onPlayRef = useLatestRef(onPlay);
+  const onPauseRef = useLatestRef(onPause);
+  const onEndedRef = useLatestRef(onEnded);
+
+  useEffect(() => {
+    let cancelled = false;
+    const failTimer = setTimeout(() => {
+      if (!cancelled) setApiFailed(true);
+    }, 6000);
+
+    loadYouTubeIframeApi().then((YT) => {
+      clearTimeout(failTimer);
+      if (cancelled) return;
+      playerRef.current = new YT.Player(frameId, {
+        videoId,
+        playerVars: { rel: 0 },
+        events: {
+          onReady: (e) => {
+            onReadyRef.current();
+            onDurationRef.current(e.target.getDuration());
+          },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) onPlayRef.current();
+            else if (e.data === YT.PlayerState.ENDED) {
+              onPauseRef.current();
+              onEndedRef.current();
+            } else onPauseRef.current();
+          },
+          onError: () => setApiFailed(true),
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(failTimer);
+      playerRef.current?.destroy?.();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frameId, videoId]);
+
+  if (apiFailed) {
+    return (
+      <iframe
+        src={getVideoEmbedUrl(value)}
+        title="Lesson video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        onLoad={() => onReadyRef.current()}
+        className="w-full h-full border-0"
+      />
+    );
+  }
+
+  return <div id={frameId} className="w-full h-full" />;
+}
+
+function Html5Video({ value, onReady, onDuration, onPlay, onPause, onEnded }) {
+  return (
+    <video
+      src={value}
+      controls
+      onLoadedMetadata={(e) => onDuration(e.target.duration)}
+      onLoadedData={onReady}
+      onPlay={onPlay}
+      onPause={onPause}
+      onEnded={onEnded}
+      className="w-full h-full"
+    />
+  );
+}
+
+function VideoBlock({ value, onDuration, onTick, onEnded }) {
+  const [loaded, setLoaded] = useState(false);
+  const tickTimerRef = useRef(null);
+  const onTickRef = useLatestRef(onTick);
+  const youtubeId = getYouTubeVideoId(value);
+
+  const startTicking = () => {
+    stopTicking();
+    tickTimerRef.current = setInterval(() => onTickRef.current(1), 1000);
+  };
+  const stopTicking = () => {
+    if (tickTimerRef.current) clearInterval(tickTimerRef.current);
+    tickTimerRef.current = null;
+  };
+  const handleEnded = () => {
+    stopTicking();
+    onEnded();
+  };
+  useEffect(() => () => stopTicking(), []);
+
+  return (
+    <div className="relative w-full aspect-video rounded-xl mb-4 overflow-hidden bg-black">
+      {!loaded && (
+        <div className="absolute inset-0 bg-line dark:bg-white/10 animate-pulse flex items-center justify-center">
+          <Video size={40} className="text-ink-soft/40 dark:text-white/30" />
+        </div>
+      )}
+      <div
+        className={`absolute inset-0 transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+      >
+        {youtubeId ? (
+          <YouTubePlayer
+            videoId={youtubeId}
+            value={value}
+            onReady={() => setLoaded(true)}
+            onDuration={onDuration}
+            onPlay={startTicking}
+            onPause={stopTicking}
+            onEnded={handleEnded}
+          />
+        ) : (
+          <Html5Video
+            value={value}
+            onReady={() => setLoaded(true)}
+            onDuration={onDuration}
+            onPlay={startTicking}
+            onPause={stopTicking}
+            onEnded={handleEnded}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LessonBlock({ block }) {
+  if (block.type === "image") {
+    return block.value ? (
+      <img
+        src={block.value}
+        alt=""
+        className="w-full rounded-xl mb-4 object-cover"
+      />
+    ) : null;
+  }
+  if (block.type === "fact") {
+    return block.value ? (
+      <div className="bg-[#FFF3D6] text-[#8A5B00] dark:bg-[#3A2E12] dark:text-[#FFD98A] rounded-xl px-4 py-3.5 mb-4 flex items-start gap-2">
+        <Lightbulb size={16} className="shrink-0 mt-0.5" /> Fun fact:{" "}
+        {block.value}
+      </div>
+    ) : null;
+  }
+  return <p className="text-[1.02rem] mb-4">{block.value}</p>;
+}
+
+function NextButton({ nextLesson, onNext }) {
   return (
     <button
       type="button"
-      onClick={onBack}
-      className="flex items-center gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 hover:text-violet dark:hover:text-violet mb-4 -ml-1"
+      onClick={onNext}
+      className="btn btn-mint inline-flex items-center justify-center gap-1.5"
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M7.78033 5.03033C8.07322 4.73744 8.07322 4.26256 7.78033 3.96967C7.48744 3.67678 7.01256 3.67678 6.71967 3.96967L3.72175 6.9676C3.5848 7.10348 3.5 7.29184 3.5 7.50001C3.5 7.69314 3.573 7.86922 3.69292 8.00217C3.70157 8.01176 3.71049 8.02116 3.71967 8.03034L6.71967 11.0303C7.01256 11.3232 7.48744 11.3232 7.78033 11.0303C8.07322 10.7374 8.07322 10.2626 7.78033 9.96967L6.06066 8.25H14.25C17.1495 8.25 19.5 10.6005 19.5 13.5C19.5 16.3995 17.1495 18.75 14.25 18.75H3.75C3.33579 18.75 3 19.0858 3 19.5C3 19.9142 3.33579 20.25 3.75 20.25H14.25C17.9779 20.25 21 17.2279 21 13.5C21 9.77208 17.9779 6.75 14.25 6.75H6.06067L7.78033 5.03033Z"
-          className="fill-current"
-        />
-      </svg>
-      Back to overview
+      {nextLesson ? `Next: ${nextLesson.title}` : "Back to overview"}
+      <ArrowRight size={16} />
     </button>
   );
 }
@@ -25,20 +203,97 @@ export default function LessonPanel({
   lesson,
   currentUser,
   onComplete,
-  onBack,
+  nextLesson,
+  onNext,
+  onVideoProgress,
+  onVideoDuration,
 }) {
   const done =
     currentUser && (currentUser.completed[course.id] || []).includes(lesson.id);
+  const blocks = getLessonBlocks(lesson);
+  const videoBlock = blocks.find((b) => b.type === "video" && b.value);
+
+  const watchedRef = useRef(
+    currentUser?.videoProgress?.[course.id]?.[lesson.id] || 0,
+  );
+  const [watchedSeconds, setWatchedSeconds] = useState(watchedRef.current);
+  const [videoDuration, setVideoDuration] = useState(null);
+
+  // Reset tracking state whenever the learner navigates to a different
+  // lesson (a fresh video needs its own duration/watch-time, not the
+  // previous lesson's).
+  useEffect(() => {
+    const initial = currentUser?.videoProgress?.[course.id]?.[lesson.id] || 0;
+    watchedRef.current = initial;
+    setWatchedSeconds(initial);
+    setVideoDuration(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course.id, lesson.id]);
+
+  // Flush any unsaved watched seconds whenever the lesson stops being
+  // visible: navigating away within the app (the effect cleanup), tabbing
+  // away, or closing the tab outright. A React unmount alone only covers
+  // in-app navigation — closing the tab tears the page down without ever
+  // running it, so visibilitychange/pagehide are the only reliable signals
+  // for that case.
+  useEffect(() => {
+    const flush = () => {
+      if (watchedRef.current > 0)
+        onVideoProgress?.(lesson.id, Math.floor(watchedRef.current));
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) flush();
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", flush);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course.id, lesson.id]);
+
+  const handleTick = (delta) => {
+    watchedRef.current += delta;
+    const rounded = Math.floor(watchedRef.current);
+    setWatchedSeconds(rounded);
+    if (rounded % 5 === 0) onVideoProgress?.(lesson.id, rounded);
+  };
+
+  const handleDuration = (seconds) => {
+    if (!seconds || !Number.isFinite(seconds)) return;
+    setVideoDuration(seconds);
+    onVideoDuration?.(lesson.id, Math.ceil(seconds / 60));
+  };
+
+  // A video ending is definitive proof it was fully watched — don't rely
+  // solely on the 1-second tick counter reaching the (near-always
+  // fractional) real duration, since the last partial second never
+  // completes a whole tick.
+  const handleEnded = () => {
+    if (videoDuration == null) return;
+    watchedRef.current = Math.max(watchedRef.current, videoDuration);
+    const rounded = Math.ceil(watchedRef.current);
+    setWatchedSeconds(rounded);
+    onVideoProgress?.(lesson.id, rounded);
+  };
+
+  const videoWatched =
+    !videoBlock ||
+    (videoDuration != null && watchedSeconds >= Math.floor(videoDuration));
 
   if (lesson.type === "quiz") {
     return (
       <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
-        {onBack && <BackToAbout onBack={onBack} />}
         <QuizPanel
           lesson={lesson}
           done={done}
           onComplete={(xp, isQuiz) => onComplete(course, lesson, xp, isQuiz)}
         />
+        <div className="mt-4">
+          <NextButton nextLesson={nextLesson} onNext={onNext} />
+        </div>
         <LessonDiscussion course={course} lesson={lesson} />
       </div>
     );
@@ -46,28 +301,52 @@ export default function LessonPanel({
 
   return (
     <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
-      {onBack && <BackToAbout onBack={onBack} />}
       <span className="eyebrow inline-flex items-center gap-1.5">
         <BookOpen size={13} /> lesson
       </span>
-      <h2>{lesson.title}</h2>
-      <p className="text-[1.02rem]">{lesson.body}</p>
-      <div className="bg-[#FFF3D6] text-[#8A5B00] dark:bg-[#3A2E12] dark:text-[#FFD98A] rounded-xl px-4 py-3.5 mb-4 flex items-start gap-2">
-        <Lightbulb size={16} className="shrink-0 mt-0.5" /> Fun fact: {lesson.fact}
+      <h2 className="text-[1.4rem] sm:text-[1.6rem] desktop:text-[1.8rem] pb-2 border-b-2 border-dashed border-line">
+        {lesson.title}
+      </h2>
+      {blocks.map((block) => {
+        if (block.type === "video") {
+          return block.value ? (
+            <VideoBlock
+              key={block.id}
+              value={block.value}
+              onDuration={handleDuration}
+              onTick={handleTick}
+              onEnded={handleEnded}
+            />
+          ) : null;
+        }
+        return <LessonBlock key={block.id} block={block} />;
+      })}
+      <div className="flex flex-wrap gap-3">
+        <button
+          className={`btn ${done ? "btn-outline" : "btn-primary"} inline-flex items-center justify-center gap-1.5`}
+          disabled={done || !videoWatched}
+          onClick={() =>
+            !done && videoWatched && onComplete(course, lesson, 10, false)
+          }
+        >
+          {done ? (
+            <>
+              <Check size={16} /> Completed
+            </>
+          ) : videoBlock ? (
+            "Submit"
+          ) : (
+            "Mark as complete (+10 XP)"
+          )}
+        </button>
+        <NextButton nextLesson={nextLesson} onNext={onNext} />
       </div>
-      <button
-        className={`btn ${done ? "btn-outline" : "btn-primary"} inline-flex items-center justify-center gap-1.5`}
-        disabled={done}
-        onClick={() => !done && onComplete(course, lesson, 10, false)}
-      >
-        {done ? (
-          <>
-            <Check size={16} /> Completed
-          </>
-        ) : (
-          "Mark as complete (+10 XP)"
-        )}
-      </button>
+      {videoBlock && !done && !videoWatched && (
+        <p className="text-[.8rem] text-ink-soft dark:text-white/50 mt-5">
+          Watch the full video to unlock Submit —{" "}
+          {videoDuration ? Math.min(100, Math.floor((watchedSeconds / videoDuration) * 100)) : 0}%
+        </p>
+      )}
       {!currentUser && (
         <p className="text-[.82rem] text-ink-soft dark:text-white/50 mt-3">
           Log in to save your progress.

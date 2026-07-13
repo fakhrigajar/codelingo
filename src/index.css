@@ -59,6 +59,10 @@
   .btn-dark {
     @apply bg-indigo-dark text-white shadow-dark hover:shadow-dark-lg;
   }
+  .btn-mint {
+    @apply bg-mint text-white shadow-mint hover:shadow-mint-lg;
+    --btn-shine: rgba(255, 255, 255, 0.55);
+  }
   .btn-outline {
     @apply bg-white text-indigo-dark shadow-[0_4px_0_rgba(43,58,103,.25)] hover:shadow-[0_6px_0_rgba(43,58,103,.25)] dark:bg-white/10 dark:text-white dark:shadow-[0_4px_0_rgba(255,255,255,.25)] dark:hover:shadow-[0_6px_0_rgba(255,255,255,.25)];
     --btn-shine: rgba(140, 122, 230, 0.55);
