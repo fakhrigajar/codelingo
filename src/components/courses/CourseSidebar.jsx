@@ -1,25 +1,9 @@
 import { useState } from "react";
 import { completedCount, progressPct } from "../../lib/helpers";
 import { getLessonMinutes } from "../../lib/lessonBlocks";
+import { groupLessonsByUnit } from "../../lib/units";
 
 const ABOUT_ID = "about";
-
-function groupByUnit(lessons) {
-  const units = [];
-  for (const lesson of lessons) {
-    const last = units[units.length - 1];
-    if (last && last.unit === lesson.unit) {
-      last.items.push(lesson);
-    } else {
-      units.push({
-        unit: lesson.unit,
-        unitTitle: lesson.unitTitle,
-        items: [lesson],
-      });
-    }
-  }
-  return units;
-}
 
 function ChevronIcon({ open }) {
   return (
@@ -89,14 +73,14 @@ export default function CourseSidebar({
   const doneIds = (currentUser && currentUser.completed[course.id]) || [];
   const pct = progressPct(currentUser, course);
   const done = completedCount(currentUser, course);
-  const units = groupByUnit(course.lessons);
+  const units = groupLessonsByUnit(course);
   const firstIncomplete =
     course.lessons.find((l) => !doneIds.includes(l.id)) || course.lessons[0];
 
   const [openUnits, setOpenUnits] = useState(() => {
     const initial = {};
     units.forEach((u) => {
-      initial[u.unit] = u.items.some((i) => i.id === firstIncomplete.id);
+      initial[u.number] = u.items.some((i) => i.id === firstIncomplete.id);
     });
     return initial;
   });
@@ -124,9 +108,9 @@ export default function CourseSidebar({
       <button
         type="button"
         onClick={() => onSelect(ABOUT_ID)}
-        className={`w-full text-left px-3 py-2.5 rounded-lg font-bold text-[.88rem] mb-3 transition-colors ${
+        className={`w-full text-left px-3 py-2.5 border-solid border-2 border-line rounded-lg font-bold text-[.88rem] mb-3 transition-colors ${
           activeLessonId === ABOUT_ID
-            ? "bg-violet/15 text-violet"
+            ? "bg-violet/15 text-violet border-transparent"
             : "text-ink-soft dark:text-white/60 hover:bg-bg dark:hover:bg-white/10"
         }`}
       >
@@ -135,28 +119,31 @@ export default function CourseSidebar({
 
       <div className="space-y-2">
         {units.map((u) => {
-          const isOpen = !!openUnits[u.unit];
+          const isOpen = !!openUnits[u.number];
           const unitMinutes = u.items.reduce(
             (a, i) => a + getLessonMinutes(i),
             0,
           );
           return (
             <div
-              key={u.unit}
+              key={u.number ?? "unsorted"}
               className="border-2 border-line dark:border-white/10 rounded-xl overflow-hidden"
             >
               <button
                 type="button"
-                onClick={() => toggleUnit(u.unit)}
+                onClick={() => toggleUnit(u.number)}
                 className="w-full flex items-center justify-between gap-2 px-3.5 py-3 text-left hover:bg-bg dark:hover:bg-white/5"
               >
                 <div className="min-w-0">
-                  <div className="font-mono text-[.65rem] font-bold uppercase tracking-wide text-ink-soft dark:text-white/50">
-                    Unit {u.unit}
-                  </div>
-                  <div className="font-bold text-[.9rem] truncate">
-                    {u.unitTitle}
-                  </div>
+                  {u.number != null ? (
+                    <div className="font-bold text-[.9rem] truncate">
+                      Unit {u.number}
+                    </div>
+                  ) : (
+                    <div className="font-bold text-[.9rem] truncate">
+                      {u.title}
+                    </div>
+                  )}
                   <div className="font-mono text-[.68rem] text-ink-soft dark:text-white/50 mt-0.5">
                     {u.items.length} lesson{u.items.length === 1 ? "" : "s"} ·{" "}
                     {unitMinutes}m

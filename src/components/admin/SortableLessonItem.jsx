@@ -5,7 +5,10 @@ import { AdminButton } from './AdminFields'
 import LessonEditor from './LessonEditor'
 
 export default function SortableLessonItem({ lesson, isOpen, onToggleEdit, onChange, onRemove }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: lesson.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: lesson.id,
+    data: { type: 'lesson' },
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),

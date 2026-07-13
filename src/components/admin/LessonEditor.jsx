@@ -140,7 +140,7 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-[1fr_140px] gap-3">
+      <div className="grid sm:grid-cols-[1fr_140px_140px] gap-3">
         <AdminInput
           label="Title"
           placeholder="e.g. Variables and Data Types"
@@ -151,6 +151,14 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
           <option value="lesson">Lesson</option>
           <option value="quiz">Quiz</option>
         </AdminSelect>
+        <AdminInput
+          label="Est. minutes"
+          type="number"
+          min="0"
+          placeholder="e.g. 15"
+          value={lesson.estimatedMinutes ?? ''}
+          onChange={(e) => onChange({ estimatedMinutes: e.target.value === '' ? undefined : Number(e.target.value) })}
+        />
       </div>
 
       {!isQuiz && (
