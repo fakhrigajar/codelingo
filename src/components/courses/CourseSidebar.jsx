@@ -138,6 +138,7 @@ export default function CourseSidebar({
                   {u.number != null ? (
                     <div className="font-bold text-[.9rem] truncate">
                       Unit {u.number}
+                      {u.title ? `: ${u.title}` : ""}
                     </div>
                   ) : (
                     <div className="font-bold text-[.9rem] truncate">

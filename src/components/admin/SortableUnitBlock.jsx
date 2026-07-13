@@ -14,6 +14,7 @@ export default function SortableUnitBlock({
   onLessonChange,
   onLessonRemove,
   onRemoveUnit,
+  onRenameUnit,
   onAddLesson,
   onAddQuiz,
 }) {
@@ -59,9 +60,22 @@ export default function SortableUnitBlock({
               <GripVertical size={18} />
             </button>
           )}
-          <span className="font-bold text-[.95rem] truncate">
-            {isRealUnit ? `Unit ${group.number}` : 'Unsorted'}
-          </span>
+          {isRealUnit ? (
+            <>
+              <span className="font-bold text-[.95rem] shrink-0">Unit {group.number}</span>
+              {onRenameUnit && (
+                <input
+                  type="text"
+                  value={group.title || ''}
+                  onChange={(e) => onRenameUnit(e.target.value)}
+                  placeholder="Unit title (optional)"
+                  className="flex-1 min-w-0 bg-transparent border-b-2 border-dashed border-line dark:border-white/20 text-[.85rem] font-semibold px-1 py-0.5 focus:outline-none focus:border-violet"
+                />
+              )}
+            </>
+          ) : (
+            <span className="font-bold text-[.95rem] truncate">Unsorted</span>
+          )}
         </div>
         {onRemoveUnit && (
           <button

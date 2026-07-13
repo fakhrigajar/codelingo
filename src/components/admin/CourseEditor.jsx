@@ -40,7 +40,7 @@ function collisionDetection(args) {
   return closestCenter({ ...args, droppableContainers });
 }
 
-export default function CourseEditor({ course, onChange, onRemove }) {
+export default function CourseEditor({ course, onChange }) {
   const [openLessonId, setOpenLessonId] = useState(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -105,6 +105,12 @@ export default function CourseEditor({ course, onChange, onRemove }) {
     commit(
       course.lessons,
       units.filter((u) => u.number !== number),
+    );
+  };
+  const renameUnit = (number, title) => {
+    commit(
+      course.lessons,
+      units.map((u) => (u.number === number ? { ...u, title } : u)),
     );
   };
 
@@ -257,6 +263,11 @@ export default function CourseEditor({ course, onChange, onRemove }) {
                       ? () => removeUnit(group.number)
                       : undefined
                   }
+                  onRenameUnit={
+                    group.number != null
+                      ? (title) => renameUnit(group.number, title)
+                      : undefined
+                  }
                   onAddLesson={
                     group.number != null
                       ? () => addLesson(group.number)
@@ -274,12 +285,6 @@ export default function CourseEditor({ course, onChange, onRemove }) {
         </DndContext>
         <AdminButton variant="outline" className="mt-3" onClick={addUnit}>
           + Add unit
-        </AdminButton>
-      </div>
-
-      <div className="mt-4 pt-3 border-t border-line dark:border-white/10">
-        <AdminButton variant="danger" onClick={onRemove}>
-          Delete this course
         </AdminButton>
       </div>
     </div>

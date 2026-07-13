@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, ChevronDown, ChevronUp } from 'lucide-react'
+import { GripVertical, ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
 import { AdminButton } from './AdminFields'
 import CourseIcon from '../courses/CourseIcon'
 import CourseEditor from './CourseEditor'
@@ -49,12 +49,15 @@ export default function SortableCourseAdminItem({ course, draftCourse, isOpen, o
               </span>
             )}
           </AdminButton>
+          <AdminButton variant="danger" onClick={onRemove} aria-label="Delete course">
+            <Trash2 size={14} />
+          </AdminButton>
         </div>
       </div>
 
       {isOpen && (
         <div className="mt-4 pt-4 border-t border-line dark:border-white/10">
-          <CourseEditor course={draftCourse} onChange={onPatch} onRemove={onRemove} />
+          <CourseEditor course={draftCourse} onChange={onPatch} />
         </div>
       )}
     </div>

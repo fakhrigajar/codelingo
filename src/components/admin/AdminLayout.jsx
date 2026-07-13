@@ -36,55 +36,57 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-bg dark:bg-indigo-dark">
-      <div className="max-w-[1180px] mx-auto px-6 py-8 grid desktop:grid-cols-[220px_1fr] gap-8">
-        <aside className="desktop:sticky desktop:top-8 h-fit">
-          <div className="flex items-center mb-2">
-            <img src={siteLogo} className="w-10" alt="" />
-            <div className="font-display font-extrabold text-lg text-indigo-dark dark:text-white">
-              CodeLingo
+      <div className="max-w-[1180px] mx-auto grid desktop:grid-cols-[220px_1fr] desktop:min-h-screen">
+        <aside className="desktop:border-r-2 px-6 desktop:border-line desktop:dark:border-white/10 desktop:pr-6">
+          <div className="desktop:sticky desktop:top-8 h-fit">
+            <div className="flex items-center mb-2">
+              <img src={siteLogo} className="w-10" alt="" />
+              <div className="font-display font-extrabold text-lg text-indigo-dark dark:text-white">
+                CodeLingo
+              </div>
+            </div>
+            <nav className="flex desktop:flex-col gap-1.5 flex-wrap">
+              {links.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  end={l.end}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-[.9rem] transition-colors ${
+                      isActive
+                        ? "bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark"
+                        : "text-ink-soft hover:bg-[#EAF1FD] dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+                    }`
+                  }
+                >
+                  <l.Icon size={16} />
+                  {l.label}
+                </NavLink>
+              ))}
+            </nav>
+            <div className="flex desktop:flex-col gap-2 mt-6">
+              <ThemeToggle
+                theme={theme}
+                onToggle={toggleTheme}
+                showLabel
+                className="btn btn-outline btn-sm w-full justify-center"
+              />
+              <button
+                onClick={() => navigate("/")}
+                className="btn btn-outline btn-sm w-full inline-flex items-center justify-center gap-1.5"
+              >
+                <ArrowLeft size={14} /> Back to site
+              </button>
+              <button
+                onClick={handleLogout}
+                className="btn btn-outline btn-sm w-full"
+              >
+                Log out
+              </button>
             </div>
           </div>
-          <nav className="flex desktop:flex-col gap-1.5 flex-wrap">
-            {links.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                end={l.end}
-                className={({ isActive }) =>
-                  `flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-[.9rem] transition-colors ${
-                    isActive
-                      ? "bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark"
-                      : "text-ink-soft hover:bg-[#EAF1FD] dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
-                  }`
-                }
-              >
-                <l.Icon size={16} />
-                {l.label}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="flex desktop:flex-col gap-2 mt-6">
-            <ThemeToggle
-              theme={theme}
-              onToggle={toggleTheme}
-              showLabel
-              className="btn btn-outline btn-sm w-full justify-center"
-            />
-            <button
-              onClick={() => navigate("/")}
-              className="btn btn-outline btn-sm w-full inline-flex items-center justify-center gap-1.5"
-            >
-              <ArrowLeft size={14} /> Back to site
-            </button>
-            <button
-              onClick={handleLogout}
-              className="btn btn-outline btn-sm w-full"
-            >
-              Log out
-            </button>
-          </div>
         </aside>
-        <main>
+        <main className="min-w-0 px-6 py-8">
           <Outlet />
         </main>
       </div>
