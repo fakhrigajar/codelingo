@@ -1,27 +1,29 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { storageGet, storageSet } from '../lib/storage'
 import { createResourceSync, patchLessonFields } from '../lib/adminSync'
-import { DEFAULT_BADGES, DEFAULT_ROOMS, DEFAULT_PAGE_TEXT } from '../data/data'
+import { DEFAULT_BADGES, DEFAULT_PAGE_TEXT } from '../data/data'
 
 const ContentContext = createContext(null)
 
-// Courses and paths now live entirely on the server/MongoDB (see
-// server/index.js) — there are no hardcoded defaults for them anymore.
-// Badges, rooms and page text have no API yet, so they still live here.
+// Courses, paths and badges now live entirely on the server/MongoDB (see
+// server/index.js), as do community posts (see postApi.js). Only page text
+// has no API yet, so it still lives here.
 const CONTENT_KEY = 'content'
 const coursesApi = createResourceSync('courses')
 const pathsApi = createResourceSync('paths')
+const badgesApi = createResourceSync('badges')
 
 function loadInitialLocalContent() {
   const saved = storageGet(CONTENT_KEY)
   if (saved) return { pageText: DEFAULT_PAGE_TEXT, ...saved }
-  return { badges: DEFAULT_BADGES, rooms: DEFAULT_ROOMS, pageText: DEFAULT_PAGE_TEXT }
+  return { pageText: DEFAULT_PAGE_TEXT }
 }
 
 export function ContentProvider({ children }) {
   const [local, setLocal] = useState(loadInitialLocalContent)
   const [courses, setCoursesState] = useState([])
   const [paths, setPathsState] = useState([])
+  const [badges, setBadgesState] = useState([])
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -29,10 +31,11 @@ export function ContentProvider({ children }) {
   }, [local])
 
   useEffect(() => {
-    Promise.all([coursesApi.list(), pathsApi.list()])
-      .then(([c, p]) => {
+    Promise.all([coursesApi.list(), pathsApi.list(), badgesApi.list()])
+      .then(([c, p, b]) => {
         setCoursesState(c)
         setPathsState(p)
+        setBadgesState(b)
       })
       .finally(() => setReady(true))
   }, [])
@@ -105,6 +108,21 @@ export function ContentProvider({ children }) {
     pathsApi.remove(id).catch(() => {})
   }, [])
 
+  const addBadge = useCallback((badge) => {
+    setBadgesState((prev) => [...prev, badge])
+    badgesApi.create(badge).catch(() => {})
+  }, [])
+
+  const updateBadge = useCallback((id, patch) => {
+    setBadgesState((prev) => prev.map((b) => (b.id === id ? { ...b, ...patch } : b)))
+    badgesApi.update(id, patch).catch(() => {})
+  }, [])
+
+  const removeBadge = useCallback((id) => {
+    setBadgesState((prev) => prev.filter((b) => b.id !== id))
+    badgesApi.remove(id).catch(() => {})
+  }, [])
+
   // Deliberate whole-collection replacements (reset to defaults, restore a
   // backup) — unlike the per-item ops above, these intentionally want to
   // make the server match a full given list, so diffing is the right call.
@@ -118,36 +136,40 @@ export function ContentProvider({ children }) {
     pathsApi.replaceAll(next).catch(() => {})
   }, [])
 
-  const setBadges = useCallback((badges) => updateLocal((prev) => ({ ...prev, badges })), [updateLocal])
-  const setRooms = useCallback((rooms) => updateLocal((prev) => ({ ...prev, rooms })), [updateLocal])
+  const replaceBadges = useCallback((next) => {
+    setBadgesState(next)
+    badgesApi.replaceAll(next).catch(() => {})
+  }, [])
+
   const setPageText = useCallback(
     (pageText) => updateLocal((prev) => ({ ...prev, pageText: { ...prev.pageText, ...pageText } })),
     [updateLocal],
   )
 
-  // Courses and paths have no hardcoded defaults to reset to anymore — this
-  // only resets the locally-stored slice (badges, rooms, page text).
+  // Courses, paths and badges have no hardcoded defaults to reset to
+  // anymore — this only resets the locally-stored slice (page text) plus
+  // badges back to the original demo set via the API.
   const resetToDefault = useCallback(() => {
-    updateLocal({ badges: DEFAULT_BADGES, rooms: DEFAULT_ROOMS, pageText: DEFAULT_PAGE_TEXT })
-  }, [updateLocal])
+    updateLocal({ pageText: DEFAULT_PAGE_TEXT })
+    replaceBadges(DEFAULT_BADGES)
+  }, [updateLocal, replaceBadges])
 
   const exportData = useCallback(
-    () => JSON.stringify({ courses, paths, ...local }, null, 2),
-    [courses, paths, local],
+    () => JSON.stringify({ courses, paths, badges, ...local }, null, 2),
+    [courses, paths, badges, local],
   )
 
   const importData = useCallback(
     (json) => {
       try {
         const parsed = JSON.parse(json)
-        if (!parsed.courses || !parsed.badges || !parsed.paths || !parsed.rooms) {
-          throw new Error('Missing required keys: courses, badges, paths, rooms')
+        if (!parsed.courses || !parsed.badges || !parsed.paths) {
+          throw new Error('Missing required keys: courses, badges, paths')
         }
         replaceCourses(parsed.courses)
         replacePaths(parsed.paths)
+        replaceBadges(parsed.badges)
         updateLocal({
-          badges: parsed.badges,
-          rooms: parsed.rooms,
           pageText: { ...DEFAULT_PAGE_TEXT, ...parsed.pageText },
         })
         return { ok: true }
@@ -155,13 +177,14 @@ export function ContentProvider({ children }) {
         return { ok: false, error: e.message }
       }
     },
-    [replaceCourses, replacePaths, updateLocal],
+    [replaceCourses, replacePaths, replaceBadges, updateLocal],
   )
 
   const value = {
     ...local,
     courses,
     paths,
+    badges,
     ready,
     addCourse,
     updateCourse,
@@ -171,8 +194,9 @@ export function ContentProvider({ children }) {
     addPath,
     updatePath,
     removePath,
-    setBadges,
-    setRooms,
+    addBadge,
+    updateBadge,
+    removeBadge,
     setPageText,
     resetToDefault,
     exportData,

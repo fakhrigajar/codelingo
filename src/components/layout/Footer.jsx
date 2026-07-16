@@ -8,8 +8,8 @@ export default function Footer() {
           CodeLingo
         </div>
         <span>
-          A prototype e-learning site. Courses, paths, accounts and chat are all served
-          from the CodeLingo API.
+          A prototype e-learning site. Courses, paths, accounts and community posts are all
+          served from the CodeLingo API.
         </span>
       </div>
     </footer>

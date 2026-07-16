@@ -4,14 +4,16 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-ki
 import { useContent } from '../context/ContentContext'
 import { useToast } from '../context/ToastContext'
 import { uid } from '../lib/helpers'
-import { AdminButton } from '../components/admin/AdminFields'
+import AdminCard from '../components/admin/AdminCard'
+import { AdminInput, AdminTextarea, AdminButton } from '../components/admin/AdminFields'
 import SortableCourseAdminItem from '../components/admin/SortableCourseAdminItem'
 
 export default function AdminCoursesPage() {
-  const { courses, addCourse, updateCourse, removeCourse, reorderCourses } = useContent()
+  const { courses, addCourse, updateCourse, removeCourse, reorderCourses, pageText, setPageText } = useContent()
   const toast = useToast()
   const [openId, setOpenId] = useState(null)
   const [drafts, setDrafts] = useState({})
+  const [pageTextDraft, setPageTextDraft] = useState(pageText)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   const handleRemove = (id) => {
@@ -32,6 +34,7 @@ export default function AdminCoursesPage() {
       title: 'New Course',
       icon: '',
       level: 'Beginner',
+      availability: 'available',
       color: '#8C7AE6',
       about: 'Describe this course.',
       lessons: [],
@@ -63,11 +66,20 @@ export default function AdminCoursesPage() {
   }
 
   const handleSubmit = () => {
+    let changed = 0
+    if (
+      pageTextDraft.coursesTitle !== pageText.coursesTitle ||
+      pageTextDraft.coursesSubtitle !== pageText.coursesSubtitle
+    ) {
+      setPageText(pageTextDraft)
+      changed++
+    }
     const pending = Object.entries(drafts)
     pending.forEach(([id, draft]) => updateCourse(id, draft))
+    changed += pending.length
     setDrafts({})
     setOpenId(null)
-    toast(pending.length ? 'Changes saved' : 'Nothing to save')
+    toast(changed ? 'Changes saved' : 'Nothing to save')
   }
 
   return (
@@ -77,8 +89,24 @@ export default function AdminCoursesPage() {
         <AdminButton onClick={handleAdd}>+ Add course</AdminButton>
       </div>
       <p className="text-ink-soft dark:text-white/60 mb-6">
-        Drag to reorder. Click Edit to change a course's info, lessons and quizzes — edits are staged until you save.
+        Edit the header shown at the top of the Courses page, then drag to reorder courses. Click Edit to change a
+        course's info, lessons and quizzes — edits are staged until you save.
       </p>
+
+      <AdminCard title="Section header" className="mb-6">
+        <AdminInput
+          label="Page title"
+          placeholder="e.g. Course library"
+          value={pageTextDraft.coursesTitle}
+          onChange={(e) => setPageTextDraft((prev) => ({ ...prev, coursesTitle: e.target.value }))}
+        />
+        <AdminTextarea
+          label="Page subtitle"
+          placeholder="A short description shown under the page title"
+          value={pageTextDraft.coursesSubtitle}
+          onChange={(e) => setPageTextDraft((prev) => ({ ...prev, coursesSubtitle: e.target.value }))}
+        />
+      </AdminCard>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={courses.map((c) => c.id)} strategy={verticalListSortingStrategy}>

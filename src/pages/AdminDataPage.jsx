@@ -40,7 +40,7 @@ export default function AdminDataPage() {
   }
 
   const handleReset = () => {
-    if (!confirm('Reset badges and rooms back to the original demo content? Courses, paths and learner accounts are not affected — edit or restore those from a backup instead.')) return
+    if (!confirm('Reset badges back to the original demo content? Courses, paths, learner accounts and community posts are not affected — edit or restore those from a backup instead.')) return
     resetToDefault()
     toast('Content reset to defaults')
   }
@@ -52,7 +52,7 @@ export default function AdminDataPage() {
 
       <AdminCard title="Export content" className="mb-4">
         <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
-          Download all courses, paths, badges and rooms as a JSON file you can keep as a backup.
+          Download all courses, paths and badges as a JSON file you can keep as a backup.
         </p>
         <AdminButton onClick={handleExport}>Download backup (.json)</AdminButton>
       </AdminCard>
@@ -71,8 +71,9 @@ export default function AdminDataPage() {
 
       <AdminCard title="Reset to defaults">
         <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
-          Wipe admin edits to badges and rooms and restore the original demo content. Courses and paths live in the
-          database now — restore those from a backup file above instead.
+          Wipe admin edits to badges and the page header text, and restore the original demo content. Courses,
+          paths, learner accounts and community posts are not affected — restore those from a backup file above
+          instead.
         </p>
         <AdminButton variant="danger" onClick={handleReset}>
           Reset content to defaults

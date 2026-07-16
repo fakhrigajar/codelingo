@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, Rocket, BookOpen } from "lucide-react";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
+import { listPosts } from "../lib/postApi";
 import CourseCarousel, { ArrowIcon } from "../components/home/CourseCarousel";
 import HeroRight from "../components/home/HeroRight";
 
@@ -77,7 +78,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Friendly community",
-    body: "Chat with fellow learners in moderated rooms: General Chat, Homework Help and Show & Tell.",
+    body: "Share posts with fellow learners — text, images or documents — and reply, like or report what others share.",
   },
   {
     pad: "04",
@@ -147,7 +148,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Your own account",
-    body: "A simple sign-up keeps your progress, badges and messages saved between visits.",
+    body: "A simple sign-up keeps your progress, badges and posts saved between visits.",
   },
 ];
 
@@ -170,7 +171,7 @@ const STEPS = [
   {
     num: "STEP 4",
     title: "Earn & share",
-    body: "Collect badges and tell the community in Show & Tell.",
+    body: "Collect badges and share your work with the community.",
   },
 ];
 
@@ -180,6 +181,13 @@ export default function HomePage() {
   const navigate = useNavigate();
   const carouselRef = useRef(null);
   const [edges, setEdges] = useState({ atStart: true, atEnd: false });
+  const [postCount, setPostCount] = useState(0);
+
+  useEffect(() => {
+    listPosts()
+      .then((posts) => setPostCount(posts.length))
+      .catch(() => {});
+  }, []);
 
   const goAccountOrProfile = () =>
     navigate(currentUser ? "/profile" : "/account");
@@ -233,8 +241,10 @@ export default function HomePage() {
                 </span>
               </div>
               <div>
-                <b className="block text-2xl dark:text-white">3</b>
-                <span className="text-[.78rem] text-[#8891C4]">chat rooms</span>
+                <b className="block text-2xl dark:text-white">{postCount}</b>
+                <span className="text-[.78rem] text-[#8891C4]">
+                  community posts
+                </span>
               </div>
             </div>
           </div>

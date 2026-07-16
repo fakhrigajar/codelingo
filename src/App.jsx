@@ -30,7 +30,7 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminPathsPage from "./pages/AdminPathsPage";
 import AdminCoursesPage from "./pages/AdminCoursesPage";
 import AdminBadgesPage from "./pages/AdminBadgesPage";
-import AdminRoomsPage from "./pages/AdminRoomsPage";
+import AdminPostsPage from "./pages/AdminPostsPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminDataPage from "./pages/AdminDataPage";
 
@@ -121,7 +121,7 @@ function AppRoutes() {
           <Route path="paths" element={<AdminPathsPage />} />
           <Route path="courses" element={<AdminCoursesPage />} />
           <Route path="badges" element={<AdminBadgesPage />} />
-          <Route path="rooms" element={<AdminRoomsPage />} />
+          <Route path="posts" element={<AdminPostsPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="data" element={<AdminDataPage />} />
         </Route>

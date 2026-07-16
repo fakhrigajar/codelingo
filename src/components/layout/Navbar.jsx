@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { initials } from "../../lib/helpers";
 import { useTheme } from "../../lib/useTheme";
 import ThemeToggle from "../common/ThemeToggle";
-import siteLogo from "../../assets/codelingo.png";
+import siteLogo from "../../assets/navbar-logo.png";
 const links = [
   { to: "/", label: "Home", end: true },
   { to: "/courses", label: "Courses" },
@@ -76,8 +76,7 @@ export default function Navbar() {
             to="/"
             className="flex items-center gap font-display font-extrabold text-[1.3rem] text-indigo-dark dark:text-white"
           >
-            <img className="w-10" src={siteLogo} alt="" />
-            CodeLingo
+            <img className="w-28" src={siteLogo} alt="" />
           </Link>
           <nav className="hidden desktop:flex gap-1 ml-2 flex-1">
             {links.map((l) => (

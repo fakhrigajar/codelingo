@@ -9,10 +9,12 @@ import { fileURLToPath } from "node:url";
 const app = express();
 app.use(express.json({ limit: "8mb" }));
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOADS_DIR = path.join(__dirname, "uploads");
-app.use("/uploads", express.static(UPLOADS_DIR));
-
+// Must come before the /uploads static handler below — express.static
+// responds directly (never calls next()) once it finds a matching file, so
+// any middleware registered after it never runs for /uploads/* requests.
+// That silently dropped CORS headers on uploaded files, which only matters
+// for callers using fetch()/XHR (img/iframe embeds don't need CORS) — e.g.
+// the document viewer fetching a .docx/.txt to render an inline preview.
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -21,6 +23,10 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = path.join(__dirname, "uploads");
+app.use("/uploads", express.static(UPLOADS_DIR));
 
 const PORT = process.env.PORT || 3001;
 const MODEL = "gemini-2.5-flash";
@@ -34,31 +40,70 @@ const IMAGE_EXT_BY_MIME = {
   "image/svg+xml": "svg",
 };
 
+// Documents attachable to a community post — kept separate from
+// IMAGE_EXT_BY_MIME so callers that only ever want images (e.g. the lesson
+// content editor) can still lean on that map alone. Scoped to exactly what
+// the composer's tooltip promises: PDF, plain-text formats, and Microsoft
+// Office documents — no archives or other binaries.
+const DOCUMENT_EXT_BY_MIME = {
+  "application/pdf": "pdf",
+  "text/plain": "txt",
+  "text/csv": "csv",
+  "application/rtf": "rtf",
+  "text/rtf": "rtf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+    "pptx",
+};
+
+const UPLOAD_EXT_BY_MIME = { ...IMAGE_EXT_BY_MIME, ...DOCUMENT_EXT_BY_MIME };
+
+function sanitizeFilename(name) {
+  const base = path
+    .basename(String(name || ""))
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .slice(0, 80);
+  return base || "file";
+}
+
 app.post("/api/uploads", async (req, res) => {
-  const { dataUrl } = req.body || {};
-  const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(
+  const { dataUrl, filename } = req.body || {};
+  const match = /^data:([a-zA-Z0-9.+-]+\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(
     dataUrl || "",
   );
-  if (!match) {
-    return res.status(400).json({ error: "Expected a base64 image data URL." });
+  const mime = match?.[1];
+  const ext = mime && UPLOAD_EXT_BY_MIME[mime];
+  if (!match || !ext) {
+    return res
+      .status(400)
+      .json({ error: "Unsupported file type — expected an image or document." });
   }
-  const [, mime, base64] = match;
-  const ext = IMAGE_EXT_BY_MIME[mime] || "bin";
-  const filename = `${crypto.randomUUID()}.${ext}`;
+  // Keeps the original name (sanitized) in the stored filename so a
+  // downloaded document doesn't just look like a random UUID — the random
+  // prefix still guarantees no collisions between uploads.
+  const storedName = filename
+    ? `${crypto.randomUUID()}-${sanitizeFilename(filename)}`
+    : `${crypto.randomUUID()}.${ext}`;
   try {
     await fs.mkdir(UPLOADS_DIR, { recursive: true });
     await fs.writeFile(
-      path.join(UPLOADS_DIR, filename),
-      Buffer.from(base64, "base64"),
+      path.join(UPLOADS_DIR, storedName),
+      Buffer.from(match[2], "base64"),
     );
   } catch {
     return res
       .status(500)
-      .json({ error: "Could not save the uploaded image." });
+      .json({ error: "Could not save the uploaded file." });
   }
-  res
-    .status(201)
-    .json({ url: `${req.protocol}://${req.get("host")}/uploads/${filename}` });
+  res.status(201).json({
+    url: `${req.protocol}://${req.get("host")}/uploads/${storedName}`,
+    mime,
+  });
 });
 
 // GET /api/health — check in Postman that the server is actually running and
@@ -92,7 +137,17 @@ const NO_ID_PROJECTION = { projection: { _id: 0 } };
 function makeCrudRoutes(
   basePath,
   collection,
-  { idField = "id", requiredFields = ["id"], sort = { _id: 1 } } = {},
+  {
+    idField = "id",
+    requiredFields = ["id"],
+    sort = { _id: 1 },
+    // Both optional — every other resource (courses, paths, users) leaves
+    // these unset and keeps today's "anyone can delete by id" behavior.
+    // canDelete(req, item) decides whether THIS delete is allowed; onDeleted
+    // fires after a successful delete, for callers that want to log it.
+    canDelete,
+    onDeleted,
+  } = {},
 ) {
   app.get(basePath, async (req, res) => {
     res.json(await collection.find({}, NO_ID_PROJECTION).sort(sort).toArray());
@@ -149,72 +204,22 @@ function makeCrudRoutes(
   });
 
   app.delete(`${basePath}/:id`, async (req, res) => {
-    const removed = await collection.findOneAndDelete(
+    const item = await collection.findOne(
       { [idField]: req.params.id },
       NO_ID_PROJECTION,
     );
-    if (!removed)
+    if (!item)
       return res.status(404).json({ error: `Not found: ${req.params.id}` });
-    res.json(removed);
+    if (canDelete && !(await canDelete(req, item))) {
+      return res.status(403).json({ error: "Not allowed to delete this." });
+    }
+    await collection.deleteOne({ [idField]: req.params.id });
+    if (onDeleted) await onDeleted(req, item).catch(() => {});
+    res.json(item);
   });
 
   app.delete(basePath, async (req, res) => {
     await collection.deleteMany({});
-    res.json({ removed: true });
-  });
-}
-
-// Community chat and lesson discussions don't fit the id-based CRUD shape
-// above (no single record is ever fetched/edited/deleted by id — messages
-// are only ever listed per room/lesson and appended to), so they get their
-// own small scoped routes instead of makeCrudRoutes.
-function makeThreadRoutes(basePath, collection, scopeFields) {
-  app.get(basePath, async (req, res) => {
-    res.json(
-      await collection.find({}, NO_ID_PROJECTION).sort({ time: 1 }).toArray(),
-    );
-  });
-
-  const scopedPath = `${basePath}/${scopeFields.map((f) => `:${f}`).join("/")}`;
-
-  app.get(scopedPath, async (req, res) => {
-    const scope = Object.fromEntries(
-      scopeFields.map((f) => [f, req.params[f]]),
-    );
-    res.json(
-      await collection
-        .find(scope, NO_ID_PROJECTION)
-        .sort({ time: 1 })
-        .toArray(),
-    );
-  });
-
-  app.post(scopedPath, async (req, res) => {
-    const { username, displayName, text } = req.body || {};
-    if (!username || !displayName || !text || !text.trim()) {
-      return res
-        .status(400)
-        .json({ error: "username, displayName and text are required." });
-    }
-    const scope = Object.fromEntries(
-      scopeFields.map((f) => [f, req.params[f]]),
-    );
-    const message = {
-      ...scope,
-      username,
-      displayName,
-      text: text.trim(),
-      time: Date.now(),
-    };
-    await collection.insertOne({ ...message });
-    res.status(201).json(message);
-  });
-
-  app.delete(scopedPath, async (req, res) => {
-    const scope = Object.fromEntries(
-      scopeFields.map((f) => [f, req.params[f]]),
-    );
-    await collection.deleteMany(scope);
     res.json({ removed: true });
   });
 }
@@ -225,7 +230,9 @@ async function start() {
   const coursesCollection = db.collection("courses");
   const pathsCollection = db.collection("paths");
   const usersCollection = db.collection("users");
-  const messagesCollection = db.collection("messages");
+  const postsCollection = db.collection("posts");
+  const postDeletionsCollection = db.collection("postDeletions");
+  const badgesCollection = db.collection("badges");
 
   // One-time migration from the old lesson-linking "grades" model to
   // "paths" (an ordered list of whole courses) — the two shapes aren't
@@ -245,6 +252,21 @@ async function start() {
     }
   }
 
+  // One-time seed: badges used to live only in the frontend bundle
+  // (src/data/data.js DEFAULT_BADGES) with admin edits kept in localStorage.
+  // Moving them here to match courses/paths/posts — seed once so existing
+  // sites don't lose their badge list, then MongoDB is the sole source of
+  // truth from here on (admin edits go straight through the API below).
+  if ((await badgesCollection.countDocuments()) === 0) {
+    await badgesCollection.insertMany([
+      { id: "first-steps", icon: "sprout", name: "First Steps", desc: "Complete your first lesson" },
+      { id: "course-champion", icon: "trophy", name: "Course Champion", desc: "Finish an entire course" },
+      { id: "quiz-whiz", icon: "brain", name: "Quiz Whiz", desc: "Pass your first quiz" },
+      { id: "chatterbox", icon: "message-circle", name: "Chatterbox", desc: "Share your first community post" },
+      { id: "triple-threat", icon: "zap", name: "Triple Threat", desc: "Make progress in 3 different courses" },
+    ]);
+  }
+
   // courses and paths no longer have hardcoded defaults in the frontend
   // bundle — MongoDB is the sole source of truth for all three resources.
   makeCrudRoutes("/api/courses", coursesCollection, {
@@ -258,7 +280,141 @@ async function start() {
     idField: "username",
     requiredFields: ["username", "displayName"],
   });
-  makeThreadRoutes("/api/messages", messagesCollection, ["roomId"]);
+  makeCrudRoutes("/api/badges", badgesCollection, {
+    requiredFields: ["id", "name"],
+  });
+  // Community posts: a message plus an optional image/document attachment.
+  // Likes and reports are tracked as username arrays and replies are
+  // embedded directly on the post — all small, bounded lists, so there's no
+  // need for separate collections the way courses/paths get one each.
+  //
+  // Deletes are gated: only the post's own author or an admin may delete it
+  // (the client also hides the delete button for everyone else, but that's
+  // not enforcement — this is). ?requestedBy=<username> names the caller;
+  // every successful delete — by the owner or by an admin — is logged to
+  // postDeletionsCollection so admins can review who deleted what.
+  makeCrudRoutes("/api/posts", postsCollection, {
+    requiredFields: ["id", "username", "displayName"],
+    sort: { time: -1 },
+    canDelete: async (req, post) => {
+      const requestedBy = req.query.requestedBy || req.body?.requestedBy;
+      if (!requestedBy) return false;
+      if (requestedBy === post.username) return true;
+      const requester = await usersCollection.findOne({ username: requestedBy });
+      return requester?.role === "admin";
+    },
+    onDeleted: async (req, post) => {
+      const requestedBy = req.query.requestedBy || req.body?.requestedBy;
+      await postDeletionsCollection.insertOne({
+        id: crypto.randomUUID(),
+        postId: post.id,
+        postText: post.text || "",
+        postOwner: post.username,
+        postOwnerDisplayName: post.displayName,
+        deletedBy: requestedBy,
+        deletedBySelf: requestedBy === post.username,
+        time: Date.now(),
+      });
+    },
+  });
+
+  app.get("/api/post-deletions", async (req, res) => {
+    res.json(
+      await postDeletionsCollection
+        .find({}, NO_ID_PROJECTION)
+        .sort({ time: -1 })
+        .toArray(),
+    );
+  });
+
+  app.post("/api/posts/:id/like", async (req, res) => {
+    const { username } = req.body || {};
+    if (!username)
+      return res.status(400).json({ error: "username is required." });
+    const post = await postsCollection.findOne({ id: req.params.id });
+    if (!post) return res.status(404).json({ error: "Post not found." });
+    const liked = (post.likes || []).includes(username);
+    const updated = await postsCollection.findOneAndUpdate(
+      { id: req.params.id },
+      liked ? { $pull: { likes: username } } : { $addToSet: { likes: username } },
+      { returnDocument: "after", ...NO_ID_PROJECTION },
+    );
+    res.json(updated);
+  });
+
+  app.post("/api/posts/:id/report", async (req, res) => {
+    const { username, reason } = req.body || {};
+    if (!username)
+      return res.status(400).json({ error: "username is required." });
+    const post = await postsCollection.findOne({ id: req.params.id });
+    if (!post) return res.status(404).json({ error: "Post not found." });
+    const alreadyReported = (post.reports || []).some(
+      (r) => r.username === username,
+    );
+    if (!alreadyReported) {
+      await postsCollection.updateOne(
+        { id: req.params.id },
+        {
+          $push: {
+            reports: { username, reason: (reason || "").trim(), time: Date.now() },
+          },
+        },
+      );
+    }
+    res.json({ reported: true });
+  });
+
+  // replyTo (optional) names the reply this one is answering — { id,
+  // displayName } — so the client can render a threaded path instead of a
+  // flat list. It's just carried through as given; the id isn't validated
+  // against the post's existing replies since a stale/missing parent only
+  // affects display (falls back to a top-level reply), never data integrity.
+  app.post("/api/posts/:id/replies", async (req, res) => {
+    const { username, displayName, text, replyTo } = req.body || {};
+    if (!username || !displayName || !text || !text.trim()) {
+      return res
+        .status(400)
+        .json({ error: "username, displayName and text are required." });
+    }
+    const reply = {
+      id: crypto.randomUUID(),
+      username,
+      displayName,
+      text: text.trim(),
+      time: Date.now(),
+      likes: [],
+      replyTo: replyTo?.id
+        ? { id: replyTo.id, displayName: replyTo.displayName }
+        : null,
+    };
+    const result = await postsCollection.findOneAndUpdate(
+      { id: req.params.id },
+      { $push: { replies: reply } },
+    );
+    if (!result) return res.status(404).json({ error: "Post not found." });
+    res.status(201).json(reply);
+  });
+
+  app.post("/api/posts/:id/replies/:replyId/like", async (req, res) => {
+    const { username } = req.body || {};
+    if (!username)
+      return res.status(400).json({ error: "username is required." });
+    const post = await postsCollection.findOne({
+      id: req.params.id,
+      "replies.id": req.params.replyId,
+    });
+    if (!post) return res.status(404).json({ error: "Post or reply not found." });
+    const reply = post.replies.find((r) => r.id === req.params.replyId);
+    const liked = (reply.likes || []).includes(username);
+    const updated = await postsCollection.findOneAndUpdate(
+      { id: req.params.id, "replies.id": req.params.replyId },
+      liked
+        ? { $pull: { "replies.$.likes": username } }
+        : { $addToSet: { "replies.$.likes": username } },
+      { returnDocument: "after", ...NO_ID_PROJECTION },
+    );
+    res.json(updated);
+  });
 
   // Atomically patches fields on one lesson nested inside a course (a Mongo
   // positional update) instead of requiring the caller to read the whole

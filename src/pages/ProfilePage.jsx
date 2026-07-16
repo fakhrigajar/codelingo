@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useContent } from '../context/ContentContext'
@@ -5,7 +6,9 @@ import { useToast } from '../context/ToastContext'
 import { initials } from '../lib/helpers'
 import { getSignificantGaps } from '../lib/interviewGaps'
 import { getBadgeIcon } from '../lib/badgeIcons'
+import { listPosts } from '../lib/postApi'
 import CourseCard from '../components/courses/CourseCard'
+import PostCard from '../components/community/PostCard'
 
 export default function ProfilePage() {
   const { currentUser, logout } = useAuth()
@@ -13,11 +16,29 @@ export default function ProfilePage() {
   const toast = useToast()
   const navigate = useNavigate()
 
+  const [myPosts, setMyPosts] = useState([])
+  const [postsLoading, setPostsLoading] = useState(true)
+
+  useEffect(() => {
+    if (!currentUser) return
+    listPosts()
+      .then((all) => setMyPosts(all.filter((p) => p.username === currentUser.username)))
+      .catch(() => {})
+      .finally(() => setPostsLoading(false))
+  }, [currentUser])
+
   if (!currentUser) return null
 
   const totalCompleted = Object.values(currentUser.completed).reduce((a, arr) => a + arr.length, 0)
   const studyingCourses = courses.filter((c) => (currentUser.completed[c.id] || []).length > 0)
   const significantGaps = getSignificantGaps(currentUser.username)
+
+  const patchMyPost = (id, patch) => {
+    setMyPosts((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)))
+  }
+  const removeMyPost = (id) => {
+    setMyPosts((prev) => prev.filter((p) => p.id !== id))
+  }
 
   const handleLogout = () => {
     navigate('/')
@@ -91,6 +112,30 @@ export default function ProfilePage() {
         <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
           {studyingCourses.map((c) => (
             <CourseCard key={c.id} course={c} currentUser={currentUser} showProgress />
+          ))}
+        </div>
+      )}
+
+      <h3 className="mt-9">My posts</h3>
+      {postsLoading ? (
+        <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">Loading…</p>
+      ) : myPosts.length === 0 ? (
+        <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
+          You haven't posted in the community yet.{' '}
+          <Link to="/community" className="text-violet font-bold hover:underline">
+            Say hello
+          </Link>
+          .
+        </p>
+      ) : (
+        <div className="flex flex-col gap-5 mt-4">
+          {myPosts.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              onChange={(patch) => patchMyPost(post.id, patch)}
+              onRemove={removeMyPost}
+            />
           ))}
         </div>
       )}

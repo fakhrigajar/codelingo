@@ -8,7 +8,7 @@ import FilterRow from "../components/common/FilterRow";
 const LEVELS = ["all", "Beginner", "Intermediate", "Advanced"];
 
 export default function CoursesPage() {
-  const { courses } = useContent();
+  const { courses, pageText } = useContent();
   const { currentUser } = useAuth();
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
@@ -32,10 +32,9 @@ export default function CoursesPage() {
       <div className="pt-12 pb-2.5">
         <div className="flex items-start justify-between gap-6 desktop:flex-row flex-col">
           <div>
-            <h1 className="text-[2.2rem]">Course library</h1>
+            <h1 className="text-[2.2rem]">{pageText.coursesTitle}</h1>
             <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
-              {courses.length} module{courses.length === 1 ? "" : "s"} covering
-              the core skills every developer needs. Tap a card to open it.
+              {pageText.coursesSubtitle}
             </p>
           </div>
           <div className="flex items-center gap-8 pt-1">

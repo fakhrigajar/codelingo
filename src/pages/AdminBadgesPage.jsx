@@ -12,7 +12,7 @@ import {
 } from "../components/admin/AdminFields";
 
 export default function AdminBadgesPage() {
-  const { badges, setBadges } = useContent();
+  const { badges, addBadge, updateBadge, removeBadge } = useContent();
   const toast = useToast();
   const [draft, setDraft] = useState(badges);
 
@@ -22,44 +22,45 @@ export default function AdminBadgesPage() {
     setDraft((prev) => badges.map((b) => prev.find((p) => p.id === b.id) ?? b));
   }, [badges]);
 
-  const patchBadge = (id, patch) => {
+  const patchDraft = (id, patch) => {
     setDraft((prev) => prev.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
 
-  const removeBadge = (id) => {
+  const handleRemove = (id) => {
     if (
       !confirm(
         "Delete this badge? Learners who already earned it will keep the id, but it will stop showing up.",
       )
     )
       return;
-    setBadges(badges.filter((b) => b.id !== id));
+    removeBadge(id);
     toast("Badge deleted");
   };
 
-  const addBadge = () => {
-    setBadges([
-      ...badges,
-      {
-        id: uid("badge"),
-        icon: "award",
-        name: "New Badge",
-        desc: "Describe how to earn this.",
-      },
-    ]);
+  const handleAdd = () => {
+    addBadge({
+      id: uid("badge"),
+      icon: "award",
+      name: "New Badge",
+      desc: "Describe how to earn this.",
+    });
     toast("Badge added");
   };
 
   const handleSubmit = () => {
-    setBadges(draft);
-    toast("Changes saved");
+    const changed = draft.filter((b) => {
+      const original = badges.find((o) => o.id === b.id);
+      return original && JSON.stringify(original) !== JSON.stringify(b);
+    });
+    changed.forEach((b) => updateBadge(b.id, b));
+    toast(changed.length ? "Changes saved" : "Nothing to save");
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-1 flex-wrap gap-2">
         <h1 className="text-2xl m-0">Badges</h1>
-        <AdminButton onClick={addBadge}>+ Add badge</AdminButton>
+        <AdminButton onClick={handleAdd}>+ Add badge</AdminButton>
       </div>
       <p className="text-ink-soft dark:text-white/60 mb-6">
         Change the icon, name and description shown on learner profiles. Edits
@@ -78,7 +79,7 @@ export default function AdminBadgesPage() {
                 <AdminSelect
                   label="Icon"
                   value={b.icon}
-                  onChange={(e) => patchBadge(b.id, { icon: e.target.value })}
+                  onChange={(e) => patchDraft(b.id, { icon: e.target.value })}
                 >
                   {BADGE_ICON_NAMES.map((name) => (
                     <option key={name} value={name}>
@@ -91,15 +92,15 @@ export default function AdminBadgesPage() {
                 label="Name"
                 placeholder="e.g. First Steps"
                 value={b.name}
-                onChange={(e) => patchBadge(b.id, { name: e.target.value })}
+                onChange={(e) => patchDraft(b.id, { name: e.target.value })}
               />
               <AdminTextarea
                 label="Description"
                 placeholder="What does a learner need to do to earn this badge?"
                 value={b.desc}
-                onChange={(e) => patchBadge(b.id, { desc: e.target.value })}
+                onChange={(e) => patchDraft(b.id, { desc: e.target.value })}
               />
-              <AdminButton variant="danger" onClick={() => removeBadge(b.id)}>
+              <AdminButton variant="danger" onClick={() => handleRemove(b.id)}>
                 Delete
               </AdminButton>
             </AdminCard>

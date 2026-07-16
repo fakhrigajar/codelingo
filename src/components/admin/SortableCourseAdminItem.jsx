@@ -35,6 +35,7 @@ export default function SortableCourseAdminItem({ course, draftCourse, isOpen, o
           <span className="font-extrabold truncate">{course.title}</span>
           <span className="text-ink-soft dark:text-white/50 text-sm shrink-0">
             · {course.level} · {course.lessons.length} lessons
+            {course.availability === 'coming-soon' && ' · Coming soon'}
           </span>
         </div>
         <div className="flex gap-2 shrink-0">

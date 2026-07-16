@@ -4,7 +4,7 @@ import {
   Route,
   BookOpen,
   Award,
-  MessageCircle,
+  Flag,
   Users,
   Database,
   ArrowLeft,
@@ -19,7 +19,7 @@ const links = [
   { to: "/admin/paths", label: "Paths", Icon: Route },
   { to: "/admin/courses", label: "Courses", Icon: BookOpen },
   { to: "/admin/badges", label: "Badges", Icon: Award },
-  { to: "/admin/rooms", label: "Chat rooms", Icon: MessageCircle },
+  { to: "/admin/posts", label: "Community posts", Icon: Flag },
   { to: "/admin/users", label: "Users", Icon: Users },
   { to: "/admin/data", label: "Backup & reset", Icon: Database },
 ];

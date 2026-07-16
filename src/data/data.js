@@ -21,7 +21,7 @@ export const DEFAULT_BADGES = [
     id: "chatterbox",
     icon: "message-circle",
     name: "Chatterbox",
-    desc: "Send your first community message",
+    desc: "Share your first community post",
   },
   {
     id: "triple-threat",
@@ -31,18 +31,11 @@ export const DEFAULT_BADGES = [
   },
 ];
 
-export const DEFAULT_ROOMS = [
-  { id: "general", name: "General Chat", sub: "Say hello to everyone" },
-  {
-    id: "homework-help",
-    name: "Homework Help",
-    sub: "Stuck on a lesson? Ask here",
-  },
-  { id: "show-and-tell", name: "Show & Tell", sub: "Share what you made" },
-];
-
 export const DEFAULT_PAGE_TEXT = {
   pathsTitle: "Learning paths",
   pathsSubtitle:
     "Follow a path from first course to last — complete one to unlock the next.",
+  coursesTitle: "Course library",
+  coursesSubtitle:
+    "Bite-sized modules covering the core skills every developer needs. Tap a card to open it.",
 };

@@ -30,6 +30,10 @@ import SortableUnitBlock from "./SortableUnitBlock";
 import CourseIcon from "../courses/CourseIcon";
 
 const LEVELS = ["Beginner", "Intermediate", "Advanced"];
+const AVAILABILITY = [
+  { value: "available", label: "Available" },
+  { value: "coming-soon", label: "Coming soon" },
+];
 
 function collisionDetection(args) {
   const draggingUnit = args.active.data.current?.type === "unit";
@@ -182,7 +186,7 @@ export default function CourseEditor({ course, onChange }) {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-2 gap-3">
+      <div className="grid sm:grid-cols-3 gap-3">
         <AdminInput
           label="Title"
           placeholder="e.g. Python Fundamentals"
@@ -197,6 +201,17 @@ export default function CourseEditor({ course, onChange }) {
           {LEVELS.map((lvl) => (
             <option key={lvl} value={lvl}>
               {lvl}
+            </option>
+          ))}
+        </AdminSelect>
+        <AdminSelect
+          label="Availability"
+          value={course.availability || "available"}
+          onChange={(e) => onChange({ availability: e.target.value })}
+        >
+          {AVAILABILITY.map((a) => (
+            <option key={a.value} value={a.value}>
+              {a.label}
             </option>
           ))}
         </AdminSelect>

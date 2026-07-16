@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
 import { useContent } from '../context/ContentContext'
 import { useToast } from '../context/ToastContext'
 import { uid, courseById } from '../lib/helpers'
@@ -155,17 +155,26 @@ export default function AdminPathsPage() {
                     · {path.level} · {path.courseIds.length} courses
                   </span>
                 </div>
-                <AdminButton variant="outline" onClick={() => toggleOpen(path.id)}>
-                  {open ? (
-                    <span className="inline-flex items-center gap-1">
-                      Close <ChevronUp size={14} />
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1">
-                      Edit <ChevronDown size={14} />
-                    </span>
-                  )}
-                </AdminButton>
+                <div className="flex gap-2 shrink-0">
+                  <AdminButton variant="outline" onClick={() => toggleOpen(path.id)}>
+                    {open ? (
+                      <span className="inline-flex items-center gap-1">
+                        Close <ChevronUp size={14} />
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1">
+                        Edit <ChevronDown size={14} />
+                      </span>
+                    )}
+                  </AdminButton>
+                  <AdminButton
+                    variant="danger"
+                    onClick={() => handleRemovePath(path.id)}
+                    aria-label="Delete path"
+                  >
+                    <Trash2 size={14} />
+                  </AdminButton>
+                </div>
               </div>
 
               {open && (
@@ -191,12 +200,6 @@ export default function AdminPathsPage() {
                   </div>
 
                   <PathCourseEditor path={path} courses={courses} updatePath={updatePath} />
-
-                  <div className="flex justify-end mt-3">
-                    <AdminButton variant="danger" onClick={() => handleRemovePath(path.id)}>
-                      Delete this path
-                    </AdminButton>
-                  </div>
                 </div>
               )}
             </AdminCard>
