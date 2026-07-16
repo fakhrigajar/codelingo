@@ -5,7 +5,7 @@ import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
 import { listPosts } from "../lib/postApi";
 import CourseCarousel, { ArrowIcon } from "../components/home/CourseCarousel";
-import HeroRight from "../components/home/HeroRight";
+import HeroFloatingLayer from "../components/home/HeroFloatingLayer";
 
 const FEATURES = [
   {
@@ -194,62 +194,78 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="pt-20 pb-10">
-        <div className="relative overflow-hidden dark:bg-transparent grid desktop:grid-cols-2 gap-8 desktop:gap-10 items-center">
+      <section className="relative pt-32 pb-16 desktop:pt-24 desktop:pb-20">
+        <div className="absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 z-0">
+          <div className="hero-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]" />
+          <div className="pointer-events-none absolute top-6 left-[20%] w-56 h-56 sm:w-72 sm:h-72 bg-violet/20 rounded-full blur-3xl animate-blobDrift" />
           <div
-            className={`hero-grid absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]`}
+            className="pointer-events-none absolute top-20 right-[20%] w-56 h-56 sm:w-72 sm:h-72 bg-mint/20 rounded-full blur-3xl animate-blobDrift"
+            style={{ animationDelay: "3s" }}
           />
-          <div className="relative z-10 text-center desktop:text-left flex flex-col items-center desktop:items-start">
-            <h1 className="text-[2rem] sm:text-[2.4rem] desktop:text-[2.9rem] leading-tight font-bold text-indigo-dark">
-              Boot up your brain.
-              <br />
-              Learn tech by doing.
-            </h1>
-            <p className="text-base sm:text-[1.15rem] max-w-[600px] dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7">
-              Bite-sized courses in JavaScript, React, backend development, AI
-              and more — guided by badges, and backed by a friendly community.
-            </p>
-            <div className="flex gap-3.5 flex-wrap justify-center desktop:justify-start mb-5">
-              <button
-                className="btn btn-primary"
-                onClick={() => navigate("/courses")}
-              >
-                Start learning
-              </button>
-              <button
-                className="btn btn-outline bg-white text-indigo-dark"
-                onClick={goAccountOrProfile}
-              >
-                Create free account
-              </button>
-            </div>
-            <div className="flex gap-5 sm:gap-7 mt-6 flex-wrap justify-center desktop:justify-start font-mono">
-              <div>
-                <b className="block text-2xl dark:text-white">
-                  {courses.length}
-                </b>
-                <span className="text-[.78rem] text-[#8891C4]">
-                  course modules
-                </span>
-              </div>
-              <div>
-                <b className="block text-2xl dark:text-white">
-                  {courses.reduce((a, c) => a + c.lessons.length, 0)}+
-                </b>
-                <span className="text-[.78rem] text-[#8891C4]">
-                  bite-size lessons
-                </span>
-              </div>
-              <div>
-                <b className="block text-2xl dark:text-white">{postCount}</b>
-                <span className="text-[.78rem] text-[#8891C4]">
-                  community posts
-                </span>
-              </div>
-            </div>
+          <div
+            className="pointer-events-none absolute bottom-0 left-[44%] w-56 h-56 bg-coral/15 rounded-full blur-3xl animate-blobDrift"
+            style={{ animationDelay: "1.5s" }}
+          />
+          <HeroFloatingLayer />
+        </div>
+
+        <div className="relative z-10 max-w-[640px] mx-auto text-center">
+          <h1
+            className="text-[2rem] sm:text-[2.4rem] desktop:text-[2.9rem] leading-tight font-bold text-indigo-dark animate-fadeUp"
+            style={{ animationDelay: ".05s" }}
+          >
+            Boot up your brain.
+            <br />
+            Learn tech by doing.
+          </h1>
+          <p
+            className="text-base sm:text-[1.15rem] max-w-[400px] sm:max-w-[500px] desktop:max-w-[600px] mx-auto dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7 animate-fadeUp"
+            style={{ animationDelay: ".18s" }}
+          >
+            Bite-sized courses in JavaScript, React, backend development, AI and
+            more — guided by badges, and backed by a friendly community.
+          </p>
+          <div
+            className="flex gap-3.5 flex-wrap justify-center mb-5 animate-fadeUp"
+            style={{ animationDelay: ".3s" }}
+          >
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate("/courses")}
+            >
+              Start learning
+            </button>
+            <button
+              className="btn btn-outline bg-white text-indigo-dark"
+              onClick={goAccountOrProfile}
+            >
+              Create free account
+            </button>
           </div>
-          <div className="relative z-10">
-            <HeroRight />
+          <div
+            className="flex gap-5 sm:gap-7 mt-6 flex-wrap justify-center font-mono animate-fadeUp"
+            style={{ animationDelay: ".42s" }}
+          >
+            <div>
+              <b className="block text-2xl dark:text-white">{courses.length}</b>
+              <span className="text-[.78rem] text-[#8891C4]">
+                course modules
+              </span>
+            </div>
+            <div>
+              <b className="block text-2xl dark:text-white">
+                {courses.reduce((a, c) => a + c.lessons.length, 0)}+
+              </b>
+              <span className="text-[.78rem] text-[#8891C4]">
+                bite-size lessons
+              </span>
+            </div>
+            <div>
+              <b className="block text-2xl dark:text-white">{postCount}</b>
+              <span className="text-[.78rem] text-[#8891C4]">
+                community posts
+              </span>
+            </div>
           </div>
         </div>
       </section>

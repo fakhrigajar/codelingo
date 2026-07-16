@@ -5,6 +5,10 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+  body {
+    overflow-x: hidden;
   }
   h1,
   h2,
@@ -114,7 +118,7 @@
     linear-gradient(rgba(0, 0, 0, 0.09) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.09) 1px, transparent 1px);
   background-size: 40px 40px;
-  animation: heroGridMove 10s linear infinite;
+  animation: heroGridMove 5s linear infinite;
 }
 
 .dark .hero-grid {
