@@ -94,7 +94,7 @@ export default function Navbar() {
             <ThemeToggle
               theme={theme}
               onToggle={toggleTheme}
-              className="hidden desktop:flex items-center justify-center w-10 h-10 rounded-full border-2 border-line bg-indigo-dark dark:bg-white dark:text-indigo-dark dark:border-white/15 text-white transition-colors"
+              className="hidden desktop:flex btn btn-primary rounded-full w-12 h-12 p-0"
             />
             {currentUser ? (
               <div className="relative hidden desktop:block" ref={menuRef}>

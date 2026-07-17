@@ -364,7 +364,7 @@ export default function HomePage() {
             </button>
           </div>
           <button
-            className="btn btn-outline btn-sm"
+            className="btn btn-primary btn-sm"
             onClick={() => navigate("/courses")}
           >
             Explore courses →

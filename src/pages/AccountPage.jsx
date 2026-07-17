@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
+
+const formVariants = {
+  enter: (direction) => ({ x: direction > 0 ? 32 : -32, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction) => ({ x: direction > 0 ? -32 : 32, opacity: 0 }),
+};
 
 function PasswordInput({ value, onChange, ...props }) {
   const [visible, setVisible] = useState(false);
@@ -33,6 +40,7 @@ export default function AccountPage() {
   const navigate = useNavigate();
 
   const [tab, setTab] = useState("login");
+  const [direction, setDirection] = useState(1);
   const [error, setError] = useState("");
 
   const [loginUsername, setLoginUsername] = useState("");
@@ -46,6 +54,8 @@ export default function AccountPage() {
   if (currentUser) return <Navigate to="/profile" replace />;
 
   const switchTab = (t) => {
+    if (t === tab) return;
+    setDirection(t === "signup" ? 1 : -1);
     setTab(t);
     setError("");
   };
@@ -78,27 +88,45 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="max-w-[440px] mx-auto my-16 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-9">
+    <motion.div
+      layout
+      transition={{ layout: { duration: 0.25, ease: "easeInOut" } }}
+      className="max-w-[440px] mx-auto my-16 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-9 overflow-hidden"
+    >
       <div className="flex gap-2 mb-6 bg-[#F1F5FD] dark:bg-white/5 rounded-xl p-1">
         <button
           onClick={() => switchTab("login")}
-          className={`flex-1 py-2.5 rounded-[9px] font-extrabold ${
+          className={`relative flex-1 py-2.5 rounded-[9px] font-extrabold transition-colors ${
             tab === "login"
-              ? "bg-white dark:bg-white/10 text-indigo-dark dark:text-white shadow-[0_2px_6px_rgba(27,38,71,.12)]"
+              ? "text-indigo-dark dark:text-white"
               : "text-ink-soft dark:text-white/50"
           }`}
         >
-          Log in
+          {tab === "login" && (
+            <motion.span
+              layoutId="accountTabIndicator"
+              className="absolute inset-0 rounded-[9px] bg-white dark:bg-white/10 shadow-[0_2px_6px_rgba(27,38,71,.12)]"
+              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+            />
+          )}
+          <span className="relative">Log in</span>
         </button>
         <button
           onClick={() => switchTab("signup")}
-          className={`flex-1 py-2.5 rounded-[9px] font-extrabold ${
+          className={`relative flex-1 py-2.5 rounded-[9px] font-extrabold transition-colors ${
             tab === "signup"
-              ? "bg-white dark:bg-white/10 text-indigo-dark dark:text-white shadow-[0_2px_6px_rgba(27,38,71,.12)]"
+              ? "text-indigo-dark dark:text-white"
               : "text-ink-soft dark:text-white/50"
           }`}
         >
-          Sign up
+          {tab === "signup" && (
+            <motion.span
+              layoutId="accountTabIndicator"
+              className="absolute inset-0 rounded-[9px] bg-white dark:bg-white/10 shadow-[0_2px_6px_rgba(27,38,71,.12)]"
+              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+            />
+          )}
+          <span className="relative">Sign up</span>
         </button>
       </div>
 
@@ -108,90 +136,110 @@ export default function AccountPage() {
         </div>
       )}
 
-      {tab === "login" ? (
-        <form onSubmit={handleLogin}>
-          <div className="field mb-4">
-            <label>Username</label>
-            <input
-              type="text"
-              required
-              autoComplete="username"
-              placeholder="Enter your username"
-              value={loginUsername}
-              onChange={(e) => setLoginUsername(e.target.value)}
-            />
-          </div>
-          <div className="field mb-4">
-            <label>Password</label>
-            <PasswordInput
-              required
-              autoComplete="current-password"
-              placeholder="Enter your password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-            />
-          </div>
-          <button className="btn btn-primary w-full" type="submit">
-            Log in
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={handleSignup}>
-          <div className="field mb-4">
-            <label>Display name</label>
-            <input
-              type="text"
-              required
-              maxLength={30}
-              placeholder="e.g. Jamie Rivera"
-              value={suName}
-              onChange={(e) => setSuName(e.target.value)}
-            />
-          </div>
-          <div className="field mb-4">
-            <label>Username</label>
-            <input
-              type="text"
-              required
-              maxLength={20}
-              pattern="[A-Za-z0-9_]+"
-              title="Letters, numbers and underscore only"
-              placeholder="Letters, numbers and underscore only"
-              value={suUsername}
-              onChange={(e) => setSuUsername(e.target.value)}
-            />
-          </div>
-          <div className="field mb-4">
-            <label>Age</label>
-            <select
-              required
-              value={suAge}
-              onChange={(e) => setSuAge(e.target.value)}
-            >
-              <option value="">Select age</option>
-              {[7, 8, 9, 10, 11, 12, 13, "14+"].map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field mb-4">
-            <label>Password</label>
-            <PasswordInput
-              required
-              minLength={4}
-              autoComplete="new-password"
-              placeholder="At least 4 characters"
-              value={suPassword}
-              onChange={(e) => setSuPassword(e.target.value)}
-            />
-          </div>
-          <button className="btn btn-primary w-full" type="submit">
-            Create account
-          </button>
-        </form>
-      )}
-    </div>
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
+        {tab === "login" ? (
+          <motion.form
+            key="login"
+            custom={direction}
+            variants={formVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.22, ease: "easeInOut" }}
+            onSubmit={handleLogin}
+          >
+            <div className="field mb-4">
+              <label>Username</label>
+              <input
+                type="text"
+                required
+                autoComplete="username"
+                placeholder="Enter your username"
+                value={loginUsername}
+                onChange={(e) => setLoginUsername(e.target.value)}
+              />
+            </div>
+            <div className="field mb-4">
+              <label>Password</label>
+              <PasswordInput
+                required
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+              />
+            </div>
+            <button className="btn btn-primary w-full" type="submit">
+              Log in
+            </button>
+          </motion.form>
+        ) : (
+          <motion.form
+            key="signup"
+            custom={direction}
+            variants={formVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.22, ease: "easeInOut" }}
+            onSubmit={handleSignup}
+          >
+            <div className="field mb-4">
+              <label>Display name</label>
+              <input
+                type="text"
+                required
+                maxLength={30}
+                placeholder="e.g. Jamie Rivera"
+                value={suName}
+                onChange={(e) => setSuName(e.target.value)}
+              />
+            </div>
+            <div className="field mb-4">
+              <label>Username</label>
+              <input
+                type="text"
+                required
+                maxLength={20}
+                pattern="[A-Za-z0-9_]+"
+                title="Letters, numbers and underscore only"
+                placeholder="Letters, numbers and underscore only"
+                value={suUsername}
+                onChange={(e) => setSuUsername(e.target.value)}
+              />
+            </div>
+            <div className="field mb-4">
+              <label>Age</label>
+              <select
+                required
+                value={suAge}
+                onChange={(e) => setSuAge(e.target.value)}
+              >
+                <option value="">Select age</option>
+                {[7, 8, 9, 10, 11, 12, 13, "14+"].map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field mb-4">
+              <label>Password</label>
+              <PasswordInput
+                required
+                minLength={4}
+                autoComplete="new-password"
+                placeholder="At least 4 characters"
+                value={suPassword}
+                onChange={(e) => setSuPassword(e.target.value)}
+              />
+            </div>
+            <button className="btn btn-primary w-full" type="submit">
+              Create account
+            </button>
+          </motion.form>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
