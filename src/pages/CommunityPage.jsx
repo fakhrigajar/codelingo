@@ -5,6 +5,7 @@ import { listPosts, createPost as createPostApi } from '../lib/postApi'
 import { uid } from '../lib/helpers'
 import PostComposer from '../components/community/PostComposer'
 import PostCard from '../components/community/PostCard'
+import AntdThemeProvider from '../components/common/AntdThemeProvider'
 
 export default function CommunityPage() {
   const { currentUser, saveCurrentUser } = useAuth()
@@ -57,35 +58,37 @@ export default function CommunityPage() {
   }
 
   return (
-    <div>
-      <div className="pt-12 pb-2.5">
-        <h1 className="text-[2.2rem]">Community</h1>
-        <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
-          Share what you&apos;re building, ask questions, and help other learners — post a
-          message, image or document, and reply, like or report what others share.
-        </p>
-      </div>
-
-      <PostComposer onSubmit={handleCreate} />
-
-      {loading ? (
-        <p className="text-ink-soft dark:text-white/60 text-center py-10">Loading posts…</p>
-      ) : posts.length === 0 ? (
-        <p className="text-ink-soft dark:text-white/60 text-center py-10">
-          No posts yet — be the first to share something!
-        </p>
-      ) : (
-        <div className="flex flex-col gap-5 mt-6">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onChange={(patch) => patchPost(post.id, patch)}
-              onRemove={removePostLocal}
-            />
-          ))}
+    <AntdThemeProvider>
+      <div>
+        <div className="pt-12 pb-2.5">
+          <h1 className="text-[2.2rem]">Community</h1>
+          <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
+            Share what you&apos;re building, ask questions, and help other learners — post a
+            message, image or document, and reply, like or report what others share.
+          </p>
         </div>
-      )}
-    </div>
+
+        <PostComposer onSubmit={handleCreate} />
+
+        {loading ? (
+          <p className="text-ink-soft dark:text-white/60 text-center py-10">Loading posts…</p>
+        ) : posts.length === 0 ? (
+          <p className="text-ink-soft dark:text-white/60 text-center py-10">
+            No posts yet — be the first to share something!
+          </p>
+        ) : (
+          <div className="flex flex-col gap-5 mt-6">
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onChange={(patch) => patchPost(post.id, patch)}
+                onRemove={removePostLocal}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </AntdThemeProvider>
   )
 }

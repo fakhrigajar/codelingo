@@ -47,12 +47,59 @@ export default function CourseDetailPage() {
     }
   }, [searchParams, course?.id]);
 
-  if (!course) return <Navigate to="/courses" replace />;
-
   const activeLesson =
-    activeLessonId && activeLessonId !== ABOUT_ID
+    course && activeLessonId && activeLessonId !== ABOUT_ID
       ? lessonById(course, activeLessonId)
       : null;
+
+  // A video's real duration is only known once it's actually played — once
+  // learned, cache it on the lesson so the sidebar/about page's estimated
+  // time reflects reality instead of just the admin's written guess.
+  const handleVideoDuration = (lessonId, minutes) => {
+    const target = lessonById(course, lessonId);
+    if (!target || target.videoMinutes === minutes) return;
+    patchLesson(course.id, lessonId, { videoMinutes: minutes });
+  };
+
+  // The sidebar/about page can only show an accurate estimated time once a
+  // video's real duration is known, and that's normally only learned by
+  // actually playing it. Rather than making every lesson but the one you've
+  // opened look like it has no time estimate, quietly probe every lesson's
+  // video in the background (once each, ever — the result is cached on the
+  // lesson) so the full course shows real numbers immediately.
+  //
+  // All probes fire together (Promise.all), not one after another — with a
+  // for-await loop, a 10-lesson course paid the sum of every probe's latency
+  // before the last time estimate showed up. Results are also applied in one
+  // batch once everything settles, so the sidebar's numbers pop in together
+  // alongside the lesson panel instead of trickling in lesson by lesson.
+  useEffect(() => {
+    if (!course) return;
+    let cancelled = false;
+    const pending = course.lessons
+      .filter((l) => l.id !== activeLesson?.id && l.videoMinutes == null)
+      .map((l) => ({ id: l.id, videoUrl: getLessonBlocks(l).find((b) => b.type === "video" && b.value)?.value }))
+      .filter((l) => l.videoUrl);
+
+    Promise.all(
+      pending.map(({ id, videoUrl }) =>
+        probeVideoDuration(videoUrl).then((seconds) => ({ id, seconds })),
+      ),
+    ).then((results) => {
+      if (cancelled) return;
+      for (const { id, seconds } of results) {
+        if (seconds) handleVideoDuration(id, Math.ceil(seconds / 60));
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course?.id]);
+
+  if (!course) return <Navigate to="/courses" replace />;
+
   const nextLesson = activeLesson
     ? course.lessons[course.lessons.indexOf(activeLesson) + 1]
     : null;
@@ -127,43 +174,6 @@ export default function CourseDetailPage() {
       },
     });
   };
-
-  // A video's real duration is only known once it's actually played — once
-  // learned, cache it on the lesson so the sidebar/about page's estimated
-  // time reflects reality instead of just the admin's written guess.
-  const handleVideoDuration = (lessonId, minutes) => {
-    const target = lessonById(course, lessonId);
-    if (!target || target.videoMinutes === minutes) return;
-    patchLesson(course.id, lessonId, { videoMinutes: minutes });
-  };
-
-  // The sidebar/about page can only show an accurate estimated time once a
-  // video's real duration is known, and that's normally only learned by
-  // actually playing it. Rather than making every lesson but the one you've
-  // opened look like it has no time estimate, quietly probe every lesson's
-  // video in the background (once each, ever — the result is cached on the
-  // lesson) so the full course shows real numbers immediately.
-  useEffect(() => {
-    let cancelled = false;
-    const pending = course.lessons
-      .filter((l) => l.id !== activeLesson?.id && l.videoMinutes == null)
-      .map((l) => ({ id: l.id, videoUrl: getLessonBlocks(l).find((b) => b.type === "video" && b.value)?.value }))
-      .filter((l) => l.videoUrl);
-
-    (async () => {
-      for (const { id, videoUrl } of pending) {
-        if (cancelled) return;
-        const seconds = await probeVideoDuration(videoUrl);
-        if (cancelled || !seconds) continue;
-        handleVideoDuration(id, Math.ceil(seconds / 60));
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course.id]);
 
   return (
     <div className="pt-8">

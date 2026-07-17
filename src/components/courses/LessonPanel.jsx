@@ -6,21 +6,12 @@ import { loadYouTubeIframeApi } from "../../lib/youtubeApi";
 import QuizPanel from "./QuizPanel";
 import LessonDiscussion from "./LessonDiscussion";
 
-// Keeps a ref in sync with the latest prop/value on every render, so a
-// long-lived callback (a setInterval tick, a YouTube player event) can call
-// `ref.current` and always run the newest version instead of the stale
-// closure it was created with.
 function useLatestRef(value) {
   const ref = useRef(value);
   ref.current = value;
   return ref;
 }
 
-// Renders via the YouTube IFrame Player API (rather than a plain embed
-// iframe) so we can read the video's real duration and detect play/pause —
-// that's what lets us gate the Submit button on actual watch time. Falls
-// back to a plain embed (untracked) if the API fails to load or the video
-// errors out (e.g. embedding disabled).
 function YouTubePlayer({
   videoId,
   value,
@@ -218,24 +209,13 @@ export default function LessonPanel({
   );
   const [watchedSeconds, setWatchedSeconds] = useState(watchedRef.current);
   const [videoDuration, setVideoDuration] = useState(null);
-
-  // Reset tracking state whenever the learner navigates to a different
-  // lesson (a fresh video needs its own duration/watch-time, not the
-  // previous lesson's).
   useEffect(() => {
     const initial = currentUser?.videoProgress?.[course.id]?.[lesson.id] || 0;
     watchedRef.current = initial;
     setWatchedSeconds(initial);
     setVideoDuration(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course.id, lesson.id]);
 
-  // Flush any unsaved watched seconds whenever the lesson stops being
-  // visible: navigating away within the app (the effect cleanup), tabbing
-  // away, or closing the tab outright. A React unmount alone only covers
-  // in-app navigation — closing the tab tears the page down without ever
-  // running it, so visibilitychange/pagehide are the only reliable signals
-  // for that case.
   useEffect(() => {
     const flush = () => {
       if (watchedRef.current > 0)
@@ -267,10 +247,6 @@ export default function LessonPanel({
     onVideoDuration?.(lesson.id, Math.ceil(seconds / 60));
   };
 
-  // A video ending is definitive proof it was fully watched — don't rely
-  // solely on the 1-second tick counter reaching the (near-always
-  // fractional) real duration, since the last partial second never
-  // completes a whole tick.
   const handleEnded = () => {
     if (videoDuration == null) return;
     watchedRef.current = Math.max(watchedRef.current, videoDuration);
@@ -304,7 +280,7 @@ export default function LessonPanel({
       <span className="eyebrow inline-flex items-center gap-1.5">
         <BookOpen size={13} /> lesson
       </span>
-      <h2 className="text-[1.4rem] sm:text-[1.6rem] desktop:text-[1.8rem] pb-2 border-b-2 border-dashed border-line">
+      <h2 className="text-[1.4rem] sm:text-[1.6rem] desktop:text-[1.8rem] pb-2 border-b-2 border-dashed border-line dark:border-white/10">
         {lesson.title}
       </h2>
       {blocks.map((block) => {
@@ -344,7 +320,10 @@ export default function LessonPanel({
       {videoBlock && !done && !videoWatched && (
         <p className="text-[.8rem] text-ink-soft dark:text-white/50 mt-5">
           Watch the full video to unlock Submit —{" "}
-          {videoDuration ? Math.min(100, Math.floor((watchedSeconds / videoDuration) * 100)) : 0}%
+          {videoDuration
+            ? Math.min(100, Math.floor((watchedSeconds / videoDuration) * 100))
+            : 0}
+          %
         </p>
       )}
       {!currentUser && (

@@ -7,6 +7,7 @@ import { listPosts, removePost, listPostDeletions } from '../lib/postApi'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminButton } from '../components/admin/AdminFields'
 import DocumentViewerModal from '../components/community/DocumentViewerModal'
+import AntdThemeProvider from '../components/common/AntdThemeProvider'
 
 function PostRow({ post, onDelete, reportBadge }) {
   const [docOpen, setDocOpen] = useState(false)
@@ -189,17 +190,19 @@ export default function AdminPostsPage() {
   ]
 
   return (
-    <div>
-      <h1 className="text-2xl mb-1">Community posts</h1>
-      <p className="text-ink-soft dark:text-white/60 mb-6">
-        Manage everything posted in the community — view content, delete posts, and review
-        reports.
-      </p>
-      {loading ? (
-        <p className="text-ink-soft dark:text-white/60">Loading…</p>
-      ) : (
-        <Tabs items={items} />
-      )}
-    </div>
+    <AntdThemeProvider>
+      <div>
+        <h1 className="text-2xl mb-1">Community posts</h1>
+        <p className="text-ink-soft dark:text-white/60 mb-6">
+          Manage everything posted in the community — view content, delete posts, and review
+          reports.
+        </p>
+        {loading ? (
+          <p className="text-ink-soft dark:text-white/60">Loading…</p>
+        ) : (
+          <Tabs items={items} />
+        )}
+      </div>
+    </AntdThemeProvider>
   )
 }

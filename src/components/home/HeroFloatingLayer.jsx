@@ -12,7 +12,6 @@ import nodeIcon from "../../assets/logos/nodejs-icon.png";
 import pythonIcon from "../../assets/logos/python-icon.png";
 import csIcon from "../../assets/logos/cs-icon.png";
 import typescriptIcon from "../../assets/logos/typescript-icon.png";
-import { delay } from "framer-motion";
 
 const CARD =
   "bg-panel dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl shadow-card";

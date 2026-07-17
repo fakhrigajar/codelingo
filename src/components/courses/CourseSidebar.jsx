@@ -108,7 +108,7 @@ export default function CourseSidebar({
       <button
         type="button"
         onClick={() => onSelect(ABOUT_ID)}
-        className={`w-full text-left px-3 py-2.5 border-solid border-2 border-line rounded-lg font-bold text-[.88rem] mb-3 transition-colors ${
+        className={`w-full text-left px-3 py-2.5 border-solid border-2 border-line dark:border-white/10 rounded-lg font-bold text-[.88rem] mb-3 transition-colors ${
           activeLessonId === ABOUT_ID
             ? "bg-violet/15 text-violet border-transparent"
             : "text-ink-soft dark:text-white/60 hover:bg-bg dark:hover:bg-white/10"
