@@ -3,12 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useContent } from "../context/ContentContext";
 import { useToast } from "../context/ToastContext";
-import { initials } from "../lib/helpers";
 import { getSignificantGaps } from "../lib/interviewGaps";
 import { getBadgeIcon } from "../lib/badgeIcons";
 import { listPosts } from "../lib/postApi";
 import CourseCard from "../components/courses/CourseCard";
 import PostCard from "../components/community/PostCard";
+import Avatar from "../components/common/Avatar";
+import Banner from "../components/common/Banner";
 
 export default function ProfilePage() {
   const { currentUser, logout } = useAuth();
@@ -57,10 +58,9 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <div className="flex gap-6 items-center py-11 pb-7 flex-wrap">
-        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[2.2rem] font-extrabold">
-          {initials(currentUser.displayName)}
-        </div>
+      <Banner user={currentUser} className="h-40 rounded-3xl mt-8" />
+      <div className="flex gap-6 items-center py-7 flex-wrap">
+        <Avatar user={currentUser} size={96} shape="square" />
         <div className="flex-1 min-w-[200px]">
           <h1 className="text-[1.9rem]">{currentUser.displayName}</h1>
           <p className="font-mono text-ink-soft dark:text-white/50 text-[.85rem]">

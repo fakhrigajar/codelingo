@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n vite,api -c blue,green \"npm:dev:vite:ready\" \"npm:server\"",
+    "dev": "concurrently -n vite,api -c blue,green \"npm:dev:vite\" \"npm:server\"",
     "dev:vite": "vite",
-    "dev:vite:ready": "wait-on tcp:3001 && npm run dev:vite",
     "server": "node server/index.js",
     "start": "node server/index.js",
     "build": "vite build",

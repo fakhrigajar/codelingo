@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { initials } from "../../lib/helpers";
 import { useTheme } from "../../lib/useTheme";
+import { useBodyScrollLock } from "../../lib/useBodyScrollLock";
 import ThemeToggle from "../common/ThemeToggle";
+import Avatar from "../common/Avatar";
 import siteLogo from "../../assets/navbar-logo.png";
 const links = [
   { to: "/", label: "Home", end: true },
@@ -48,12 +49,7 @@ export default function Navbar() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [navOpen]);
 
-  useEffect(() => {
-    document.body.style.overflow = navOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [navOpen]);
+  useBodyScrollLock(navOpen);
 
   const handleLogout = () => {
     setMenuOpen(false);
@@ -70,7 +66,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="sticky top-0 z-[110] bg-bg/90 dark:bg-indigo-dark/90 backdrop-blur-md border-b-2 border-line dark:border-white/10 transition-colors">
+      <div className="fixed top-0 inset-x-0 z-[110] bg-bg/90 dark:bg-indigo-dark/90 backdrop-blur-md border-b-2 border-line dark:border-white/10 transition-colors">
         <div className="max-w-[1180px] mx-auto flex items-center justify-between gap-6 px-6 py-3.5">
           <Link
             to="/"
@@ -104,9 +100,7 @@ export default function Navbar() {
                   aria-expanded={menuOpen}
                   className="btn btn-dark h-12 rounded-full pl-1.5 pr-2 sm:pr-3.5 py-0 normal-case tracking-normal font-bold"
                 >
-                  <span className="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[.85rem] font-extrabold shrink-0">
-                    {initials(currentUser.displayName)}
-                  </span>
+                  <Avatar user={currentUser} size={30} />
                   <span className="hidden sm:inline whitespace-nowrap">
                     {currentUser.displayName.split(" ")[0]} ·{" "}
                     <span className="font-mono text-xs">
@@ -227,9 +221,7 @@ export default function Navbar() {
         {currentUser ? (
           <>
             <div className="flex items-center gap-2.5 px-4 py-2">
-              <span className="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[.85rem] font-extrabold shrink-0">
-                {initials(currentUser.displayName)}
-              </span>
+              <Avatar user={currentUser} size={30} />
               <span className="font-bold text-ink dark:text-white whitespace-nowrap">
                 {currentUser.displayName.split(" ")[0]} ·{" "}
                 <span className="font-mono text-xs">{currentUser.xp} XP</span>

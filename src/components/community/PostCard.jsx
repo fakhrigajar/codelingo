@@ -57,9 +57,6 @@ export default function PostCard({ post, onChange, onRemove }) {
   const [docViewerOpen, setDocViewerOpen] = useState(false);
   const commentInputRef = useRef(null);
 
-  // Clicking "Reply" anywhere in the thread retargets this one input rather
-  // than opening a second box — jump focus to it so typing can start right
-  // away instead of leaving the user to hunt for where their reply will go.
   useEffect(() => {
     if (replyTarget) commentInputRef.current?.focus();
   }, [replyTarget]);
@@ -227,12 +224,17 @@ export default function PostCard({ post, onChange, onRemove }) {
           )}
 
           {post.image && (
-            <Image
-              src={post.image.url}
-              alt=""
-              rootClassName="mt-3 block rounded-xl overflow-hidden border-2 border-line dark:border-white/10"
-              style={{ maxHeight: 400, width: "100%", objectFit: "cover", display: "block" }}
-            />
+            <div className="mt-3">
+              <Image
+                src={post.image.url}
+                alt=""
+                width={100}
+                height={100}
+                rootClassName="rounded-xl overflow-hidden"
+                className="border-2 border-line dark:border-white/10"
+                style={{ objectFit: "cover", display: "block" }}
+              />
+            </div>
           )}
 
           {post.document && (

@@ -31,13 +31,35 @@ export function ContentProvider({ children }) {
   }, [local])
 
   useEffect(() => {
-    Promise.all([coursesApi.list(), pathsApi.list(), badgesApi.list()])
-      .then(([c, p, b]) => {
+    let cancelled = false
+
+    // The API server can still be finishing its MongoDB connection right as
+    // the page loads (Vite no longer waits for it to be up before starting —
+    // see package.json), so the very first request can land before it's
+    // ready. Retry with backoff instead of leaving the app stuck on an empty
+    // course/path/badge list until a manual refresh.
+    async function load(attempt = 0) {
+      try {
+        const [c, p, b] = await Promise.all([coursesApi.list(), pathsApi.list(), badgesApi.list()])
+        if (cancelled) return
         setCoursesState(c)
         setPathsState(p)
         setBadgesState(b)
-      })
-      .finally(() => setReady(true))
+        setReady(true)
+      } catch (err) {
+        if (cancelled) return
+        if (attempt < 5) {
+          setTimeout(() => load(attempt + 1), 500 * (attempt + 1))
+        } else {
+          setReady(true)
+        }
+      }
+    }
+
+    load()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const updateLocal = useCallback((updater) => {

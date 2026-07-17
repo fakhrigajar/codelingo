@@ -78,18 +78,22 @@ export function AuthProvider({ children }) {
   const updateAccount = useCallback(
     async ({ displayName, username, email, currentPassword, newPassword }) => {
       if (!currentUser) return { ok: false, error: "Not logged in." };
-      if (!currentPassword || currentUser.password !== currentPassword) {
-        return { ok: false, error: "Current password is incorrect." };
+      // Current password is only checked when actually changing the
+      // password — editing username/email doesn't need re-authentication.
+      if (newPassword) {
+        if (!currentPassword || currentUser.password !== currentPassword) {
+          return { ok: false, error: "Current password is incorrect." };
+        }
+        if (newPassword.length < 4) {
+          return {
+            ok: false,
+            error: "New password must be at least 4 characters.",
+          };
+        }
       }
       const uname = username.trim().toLowerCase();
       if (!displayName.trim() || !uname) {
         return { ok: false, error: "Please fill in every required field." };
-      }
-      if (newPassword && newPassword.length < 4) {
-        return {
-          ok: false,
-          error: "New password must be at least 4 characters.",
-        };
       }
 
       const updated = {

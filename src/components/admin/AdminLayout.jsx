@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../lib/useTheme";
+import { useBodyScrollLock } from "../../lib/useBodyScrollLock";
 import { AdminSaveBarProvider } from "../../context/AdminSaveBarContext";
 import ThemeToggle from "../common/ThemeToggle";
 import AdminSaveBar from "./AdminSaveBar";
@@ -52,12 +53,7 @@ export default function AdminLayout() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [navOpen]);
 
-  useEffect(() => {
-    document.body.style.overflow = navOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [navOpen]);
+  useBodyScrollLock(navOpen);
 
   const handleLogout = () => {
     setNavOpen(false);
