@@ -94,7 +94,7 @@ export default function Navbar() {
             <ThemeToggle
               theme={theme}
               onToggle={toggleTheme}
-              className="hidden desktop:flex btn btn-primary rounded-full w-12 h-12 p-0"
+              className="hidden desktop:flex btn btn-dark rounded-full w-12 h-12 p-0"
             />
             {currentUser ? (
               <div className="relative hidden desktop:block" ref={menuRef}>
@@ -102,7 +102,7 @@ export default function Navbar() {
                   onClick={() => setMenuOpen((o) => !o)}
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}
-                  className="flex items-center gap-2 bg-panel dark:bg-white/10 border-2 border-line dark:border-white/15 pl-1.5 pr-2 sm:pr-3.5 py-1.5 rounded-full font-bold text-ink dark:text-white"
+                  className="btn btn-dark h-12 rounded-full pl-1.5 pr-2 sm:pr-3.5 py-0 normal-case tracking-normal font-bold"
                 >
                   <span className="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[.85rem] font-extrabold shrink-0">
                     {initials(currentUser.displayName)}
