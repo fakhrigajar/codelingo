@@ -3,6 +3,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { useContent } from '../context/ContentContext'
 import { useToast } from '../context/ToastContext'
+import { useAdminSaveBar } from '../context/AdminSaveBarContext'
 import { uid } from '../lib/helpers'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminInput, AdminTextarea, AdminButton } from '../components/admin/AdminFields'
@@ -65,22 +66,39 @@ export default function AdminCoursesPage() {
     reorderCourses(arrayMove(courses, oldIndex, newIndex))
   }
 
+  const pageTextDirty =
+    pageTextDraft.coursesTitle !== pageText.coursesTitle ||
+    pageTextDraft.coursesSubtitle !== pageText.coursesSubtitle
+  const changedDraftIds = Object.keys(drafts).filter(
+    (id) => JSON.stringify(drafts[id]) !== JSON.stringify(courses.find((c) => c.id === id)),
+  )
+  const dirty = pageTextDirty || changedDraftIds.length > 0
+
   const handleSubmit = () => {
     let changed = 0
-    if (
-      pageTextDraft.coursesTitle !== pageText.coursesTitle ||
-      pageTextDraft.coursesSubtitle !== pageText.coursesSubtitle
-    ) {
+    if (pageTextDirty) {
       setPageText(pageTextDraft)
       changed++
     }
-    const pending = Object.entries(drafts)
-    pending.forEach(([id, draft]) => updateCourse(id, draft))
-    changed += pending.length
+    changedDraftIds.forEach((id) => updateCourse(id, drafts[id]))
+    changed += changedDraftIds.length
     setDrafts({})
     setOpenId(null)
     toast(changed ? 'Changes saved' : 'Nothing to save')
   }
+
+  const handleDiscard = () => {
+    setPageTextDraft(pageText)
+    setDrafts({})
+    setOpenId(null)
+  }
+
+  useAdminSaveBar({
+    dirty,
+    message: 'You have unsaved course changes',
+    onSave: handleSubmit,
+    onDiscard: handleDiscard,
+  })
 
   return (
     <div>
@@ -125,10 +143,6 @@ export default function AdminCoursesPage() {
           </div>
         </SortableContext>
       </DndContext>
-
-      <div className="flex justify-end mt-6">
-        <AdminButton onClick={handleSubmit}>Save changes</AdminButton>
-      </div>
     </div>
   )
 }

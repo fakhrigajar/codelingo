@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useContent } from "../context/ContentContext";
 import { useToast } from "../context/ToastContext";
+import { useAdminSaveBar } from "../context/AdminSaveBarContext";
 import { uid } from "../lib/helpers";
 import { BADGE_ICON_NAMES, getBadgeIcon } from "../lib/badgeIcons";
 import AdminCard from "../components/admin/AdminCard";
@@ -47,14 +48,26 @@ export default function AdminBadgesPage() {
     toast("Badge added");
   };
 
+  const changedBadges = draft.filter((b) => {
+    const original = badges.find((o) => o.id === b.id);
+    return original && JSON.stringify(original) !== JSON.stringify(b);
+  });
+
   const handleSubmit = () => {
-    const changed = draft.filter((b) => {
-      const original = badges.find((o) => o.id === b.id);
-      return original && JSON.stringify(original) !== JSON.stringify(b);
-    });
-    changed.forEach((b) => updateBadge(b.id, b));
-    toast(changed.length ? "Changes saved" : "Nothing to save");
+    changedBadges.forEach((b) => updateBadge(b.id, b));
+    toast(changedBadges.length ? "Changes saved" : "Nothing to save");
   };
+
+  const handleDiscard = () => {
+    setDraft(badges);
+  };
+
+  useAdminSaveBar({
+    dirty: changedBadges.length > 0,
+    message: "You have unsaved badge changes",
+    onSave: handleSubmit,
+    onDiscard: handleDiscard,
+  });
 
   return (
     <div>
@@ -106,10 +119,6 @@ export default function AdminBadgesPage() {
             </AdminCard>
           );
         })}
-      </div>
-
-      <div className="flex justify-end mt-6">
-        <AdminButton onClick={handleSubmit}>Save changes</AdminButton>
       </div>
     </div>
   );

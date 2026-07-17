@@ -181,7 +181,7 @@ function NextButton({ nextLesson, onNext }) {
     <button
       type="button"
       onClick={onNext}
-      className="btn btn-mint inline-flex items-center justify-center gap-1.5"
+      className="btn btn-gold inline-flex items-center justify-center gap-1.5"
     >
       {nextLesson ? `Next: ${nextLesson.title}` : "Back to overview"}
       <ArrowRight size={16} />
@@ -297,7 +297,7 @@ export default function LessonPanel({
         }
         return <LessonBlock key={block.id} block={block} />;
       })}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex justify-between gap-3">
         <button
           className={`btn ${done ? "btn-outline" : "btn-primary"} inline-flex items-center justify-center gap-1.5`}
           disabled={done || !videoWatched}

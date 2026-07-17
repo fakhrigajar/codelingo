@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { listPosts } from "../lib/postApi";
 import CourseCarousel, { ArrowIcon } from "../components/home/CourseCarousel";
 import HeroFloatingLayer from "../components/home/HeroFloatingLayer";
+import ThemedButton from "../components/common/ThemedButton";
 
 const FEATURES = [
   {
@@ -229,14 +230,14 @@ export default function HomePage() {
             className="flex gap-3.5 flex-wrap justify-center mb-5 animate-fadeUp"
             style={{ animationDelay: ".3s" }}
           >
-            <button
+            <ThemedButton
               className="btn btn-primary"
               onClick={() => navigate("/courses")}
             >
               Start learning
-            </button>
+            </ThemedButton>
             <button
-              className="btn btn-outline bg-white text-indigo-dark"
+              className="btn bg-coral border-coral-dark text-white"
               onClick={goAccountOrProfile}
             >
               Create free account

@@ -166,7 +166,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => navigate("/account")}
-                className="btn btn-sm hidden desktop:block  bg-indigo-dark dark:bg-white dark:text-indigo-dark text-white shadow-dark hover:shadow-dark-lg hover:-translate-y-0.5 dark:shadow-[0_4px_0_rgba(0,0,0,.3)] dark:hover:shadow-[0_6px_0_rgba(0,0,0,.3)] dark:[--btn-shine:rgba(43,58,103,.3)]"
+                className="btn btn-primary btn-sm hidden desktop:block"
               >
                 Log in / Sign up
               </button>
@@ -277,7 +277,7 @@ export default function Navbar() {
               setNavOpen(false);
               navigate("/account");
             }}
-            className="btn btn-sm mx-4 mt-1 bg-indigo-dark dark:bg-white dark:text-indigo-dark text-white shadow-dark hover:shadow-dark-lg hover:-translate-y-0.5 dark:shadow-[0_4px_0_rgba(0,0,0,.3)] dark:hover:shadow-[0_6px_0_rgba(0,0,0,.3)] dark:[--btn-shine:rgba(43,58,103,.3)]"
+            className="btn btn-primary btn-sm mx-4 mt-1"
           >
             Log in / Sign up
           </button>
