@@ -190,8 +190,7 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  const goAccountOrProfile = () =>
-    navigate(currentUser ? "/profile" : "/account");
+  const goToAccount = () => navigate("/account");
 
   return (
     <div>
@@ -236,12 +235,14 @@ export default function HomePage() {
             >
               Start learning
             </ThemedButton>
-            <button
-              className="btn bg-coral border-coral-dark text-white"
-              onClick={goAccountOrProfile}
-            >
-              Create free account
-            </button>
+            {!currentUser && (
+              <button
+                className="btn bg-coral border-coral-dark text-white"
+                onClick={goToAccount}
+              >
+                Create free account
+              </button>
+            )}
           </div>
           <div
             className="flex gap-5 sm:gap-7 mt-6 flex-wrap justify-center font-mono animate-fadeUp"
@@ -377,19 +378,21 @@ export default function HomePage() {
         />
       </section>
 
-      <div className="bg-indigo-dark rounded-[22px] p-12 flex justify-between items-center gap-6 flex-wrap [background-image:radial-gradient(circle_at_90%_10%,rgba(255,201,60,.18),transparent_45%),radial-gradient(circle_at_10%_90%,rgba(140,122,230,.22),transparent_45%)]">
-        <div>
-          <h2 className="text-white text-[1.8rem] max-w-[460px]">
-            Ready to power on?
-          </h2>
-          <p className="text-[#C4CCEB] max-w-[420px]">
-            Create your free account and start your first lesson today.
-          </p>
+      {!currentUser && (
+        <div className="bg-indigo-dark rounded-[22px] p-12 flex justify-between items-center gap-6 flex-wrap [background-image:radial-gradient(circle_at_90%_10%,rgba(255,201,60,.18),transparent_45%),radial-gradient(circle_at_10%_90%,rgba(140,122,230,.22),transparent_45%)]">
+          <div>
+            <h2 className="text-white text-[1.8rem] max-w-[460px]">
+              Ready to power on?
+            </h2>
+            <p className="text-[#C4CCEB] max-w-[420px]">
+              Create your free account and start your first lesson today.
+            </p>
+          </div>
+          <button className="btn btn-primary" onClick={goToAccount}>
+            Get started free →
+          </button>
         </div>
-        <button className="btn btn-primary" onClick={goAccountOrProfile}>
-          Get started free →
-        </button>
-      </div>
+      )}
     </div>
   );
 }

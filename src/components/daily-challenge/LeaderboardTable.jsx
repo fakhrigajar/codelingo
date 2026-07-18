@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Flame, Medal } from 'lucide-react'
+import Avatar from '../common/Avatar'
 
 const MEDAL_STYLES = ['text-sun', 'text-ink-soft dark:text-white/50', 'text-coral']
 
@@ -12,7 +13,7 @@ function initials(name) {
     .toUpperCase()
 }
 
-export default function LeaderboardTable({ entries }) {
+export default function LeaderboardTable({ entries, currentUser }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -52,9 +53,13 @@ export default function LeaderboardTable({ entries }) {
                 </td>
                 <td className="px-2 py-3">
                   <div className="flex items-center gap-2.5">
-                    <span className="w-8 h-8 rounded-full bg-line dark:bg-white/10 flex items-center justify-center font-mono text-[.7rem] font-bold text-ink-soft dark:text-white/70">
-                      {initials(entry.displayName)}
-                    </span>
+                    {entry.isYou && currentUser ? (
+                      <Avatar user={currentUser} size={32} />
+                    ) : (
+                      <span className="w-8 h-8 rounded-full bg-line dark:bg-white/10 flex items-center justify-center font-mono text-[.7rem] font-bold text-ink-soft dark:text-white/70">
+                        {initials(entry.displayName)}
+                      </span>
+                    )}
                     <span className={`font-bold ${entry.isYou ? 'text-violet' : 'text-ink dark:text-white'}`}>
                       {entry.displayName}
                       {entry.isYou && <span className="text-[.7rem] text-ink-soft/60 dark:text-white/40 font-normal"> (you)</span>}

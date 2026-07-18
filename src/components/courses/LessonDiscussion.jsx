@@ -2,12 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { usePublicUsers } from "../../context/PublicUsersContext";
 import { useToast } from "../../context/ToastContext";
 import { listComments, postComment as postCommentApi } from "../../lib/discussionApi";
 import { initials } from "../../lib/helpers";
+import Avatar from "../common/Avatar";
 
 export default function LessonDiscussion({ course, lesson }) {
   const { currentUser } = useAuth();
+  const { getUser } = usePublicUsers();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -62,18 +65,24 @@ export default function LessonDiscussion({ course, lesson }) {
         ) : (
           comments.map((c, i) => {
             const mine = currentUser && c.username === currentUser.username;
+            const authorUser = mine ? currentUser : getUser(c.username);
             const time = new Date(c.time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
+              hour12: false,
             });
             return (
               <div
                 key={i}
                 className={`flex gap-3 max-w-[85%] ${mine ? "flex-row-reverse ml-auto" : ""}`}
               >
-                <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.72rem] flex-shrink-0">
-                  {initials(c.displayName)}
-                </div>
+                {authorUser?.avatarUrl || authorUser?.avatarGradient ? (
+                  <Avatar user={authorUser} size={32} className="flex-shrink-0" />
+                ) : (
+                  <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.72rem] flex-shrink-0">
+                    {initials(c.displayName)}
+                  </div>
+                )}
                 <div
                   className={`rounded-xl px-3.5 py-2.5 ${
                     mine

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import { initials } from '../../lib/helpers'
+import { usePublicUsers } from '../../context/PublicUsersContext'
+import Avatar from '../common/Avatar'
 
 function timeAgo(ts) {
   const min = Math.floor(Math.max(0, Date.now() - ts) / 60000)
@@ -38,8 +40,11 @@ function ActionRow({ item, liked, onLike, onReplyClick }) {
 // never bleeds into the "Hide replies" toggle below it.
 export default function CommentItem({ comment, branch, currentUser, onLike, onStartReply }) {
   const [showBranch, setShowBranch] = useState(false)
+  const { getUser } = usePublicUsers()
 
   const liked = currentUser && (comment.likes || []).includes(currentUser.username)
+  const authorUser =
+    currentUser && comment.username === currentUser.username ? currentUser : getUser(comment.username)
 
   const handleReplyClick = (target) => {
     if (branch.length > 0) setShowBranch(true)
@@ -49,9 +54,13 @@ export default function CommentItem({ comment, branch, currentUser, onLike, onSt
   return (
     <div>
       <div className="flex gap-2.5">
-        <div className="w-[28px] h-[28px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.65rem] flex-shrink-0">
-          {initials(comment.displayName)}
-        </div>
+        {authorUser?.avatarUrl || authorUser?.avatarGradient ? (
+          <Avatar user={authorUser} size={28} className="flex-shrink-0" />
+        ) : (
+          <div className="w-[28px] h-[28px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.65rem] flex-shrink-0">
+            {initials(comment.displayName)}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <div className="bg-[#F1F5FD] dark:bg-white/10 rounded-xl px-3 py-2">
             <div className="font-extrabold text-[.78rem]">{comment.displayName}</div>
@@ -80,11 +89,17 @@ export default function CommentItem({ comment, branch, currentUser, onLike, onSt
         <div className="ml-[13px] pl-[19px] mt-2.5 border-l-2 border-line dark:border-white/10 flex flex-col gap-3">
           {branch.map((r) => {
             const rLiked = currentUser && (r.likes || []).includes(currentUser.username)
+            const rAuthorUser =
+              currentUser && r.username === currentUser.username ? currentUser : getUser(r.username)
             return (
               <div key={r.id} className="flex gap-2.5">
-                <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.6rem] flex-shrink-0">
-                  {initials(r.displayName)}
-                </div>
+                {rAuthorUser?.avatarUrl || rAuthorUser?.avatarGradient ? (
+                  <Avatar user={rAuthorUser} size={26} className="flex-shrink-0" />
+                ) : (
+                  <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.6rem] flex-shrink-0">
+                    {initials(r.displayName)}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="bg-[#F1F5FD] dark:bg-white/10 rounded-xl px-3 py-2">
                     <div className="font-extrabold text-[.78rem]">{r.displayName}</div>

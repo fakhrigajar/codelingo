@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Image } from "antd";
 import { Heart, MessageCircle, Flag, FileText, Trash2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { usePublicUsers } from "../../context/PublicUsersContext";
 import { useToast } from "../../context/ToastContext";
 import { initials } from "../../lib/helpers";
 import {
@@ -14,6 +15,7 @@ import {
 } from "../../lib/postApi";
 import CommentItem from "./CommentItem";
 import DocumentViewerModal from "./DocumentViewerModal";
+import Avatar from "../common/Avatar";
 
 // Comments (replyTo === null) each get exactly one flat branch of replies —
 // even a reply-to-a-reply is walked up to its root comment and dropped in
@@ -47,6 +49,7 @@ function buildBranches(replies) {
 
 export default function PostCard({ post, onChange, onRemove }) {
   const { currentUser } = useAuth();
+  const { getUser } = usePublicUsers();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -80,12 +83,17 @@ export default function PostCard({ post, onChange, onRemove }) {
   // The server still allows admin deletes; this only narrows the UI.
   const canDelete = currentUser && currentUser.username === post.username;
   const { roots: comments, branches } = buildBranches(replies);
+  const authorUser =
+    currentUser && post.username === currentUser.username
+      ? currentUser
+      : getUser(post.username);
 
   const time = new Date(post.time).toLocaleString([], {
     month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   });
 
   const handleLike = async () => {
@@ -193,9 +201,13 @@ export default function PostCard({ post, onChange, onRemove }) {
   return (
     <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5">
       <div className="flex items-start gap-3">
-        <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.85rem] flex-shrink-0">
-          {initials(post.displayName)}
-        </div>
+        {authorUser?.avatarUrl || authorUser?.avatarGradient ? (
+          <Avatar user={authorUser} size={38} className="flex-shrink-0" />
+        ) : (
+          <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.85rem] flex-shrink-0">
+            {initials(post.displayName)}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <div>

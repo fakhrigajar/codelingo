@@ -3,22 +3,20 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { uploadImage } from "../lib/uploadImage";
+import { useTheme } from "../lib/useTheme";
 import Avatar from "../components/common/Avatar";
 import Banner from "../components/common/Banner";
+import Switch from "../components/common/Switch";
 
 const SECTIONS = [
   {
     id: "profile",
     label: "Profile settings",
-    hint: "Photo, banner, display name",
+    hint: "Photo, banner, dark mode",
   },
   { id: "account", label: "User settings", hint: "Username, email, password" },
 ];
 
-// Curated two-color gradients, offered as a fallback background for both
-// the initials bubble and the profile banner when no photo is uploaded.
-// "Sunset" matches the app-wide default (violet → coral) so picking it is
-// equivalent to resetting to the default look.
 const GRADIENTS = [
   {
     id: "sunset",
@@ -187,10 +185,10 @@ function GradientSwatches({ hint, value, onChange }) {
 export default function SettingsPage() {
   const { currentUser, updateAccount, saveCurrentUser } = useAuth();
   const toast = useToast();
+  const { theme, toggleTheme } = useTheme();
 
   const [section, setSection] = useState("profile");
 
-  const [displayName, setDisplayName] = useState(currentUser.displayName);
   const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl || "");
   const [avatarGradient, setAvatarGradient] = useState(
     currentUser.avatarGradient || GRADIENTS[0].value,
@@ -242,13 +240,8 @@ export default function SettingsPage() {
   const handleProfileSubmit = (e) => {
     e.preventDefault();
     setProfileError("");
-    if (!displayName.trim()) {
-      setProfileError("Display name is required.");
-      return;
-    }
     saveCurrentUser({
       ...currentUser,
-      displayName: displayName.trim(),
       avatarUrl,
       avatarGradient,
       bannerUrl,
@@ -403,14 +396,19 @@ export default function SettingsPage() {
                 />
               )}
 
-              <div className="field mb-6">
-                <label>Display name</label>
-                <input
-                  type="text"
-                  required
-                  maxLength={30}
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+              <div className="flex items-center justify-between gap-4 mb-6 py-1">
+                <div>
+                  <span className="block font-bold text-sm text-ink-soft dark:text-white/60">
+                    Dark mode
+                  </span>
+                  <span className="block text-[.78rem] text-ink-soft dark:text-white/50 mt-0.5">
+                    Switch between light and dark themes.
+                  </span>
+                </div>
+                <Switch
+                  checked={theme === "dark"}
+                  onChange={toggleTheme}
+                  label="Toggle dark mode"
                 />
               </div>
 

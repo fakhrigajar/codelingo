@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
+import { ChevronDown, Shield, RotateCcw, Trash2 } from "lucide-react";
 import { getAllUsers, saveUser, deleteUser } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
-import { initials } from "../lib/helpers";
 import AdminCard from "../components/admin/AdminCard";
-import { AdminButton } from "../components/admin/AdminFields";
+import IconButtonWithTooltip from "../components/common/IconButtonWithTooltip";
+import Avatar from "../components/common/Avatar";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
   const [ready, setReady] = useState(false);
+  const [expanded, setExpanded] = useState(() => new Set());
   const toast = useToast();
   const list = [...users].sort(
     (a, b) => new Date(b.joined) - new Date(a.joined),
@@ -18,6 +20,15 @@ export default function AdminUsersPage() {
   useEffect(() => {
     refresh().finally(() => setReady(true));
   }, []);
+
+  const toggleExpanded = (username) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(username)) next.delete(username);
+      else next.add(username);
+      return next;
+    });
+  };
 
   const handleDelete = async (username) => {
     if (!confirm(`Delete the account "${username}"? This cannot be undone.`))
@@ -78,64 +89,66 @@ export default function AdminUsersPage() {
             (a, arr) => a + arr.length,
             0,
           );
+          const isOpen = expanded.has(u.username);
           return (
             <AdminCard key={u.username}>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div className="flex items-start gap-3 min-w-0">
-                  <span className="w-10 h-10 rounded-full bg-gradient-to-br from-violet to-coral flex items-center justify-center text-white text-[.85rem] font-extrabold shrink-0">
-                    {initials(u.displayName)}
-                  </span>
-                  <div className="min-w-0">
-                    <div className="font-extrabold flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="truncate">{u.displayName}</span>
-                      <span className="text-ink-soft dark:text-white/50 font-mono text-[.8rem] font-normal">
-                        @{u.username}
+              <button
+                type="button"
+                onClick={() => toggleExpanded(u.username)}
+                aria-expanded={isOpen}
+                className="w-full flex items-center gap-3 min-w-0 text-left"
+              >
+                <Avatar user={u} size={40} />
+                <span className="font-extrabold truncate flex-1">
+                  {u.displayName}
+                </span>
+                <ChevronDown
+                  size={18}
+                  className={`shrink-0 text-ink-soft dark:text-white/50 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="mt-4 pt-4 border-t-2 border-line dark:border-white/10">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-ink-soft dark:text-white/50 text-[.85rem]">
+                    <span className="font-mono">@{u.username}</span>
+                    {u.role === "admin" && (
+                      <span className="text-[.7rem] font-bold bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark rounded-full px-2 py-0.5">
+                        Admin
                       </span>
-                      {u.role === "admin" && (
-                        <span className="text-[.7rem] font-bold bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark rounded-full px-2 py-0.5">
-                          Admin
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-ink-soft dark:text-white/50 text-[.85rem] mt-1">
-                      <span>Age {u.age}</span>
-                      <span>{u.xp} XP</span>
-                      <span>
-                        {totalCompleted} lesson{totalCompleted === 1 ? "" : "s"}{" "}
-                        done
-                      </span>
-                      <span>
-                        {u.badges.length} badge
-                        {u.badges.length === 1 ? "" : "s"}
-                      </span>
-                      <span>
-                        Joined {new Date(u.joined).toLocaleDateString()}
-                      </span>
-                    </div>
+                    )}
+                    <span>Age {u.age}</span>
+                    <span>{u.xp} XP</span>
+                    <span>
+                      {totalCompleted} lesson{totalCompleted === 1 ? "" : "s"}{" "}
+                      done
+                    </span>
+                    <span>
+                      {u.badges.length} badge{u.badges.length === 1 ? "" : "s"}
+                    </span>
+                    <span>Joined {new Date(u.joined).toLocaleDateString()}</span>
+                  </div>
+
+                  <div className="flex gap-2.5 mt-4">
+                    <IconButtonWithTooltip
+                      icon={Shield}
+                      tooltip={u.role === "admin" ? "Remove admin" : "Make admin"}
+                      onClick={() => handleToggleRole(u.username)}
+                    />
+                    <IconButtonWithTooltip
+                      icon={RotateCcw}
+                      tooltip="Reset progress"
+                      onClick={() => handleResetProgress(u.username)}
+                    />
+                    <IconButtonWithTooltip
+                      icon={Trash2}
+                      tooltip="Delete account"
+                      variant="danger"
+                      onClick={() => handleDelete(u.username)}
+                    />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
-                  <AdminButton
-                    className="bg-ink"
-                    onClick={() => handleToggleRole(u.username)}
-                  >
-                    {u.role === "admin" ? "Remove admin" : "Make admin"}
-                  </AdminButton>
-                  <AdminButton
-                    className="bg-ink"
-                    onClick={() => handleResetProgress(u.username)}
-                  >
-                    Reset progress
-                  </AdminButton>
-                  <AdminButton
-                    variant="danger"
-                    onClick={() => handleDelete(u.username)}
-                    className="col-span-2 sm:col-span-1"
-                  >
-                    Delete account
-                  </AdminButton>
-                </div>
-              </div>
+              )}
             </AdminCard>
           );
         })}

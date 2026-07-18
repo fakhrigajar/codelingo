@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useContent } from "../context/ContentContext";
-import { useToast } from "../context/ToastContext";
 import { getSignificantGaps } from "../lib/interviewGaps";
-import { getBadgeIcon } from "../lib/badgeIcons";
 import { listPosts } from "../lib/postApi";
 import CourseCard from "../components/courses/CourseCard";
 import PostCard from "../components/community/PostCard";
 import Avatar from "../components/common/Avatar";
 import Banner from "../components/common/Banner";
+import ThemeBadge from "../components/common/ThemeBadge";
 
 export default function ProfilePage() {
-  const { currentUser, logout } = useAuth();
-  const { courses, badges } = useContent();
-  const toast = useToast();
+  const { currentUser } = useAuth();
+  const { courses } = useContent();
   const navigate = useNavigate();
 
   const [myPosts, setMyPosts] = useState([]);
@@ -50,32 +48,25 @@ export default function ProfilePage() {
     setMyPosts((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const handleLogout = () => {
-    navigate("/");
-    logout();
-    toast("Logged out. See you soon!");
-  };
-
   return (
     <div>
-      <Banner user={currentUser} className="h-40 rounded-3xl mt-8" />
-      <div className="flex gap-6 items-center py-7 flex-wrap">
-        <Avatar user={currentUser} size={96} shape="square" />
-        <div className="flex-1 min-w-[200px]">
+      <div className="relative mb-10">
+        <Banner user={currentUser} className="h-60 rounded-3xl mt-8" />
+        <Avatar
+          className="absolute -bottom-10 left-1/2 -translate-x-1/2 border-bg dark:border-indigo-dark border-4 "
+          user={currentUser}
+          size={150}
+          shape="square"
+        />
+      </div>
+      <div className="flex gap-6 items-center justify-center py-7 flex-wrap">
+        <div className="flex flex-col items-center">
           <h1 className="text-[1.9rem]">{currentUser.displayName}</h1>
-          <p className="font-mono text-ink-soft dark:text-white/50 text-[.85rem]">
-            @{currentUser.username} · age {currentUser.age} · joined{" "}
-            {new Date(currentUser.joined).toLocaleDateString()}
+          <p className="font-mono text-ink-soft dark:text-white/50 text-[1rem]">
+            @{currentUser.username}
           </p>
         </div>
-        <button
-          className="btn bg-coral border-coral-dark text-white btn-sm"
-          onClick={handleLogout}
-        >
-          Log out
-        </button>
       </div>
-
       <div className="grid sm:grid-cols-3 gap-4 my-7">
         <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-center">
           <b className="block font-mono text-[1.7rem] text-indigo-dark dark:text-white">
@@ -104,26 +95,7 @@ export default function ProfilePage() {
       </div>
 
       <h3 className="mt-9">Badges</h3>
-      <div className="flex gap-3.5 flex-wrap mt-2.5">
-        {badges.map((b) => {
-          const has = currentUser.badges.includes(b.id);
-          const Icon = getBadgeIcon(b.icon);
-          return (
-            <div
-              key={b.id}
-              title={b.desc}
-              className={`bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl px-4 py-3.5 text-center w-[110px] ${!has ? "opacity-35" : ""}`}
-            >
-              <div className="flex justify-center text-violet">
-                <Icon size={26} />
-              </div>
-              <div className="text-[.72rem] font-bold mt-1.5 text-ink-soft dark:text-white/60">
-                {b.name}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <ThemeBadge />
 
       <h3 className="mt-9">Course progress</h3>
       {studyingCourses.length === 0 ? (

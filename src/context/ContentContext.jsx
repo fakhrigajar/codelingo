@@ -46,7 +46,7 @@ export function ContentProvider({ children }) {
         setPathsState(p)
         setBadgesState(b)
         setReady(true)
-      } catch (err) {
+      } catch {
         if (cancelled) return
         if (attempt < 5) {
           setTimeout(() => load(attempt + 1), 500 * (attempt + 1))

@@ -2,9 +2,11 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ContentProvider, useContent } from "./context/ContentContext";
 import { AuthProvider } from "./context/AuthContext";
+import { PublicUsersProvider } from "./context/PublicUsersContext";
 import { ToastProvider } from "./context/ToastContext";
 
 import ScrollToTop from "./components/common/ScrollToTop";
+import VisitLogger from "./components/common/VisitLogger";
 import Layout from "./components/layout/Layout";
 import RequireAuth from "./routes/RequireAuth";
 import RequireAdmin from "./routes/RequireAdmin";
@@ -40,6 +42,7 @@ const AdminCoursesPage = lazy(() => import("./pages/AdminCoursesPage"));
 const AdminBadgesPage = lazy(() => import("./pages/AdminBadgesPage"));
 const AdminPostsPage = lazy(() => import("./pages/AdminPostsPage"));
 const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage"));
+const AdminVisitorsPage = lazy(() => import("./pages/AdminVisitorsPage"));
 const AdminDataPage = lazy(() => import("./pages/AdminDataPage"));
 
 function AppRoutes() {
@@ -49,6 +52,7 @@ function AppRoutes() {
   return (
     <>
       <ScrollToTop />
+      <VisitLogger />
       <Suspense fallback={null}>
         <Routes>
           <Route element={<Layout />}>
@@ -132,6 +136,7 @@ function AppRoutes() {
             <Route path="badges" element={<AdminBadgesPage />} />
             <Route path="posts" element={<AdminPostsPage />} />
             <Route path="users" element={<AdminUsersPage />} />
+            <Route path="visitors" element={<AdminVisitorsPage />} />
             <Route path="data" element={<AdminDataPage />} />
           </Route>
 
@@ -146,9 +151,11 @@ export default function App() {
   return (
     <ContentProvider>
       <AuthProvider>
-        <ToastProvider>
-          <AppRoutes />
-        </ToastProvider>
+        <PublicUsersProvider>
+          <ToastProvider>
+            <AppRoutes />
+          </ToastProvider>
+        </PublicUsersProvider>
       </AuthProvider>
     </ContentProvider>
   );

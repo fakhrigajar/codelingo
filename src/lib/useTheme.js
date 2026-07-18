@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { storageGet, storageSet } from './storage'
 
+const THEME_EVENT = 'codelingo:theme-change'
+
 function getInitialTheme() {
   const stored = storageGet('theme')
   if (stored === 'dark' || stored === 'light') return stored
@@ -15,7 +17,21 @@ export function useTheme() {
     storageSet('theme', theme)
   }, [theme])
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  // More than one component can call useTheme() at once (e.g. the navbar
+  // toggle and the settings page switch) — each holds its own state, so
+  // without this they'd drift out of sync until a full remount.
+  useEffect(() => {
+    const handleExternalChange = (e) => setTheme(e.detail)
+    window.addEventListener(THEME_EVENT, handleExternalChange)
+    return () => window.removeEventListener(THEME_EVENT, handleExternalChange)
+  }, [])
 
-  return { theme, toggleTheme }
+  const setThemeShared = (next) => {
+    setTheme(next)
+    window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: next }))
+  }
+
+  const toggleTheme = () => setThemeShared(theme === 'dark' ? 'light' : 'dark')
+
+  return { theme, toggleTheme, setTheme: setThemeShared }
 }

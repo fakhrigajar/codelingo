@@ -51,7 +51,7 @@ export default function AccountPage() {
   const [suAge, setSuAge] = useState("");
   const [suPassword, setSuPassword] = useState("");
 
-  if (currentUser) return <Navigate to="/profile" replace />;
+  if (currentUser) return <Navigate to="/" replace />;
 
   const switchTab = (t) => {
     if (t === tab) return;
@@ -68,7 +68,7 @@ export default function AccountPage() {
       return;
     }
     toast(`Welcome back, ${res.user.displayName.split(" ")[0]}!`);
-    navigate("/profile");
+    navigate("/");
   };
 
   const handleSignup = async (e) => {
@@ -84,7 +84,7 @@ export default function AccountPage() {
       return;
     }
     toast(`Welcome to CodeLingo, ${res.user.displayName.split(" ")[0]}!`);
-    navigate("/profile");
+    navigate("/");
   };
 
   return (

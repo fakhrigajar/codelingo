@@ -134,6 +134,63 @@ const mongoClient = new MongoClient(MONGODB_URI);
 
 const NO_ID_PROJECTION = { projection: { _id: 0 } };
 
+// Prefer the original client address from a reverse proxy (Railway sits in
+// front of this server in production) over req.socket.remoteAddress, which
+// would otherwise just be the proxy's own internal IP.
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return req.socket.remoteAddress || "";
+}
+
+function isPrivateIp(ip) {
+  return (
+    !ip ||
+    ip === "::1" ||
+    ip === "127.0.0.1" ||
+    ip.startsWith("::ffff:127.") ||
+    /^10\./.test(ip) ||
+    /^192\.168\./.test(ip) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip)
+  );
+}
+
+// A free-tier geolocation lookup is "best effort" for a prototype like this
+// one — it's wrapped in a short timeout and a catch-all so a slow or failed
+// external call never holds up (or breaks) logging the visit itself.
+async function lookupGeo(ip) {
+  if (isPrivateIp(ip)) return { country: "Local", city: "Local" };
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    const geoRes = await fetch(
+      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,city`,
+      { signal: controller.signal },
+    );
+    clearTimeout(timeout);
+    const data = await geoRes.json();
+    if (data.status !== "success") return { country: "Unknown", city: "Unknown" };
+    return { country: data.country || "Unknown", city: data.city || "Unknown" };
+  } catch {
+    return { country: "Unknown", city: "Unknown" };
+  }
+}
+
+function parseUserAgent(ua = "") {
+  const isTablet = /Tablet|iPad/i.test(ua);
+  const isMobile = !isTablet && /Mobi|Android/i.test(ua);
+  const device = isTablet ? "Tablet" : isMobile ? "Mobile" : "Desktop";
+
+  let browser = "Unknown";
+  if (/Edg\//.test(ua)) browser = "Edge";
+  else if (/OPR\//.test(ua) || /Opera/.test(ua)) browser = "Opera";
+  else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) browser = "Chrome";
+  else if (/Firefox\//.test(ua)) browser = "Firefox";
+  else if (/Safari\//.test(ua) && /Version\//.test(ua)) browser = "Safari";
+
+  return { browser, device };
+}
+
 function makeCrudRoutes(
   basePath,
   collection,
@@ -233,6 +290,7 @@ async function start() {
   const postsCollection = db.collection("posts");
   const postDeletionsCollection = db.collection("postDeletions");
   const badgesCollection = db.collection("badges");
+  const visitsCollection = db.collection("visits");
 
   // One-time migration from the old lesson-linking "grades" model to
   // "paths" (an ordered list of whole courses) — the two shapes aren't
@@ -280,6 +338,29 @@ async function start() {
     idField: "username",
     requiredFields: ["username", "displayName"],
   });
+
+  // /api/users returns full accounts (including plaintext passwords), so
+  // pages that just need to show *someone else's* avatar next to their
+  // name — community posts, lesson discussions — use this instead. Never
+  // widen this projection without re-checking what's safe to expose publicly.
+  app.get("/api/users-public", async (req, res) => {
+    res.json(
+      await usersCollection
+        .find(
+          {},
+          {
+            projection: {
+              _id: 0,
+              username: 1,
+              displayName: 1,
+              avatarUrl: 1,
+              avatarGradient: 1,
+            },
+          },
+        )
+        .toArray(),
+    );
+  });
   makeCrudRoutes("/api/badges", badgesCollection, {
     requiredFields: ["id", "name"],
   });
@@ -325,6 +406,45 @@ async function start() {
         .sort({ time: -1 })
         .toArray(),
     );
+  });
+
+  // Visitor analytics for the admin "Visitors" page. The client only knows
+  // the SPA route and document.referrer — everything identifying the caller
+  // (IP, geolocation, browser/device) is derived here from the request
+  // itself, never trusted from the client.
+  app.post("/api/visits", async (req, res) => {
+    const { path: visitedPath, referrer } = req.body || {};
+    const ip = getClientIp(req);
+    const { browser, device } = parseUserAgent(req.headers["user-agent"] || "");
+    const { country, city } = await lookupGeo(ip);
+    const visit = {
+      id: crypto.randomUUID(),
+      ip: ip || "Unknown",
+      country,
+      city,
+      browser,
+      device,
+      referrer: (referrer || "").slice(0, 300) || "Direct",
+      path: (visitedPath || "/").slice(0, 300),
+      time: Date.now(),
+    };
+    await visitsCollection.insertOne(visit);
+    res.status(201).json(visit);
+  });
+
+  app.get("/api/visits", async (req, res) => {
+    res.json(
+      await visitsCollection
+        .find({}, NO_ID_PROJECTION)
+        .sort({ time: -1 })
+        .limit(500)
+        .toArray(),
+    );
+  });
+
+  app.delete("/api/visits", async (req, res) => {
+    await visitsCollection.deleteMany({});
+    res.json({ removed: true });
   });
 
   app.post("/api/posts/:id/like", async (req, res) => {

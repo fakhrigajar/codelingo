@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Award, Clock, ArrowRight } from "lucide-react";
 import { pathCourses, pathStats } from "../../lib/helpers";
-import CourseIcon from "../courses/CourseIcon";
 
 const VISIBLE_COURSES = 5;
 

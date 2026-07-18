@@ -100,7 +100,7 @@ export default function DailyChallengePage() {
 
         <AchievementBadges unlockedIds={unlockedIds} />
 
-        <LeaderboardTable entries={leaderboard} />
+        <LeaderboardTable entries={leaderboard} currentUser={currentUser} />
 
         <ChallengeHistoryTable history={progress.history} />
 

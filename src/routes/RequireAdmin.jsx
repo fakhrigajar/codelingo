@@ -4,6 +4,6 @@ import { useAuth } from '../context/AuthContext'
 export default function RequireAdmin({ children }) {
   const { currentUser, ready } = useAuth()
   if (!ready) return null
-  if (false && currentUser?.role !== 'admin') return <Navigate to="/account" replace />
+  if (currentUser?.role !== 'admin') return <Navigate to="/account" replace />
   return children
 }

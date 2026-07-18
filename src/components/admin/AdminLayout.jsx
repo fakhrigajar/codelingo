@@ -7,6 +7,7 @@ import {
   Award,
   Flag,
   Users,
+  Globe,
   Database,
   ArrowLeft,
 } from "lucide-react";
@@ -25,6 +26,7 @@ const links = [
   { to: "/admin/badges", label: "Badges", Icon: Award },
   { to: "/admin/posts", label: "Community posts", Icon: Flag },
   { to: "/admin/users", label: "Users", Icon: Users },
+  { to: "/admin/visitors", label: "Visitors", Icon: Globe },
   { to: "/admin/data", label: "Backup & reset", Icon: Database },
 ];
 
