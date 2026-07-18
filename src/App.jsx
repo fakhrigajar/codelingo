@@ -10,12 +10,6 @@ import VisitLogger from "./components/common/VisitLogger";
 import Layout from "./components/layout/Layout";
 import RequireAuth from "./routes/RequireAuth";
 import RequireAdmin from "./routes/RequireAdmin";
-
-// Route-level code splitting: each page (and whatever heavy deps it pulls in
-// — pdfjs-dist/mammoth for the CV tool, mammoth/antd for Community, dnd-kit
-// and the whole admin section, framer-motion for the daily challenge) only
-// downloads when a user actually navigates there, instead of all loading
-// upfront on every visit including the home page.
 const HomePage = lazy(() => import("./pages/HomePage"));
 const CoursesPage = lazy(() => import("./pages/CoursesPage"));
 const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));

@@ -50,7 +50,7 @@ export default function AdminVisitorsPage() {
           </p>
         ) : (
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full min-w-[900px] text-left border-collapse">
+            <table className="w-full min-w-[1000px] text-left border-collapse">
               <thead>
                 <tr className="text-[.72rem] font-bold text-ink-soft/60 dark:text-white/40 uppercase tracking-wide">
                   <th className="px-2 py-2">Time</th>
@@ -59,6 +59,7 @@ export default function AdminVisitorsPage() {
                   <th className="px-2 py-2">Country</th>
                   <th className="px-2 py-2">City</th>
                   <th className="px-2 py-2">Browser</th>
+                  <th className="px-2 py-2">OS</th>
                   <th className="px-2 py-2">Device</th>
                   <th className="px-2 py-2">Referrer</th>
                 </tr>
@@ -81,6 +82,7 @@ export default function AdminVisitorsPage() {
                     <td className="px-2 py-2.5 whitespace-nowrap">{v.country}</td>
                     <td className="px-2 py-2.5 whitespace-nowrap">{v.city}</td>
                     <td className="px-2 py-2.5 whitespace-nowrap">{v.browser}</td>
+                    <td className="px-2 py-2.5 whitespace-nowrap">{v.os}</td>
                     <td className="px-2 py-2.5 whitespace-nowrap">{v.device}</td>
                     <td className="px-2 py-2.5 truncate max-w-[220px] rounded-r-xl">
                       {v.referrer}

@@ -1,4 +1,5 @@
 import { initials } from "../../lib/helpers";
+import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 
 // Shows a user's uploaded profile photo, falling back to the initials
 // bubble everywhere in the app already used before avatars existed.
@@ -9,7 +10,7 @@ export default function Avatar({ user, size = 40, shape = "circle", className = 
   if (user?.avatarUrl) {
     return (
       <img
-        src={user.avatarUrl}
+        src={resolveUploadUrl(user.avatarUrl)}
         alt=""
         className={`${shapeClass} object-cover shrink-0 border-2 border-line dark:border-white/15 ${className}`}
         style={{ width: px, height: px }}

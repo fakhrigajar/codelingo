@@ -4,6 +4,7 @@ import { Flag, Trash2, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { listPosts, removePost, listPostDeletions } from '../lib/postApi'
+import { resolveUploadUrl } from '../lib/resolveUploadUrl'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminButton } from '../components/admin/AdminFields'
 import DocumentViewerModal from '../components/community/DocumentViewerModal'
@@ -31,7 +32,7 @@ function PostRow({ post, onDelete, reportBadge }) {
 
           {post.image && (
             <Image
-              src={post.image.url}
+              src={resolveUploadUrl(post.image.url)}
               alt=""
               width={64}
               height={64}

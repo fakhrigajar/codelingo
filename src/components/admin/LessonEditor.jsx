@@ -14,6 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { uid } from "../../lib/helpers";
 import { uploadImage } from "../../lib/uploadImage";
+import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 import { useToast } from "../../context/ToastContext";
 import {
   getLessonBlocks,
@@ -68,7 +69,7 @@ function ImageBlockField({ block, onValueChange }) {
       preview={
         block.value ? (
           <img
-            src={block.value}
+            src={resolveUploadUrl(block.value)}
             alt=""
             className="w-14 h-14 object-cover rounded-lg"
           />

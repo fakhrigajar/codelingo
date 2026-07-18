@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Modal, Button, Spin } from 'antd'
 import DOMPurify from 'dompurify'
 import { Download, FileText } from 'lucide-react'
+import { resolveUploadUrl } from '../../lib/resolveUploadUrl'
 
 const TEXT_MIMES = new Set(['text/plain', 'text/csv'])
 const DOCX_MIME =
@@ -18,6 +19,7 @@ const DOCX_MIME =
 export default function DocumentViewerModal({ document, open, onClose }) {
   const [status, setStatus] = useState('idle')
   const [content, setContent] = useState('')
+  const url = document ? resolveUploadUrl(document.url) : null
 
   useEffect(() => {
     if (!open || !document) return
@@ -29,7 +31,7 @@ export default function DocumentViewerModal({ document, open, onClose }) {
 
     if (TEXT_MIMES.has(document.mime)) {
       setStatus('loading')
-      fetch(document.url)
+      fetch(url)
         .then((res) => {
           if (!res.ok) throw new Error('fetch failed')
           return res.text()
@@ -44,7 +46,7 @@ export default function DocumentViewerModal({ document, open, onClose }) {
 
     if (document.mime === DOCX_MIME) {
       setStatus('loading')
-      Promise.all([fetch(document.url).then((res) => {
+      Promise.all([fetch(url).then((res) => {
         if (!res.ok) throw new Error('fetch failed')
         return res.arrayBuffer()
       }), import('mammoth')])
@@ -58,7 +60,7 @@ export default function DocumentViewerModal({ document, open, onClose }) {
     }
 
     setStatus('unsupported')
-  }, [open, document])
+  }, [open, document, url])
 
   if (!document) return null
 
@@ -74,14 +76,14 @@ export default function DocumentViewerModal({ document, open, onClose }) {
         <Button key="close" onClick={onClose}>
           Close
         </Button>,
-        <Button key="download" type="primary" href={document.url} target="_blank" rel="noreferrer">
+        <Button key="download" type="primary" href={url} target="_blank" rel="noreferrer">
           <Download size={14} className="inline -mt-0.5 mr-1" /> Download
         </Button>,
       ]}
     >
       {status === 'pdf' && (
         <iframe
-          src={document.url}
+          src={url}
           title={document.name}
           style={{ width: '100%', height: '70vh', border: 'none' }}
         />

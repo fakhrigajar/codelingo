@@ -100,8 +100,12 @@ app.post("/api/uploads", async (req, res) => {
       .status(500)
       .json({ error: "Could not save the uploaded file." });
   }
+  // A relative path rather than an absolute URL — baking in req.get("host")
+  // meant the URL only worked from whatever device/host handled the upload
+  // (e.g. a developer's own localhost), breaking on every other device. The
+  // client resolves this against its own current API base at render time.
   res.status(201).json({
-    url: `${req.protocol}://${req.get("host")}/uploads/${storedName}`,
+    url: `/uploads/${storedName}`,
     mime,
   });
 });
@@ -188,7 +192,16 @@ function parseUserAgent(ua = "") {
   else if (/Firefox\//.test(ua)) browser = "Firefox";
   else if (/Safari\//.test(ua) && /Version\//.test(ua)) browser = "Safari";
 
-  return { browser, device };
+  // Checked in this order deliberately: iOS/Android UAs also contain "Mac OS
+  // X" / "Linux" substrings, so the more specific mobile checks must run first.
+  let os = "Unknown";
+  if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
+  else if (/Android/.test(ua)) os = "Android";
+  else if (/Windows NT/.test(ua)) os = "Windows";
+  else if (/Mac OS X/.test(ua)) os = "macOS";
+  else if (/Linux/.test(ua)) os = "Linux";
+
+  return { browser, device, os };
 }
 
 function makeCrudRoutes(
@@ -415,21 +428,28 @@ async function start() {
   app.post("/api/visits", async (req, res) => {
     const { path: visitedPath, referrer } = req.body || {};
     const ip = getClientIp(req);
-    const { browser, device } = parseUserAgent(req.headers["user-agent"] || "");
-    const { country, city } = await lookupGeo(ip);
+    const { browser, device, os } = parseUserAgent(req.headers["user-agent"] || "");
     const visit = {
       id: crypto.randomUUID(),
       ip: ip || "Unknown",
-      country,
-      city,
+      country: "Unknown",
+      city: "Unknown",
       browser,
       device,
+      os,
       referrer: (referrer || "").slice(0, 300) || "Direct",
       path: (visitedPath || "/").slice(0, 300),
       time: Date.now(),
     };
     await visitsCollection.insertOne(visit);
     res.status(201).json(visit);
+
+    // Geolocation is a best-effort external call that can be slow or
+    // unreachable — enriching the record *after* responding means a slow
+    // lookup here never holds up the page navigation that triggered it.
+    lookupGeo(ip).then(({ country, city }) =>
+      visitsCollection.updateOne({ id: visit.id }, { $set: { country, city } }),
+    ).catch(() => {});
   });
 
   app.get("/api/visits", async (req, res) => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BookOpen, Lightbulb, Check, ArrowRight, Video } from "lucide-react";
 import { getLessonBlocks } from "../../lib/lessonBlocks";
+import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 import { getYouTubeVideoId, getVideoEmbedUrl } from "../../lib/videoEmbed";
 import { loadYouTubeIframeApi } from "../../lib/youtubeApi";
 import QuizPanel from "./QuizPanel";
@@ -159,7 +160,7 @@ function LessonBlock({ block }) {
   if (block.type === "image") {
     return block.value ? (
       <img
-        src={block.value}
+        src={resolveUploadUrl(block.value)}
         alt=""
         className="w-full rounded-xl mb-4 object-cover"
       />

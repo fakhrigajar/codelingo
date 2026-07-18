@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { usePublicUsers } from "../../context/PublicUsersContext";
 import { useToast } from "../../context/ToastContext";
 import { initials } from "../../lib/helpers";
+import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 import {
   likePost,
   reportPost,
@@ -238,7 +239,7 @@ export default function PostCard({ post, onChange, onRemove }) {
           {post.image && (
             <div className="mt-3">
               <Image
-                src={post.image.url}
+                src={resolveUploadUrl(post.image.url)}
                 alt=""
                 width={100}
                 height={100}

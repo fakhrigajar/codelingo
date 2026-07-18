@@ -4,6 +4,7 @@ import { Image as ImageIcon, Paperclip, FileText, X } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { uploadFile } from '../../lib/uploadFile'
+import { resolveUploadUrl } from '../../lib/resolveUploadUrl'
 
 const DOCUMENT_ACCEPT = '.pdf,.txt,.csv,.rtf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
 const DOCUMENT_TOOLTIP = 'Allowed files: PDF, text (.txt, .csv, .rtf), Microsoft Office (Word, Excel, PowerPoint)'
@@ -113,7 +114,7 @@ export default function PostComposer({ onSubmit }) {
       {image && (
         <div className="relative inline-block mt-2">
           <img
-            src={image.url}
+            src={resolveUploadUrl(image.url)}
             alt=""
             className="max-h-40 rounded-xl border-2 border-line dark:border-white/10"
           />
