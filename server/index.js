@@ -9,12 +9,6 @@ import { fileURLToPath } from "node:url";
 const app = express();
 app.use(express.json({ limit: "8mb" }));
 
-// Must come before the /uploads static handler below — express.static
-// responds directly (never calls next()) once it finds a matching file, so
-// any middleware registered after it never runs for /uploads/* requests.
-// That silently dropped CORS headers on uploaded files, which only matters
-// for callers using fetch()/XHR (img/iframe embeds don't need CORS) — e.g.
-// the document viewer fetching a .docx/.txt to render an inline preview.
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -40,11 +34,6 @@ const IMAGE_EXT_BY_MIME = {
   "image/svg+xml": "svg",
 };
 
-// Documents attachable to a community post — kept separate from
-// IMAGE_EXT_BY_MIME so callers that only ever want images (e.g. the lesson
-// content editor) can still lean on that map alone. Scoped to exactly what
-// the composer's tooltip promises: PDF, plain-text formats, and Microsoft
-// Office documents — no archives or other binaries.
 const DOCUMENT_EXT_BY_MIME = {
   "application/pdf": "pdf",
   "text/plain": "txt",
@@ -79,13 +68,10 @@ app.post("/api/uploads", async (req, res) => {
   const mime = match?.[1];
   const ext = mime && UPLOAD_EXT_BY_MIME[mime];
   if (!match || !ext) {
-    return res
-      .status(400)
-      .json({ error: "Unsupported file type — expected an image or document." });
+    return res.status(400).json({
+      error: "Unsupported file type — expected an image or document.",
+    });
   }
-  // Keeps the original name (sanitized) in the stored filename so a
-  // downloaded document doesn't just look like a random UUID — the random
-  // prefix still guarantees no collisions between uploads.
   const storedName = filename
     ? `${crypto.randomUUID()}-${sanitizeFilename(filename)}`
     : `${crypto.randomUUID()}.${ext}`;
@@ -96,22 +82,14 @@ app.post("/api/uploads", async (req, res) => {
       Buffer.from(match[2], "base64"),
     );
   } catch {
-    return res
-      .status(500)
-      .json({ error: "Could not save the uploaded file." });
+    return res.status(500).json({ error: "Could not save the uploaded file." });
   }
-  // A relative path rather than an absolute URL — baking in req.get("host")
-  // meant the URL only worked from whatever device/host handled the upload
-  // (e.g. a developer's own localhost), breaking on every other device. The
-  // client resolves this against its own current API base at render time.
   res.status(201).json({
     url: `/uploads/${storedName}`,
     mime,
   });
 });
 
-// GET /api/health — check in Postman that the server is actually running and
-// configured correctly (never returns the key itself, just whether it's set).
 app.get("/api/health", async (req, res) => {
   const dbConnected = await mongoClient
     .db("codelingo")
@@ -130,17 +108,11 @@ app.get("/api/health", async (req, res) => {
   });
 });
 
-// This is now the app's actual database (courses, paths and users no
-// longer live in the browser's localStorage) — persisted in MongoDB so it
-// survives restarts and redeploys, not just kept in server memory.
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
 const mongoClient = new MongoClient(MONGODB_URI);
 
 const NO_ID_PROJECTION = { projection: { _id: 0 } };
 
-// Prefer the original client address from a reverse proxy (Railway sits in
-// front of this server in production) over req.socket.remoteAddress, which
-// would otherwise just be the proxy's own internal IP.
 function getClientIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
   if (forwarded) return forwarded.split(",")[0].trim();
@@ -159,9 +131,6 @@ function isPrivateIp(ip) {
   );
 }
 
-// A free-tier geolocation lookup is "best effort" for a prototype like this
-// one — it's wrapped in a short timeout and a catch-all so a slow or failed
-// external call never holds up (or breaks) logging the visit itself.
 async function lookupGeo(ip) {
   if (isPrivateIp(ip)) return { country: "Local", city: "Local" };
   try {
@@ -173,7 +142,8 @@ async function lookupGeo(ip) {
     );
     clearTimeout(timeout);
     const data = await geoRes.json();
-    if (data.status !== "success") return { country: "Unknown", city: "Unknown" };
+    if (data.status !== "success")
+      return { country: "Unknown", city: "Unknown" };
     return { country: data.country || "Unknown", city: data.city || "Unknown" };
   } catch {
     return { country: "Unknown", city: "Unknown" };
@@ -192,8 +162,6 @@ function parseUserAgent(ua = "") {
   else if (/Firefox\//.test(ua)) browser = "Firefox";
   else if (/Safari\//.test(ua) && /Version\//.test(ua)) browser = "Safari";
 
-  // Checked in this order deliberately: iOS/Android UAs also contain "Mac OS
-  // X" / "Linux" substrings, so the more specific mobile checks must run first.
   let os = "Unknown";
   if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
   else if (/Android/.test(ua)) os = "Android";
@@ -305,10 +273,6 @@ async function start() {
   const badgesCollection = db.collection("badges");
   const visitsCollection = db.collection("visits");
 
-  // One-time migration from the old lesson-linking "grades" model to
-  // "paths" (an ordered list of whole courses) — the two shapes aren't
-  // compatible, so this only carries over the label as an empty path for
-  // the admin to fill in. Leaves the old "grades" collection untouched.
   if ((await pathsCollection.countDocuments()) === 0) {
     const legacyGrades = await db.collection("grades").find({}).toArray();
     if (legacyGrades.length) {
@@ -323,23 +287,41 @@ async function start() {
     }
   }
 
-  // One-time seed: badges used to live only in the frontend bundle
-  // (src/data/data.js DEFAULT_BADGES) with admin edits kept in localStorage.
-  // Moving them here to match courses/paths/posts — seed once so existing
-  // sites don't lose their badge list, then MongoDB is the sole source of
-  // truth from here on (admin edits go straight through the API below).
   if ((await badgesCollection.countDocuments()) === 0) {
     await badgesCollection.insertMany([
-      { id: "first-steps", icon: "sprout", name: "First Steps", desc: "Complete your first lesson" },
-      { id: "course-champion", icon: "trophy", name: "Course Champion", desc: "Finish an entire course" },
-      { id: "quiz-whiz", icon: "brain", name: "Quiz Whiz", desc: "Pass your first quiz" },
-      { id: "chatterbox", icon: "message-circle", name: "Chatterbox", desc: "Share your first community post" },
-      { id: "triple-threat", icon: "zap", name: "Triple Threat", desc: "Make progress in 3 different courses" },
+      {
+        id: "first-steps",
+        icon: "sprout",
+        name: "First Steps",
+        desc: "Complete your first lesson",
+      },
+      {
+        id: "course-champion",
+        icon: "trophy",
+        name: "Course Champion",
+        desc: "Finish an entire course",
+      },
+      {
+        id: "quiz-whiz",
+        icon: "brain",
+        name: "Quiz Whiz",
+        desc: "Pass your first quiz",
+      },
+      {
+        id: "chatterbox",
+        icon: "message-circle",
+        name: "Chatterbox",
+        desc: "Share your first community post",
+      },
+      {
+        id: "triple-threat",
+        icon: "zap",
+        name: "Triple Threat",
+        desc: "Make progress in 3 different courses",
+      },
     ]);
   }
 
-  // courses and paths no longer have hardcoded defaults in the frontend
-  // bundle — MongoDB is the sole source of truth for all three resources.
   makeCrudRoutes("/api/courses", coursesCollection, {
     sort: { order: 1, _id: 1 },
   });
@@ -352,10 +334,6 @@ async function start() {
     requiredFields: ["username", "displayName"],
   });
 
-  // /api/users returns full accounts (including plaintext passwords), so
-  // pages that just need to show *someone else's* avatar next to their
-  // name — community posts, lesson discussions — use this instead. Never
-  // widen this projection without re-checking what's safe to expose publicly.
   app.get("/api/users-public", async (req, res) => {
     res.json(
       await usersCollection
@@ -377,16 +355,6 @@ async function start() {
   makeCrudRoutes("/api/badges", badgesCollection, {
     requiredFields: ["id", "name"],
   });
-  // Community posts: a message plus an optional image/document attachment.
-  // Likes and reports are tracked as username arrays and replies are
-  // embedded directly on the post — all small, bounded lists, so there's no
-  // need for separate collections the way courses/paths get one each.
-  //
-  // Deletes are gated: only the post's own author or an admin may delete it
-  // (the client also hides the delete button for everyone else, but that's
-  // not enforcement — this is). ?requestedBy=<username> names the caller;
-  // every successful delete — by the owner or by an admin — is logged to
-  // postDeletionsCollection so admins can review who deleted what.
   makeCrudRoutes("/api/posts", postsCollection, {
     requiredFields: ["id", "username", "displayName"],
     sort: { time: -1 },
@@ -394,7 +362,9 @@ async function start() {
       const requestedBy = req.query.requestedBy || req.body?.requestedBy;
       if (!requestedBy) return false;
       if (requestedBy === post.username) return true;
-      const requester = await usersCollection.findOne({ username: requestedBy });
+      const requester = await usersCollection.findOne({
+        username: requestedBy,
+      });
       return requester?.role === "admin";
     },
     onDeleted: async (req, post) => {
@@ -421,14 +391,12 @@ async function start() {
     );
   });
 
-  // Visitor analytics for the admin "Visitors" page. The client only knows
-  // the SPA route and document.referrer — everything identifying the caller
-  // (IP, geolocation, browser/device) is derived here from the request
-  // itself, never trusted from the client.
   app.post("/api/visits", async (req, res) => {
     const { path: visitedPath, referrer } = req.body || {};
     const ip = getClientIp(req);
-    const { browser, device, os } = parseUserAgent(req.headers["user-agent"] || "");
+    const { browser, device, os } = parseUserAgent(
+      req.headers["user-agent"] || "",
+    );
     const visit = {
       id: crypto.randomUUID(),
       ip: ip || "Unknown",
@@ -444,12 +412,14 @@ async function start() {
     await visitsCollection.insertOne(visit);
     res.status(201).json(visit);
 
-    // Geolocation is a best-effort external call that can be slow or
-    // unreachable — enriching the record *after* responding means a slow
-    // lookup here never holds up the page navigation that triggered it.
-    lookupGeo(ip).then(({ country, city }) =>
-      visitsCollection.updateOne({ id: visit.id }, { $set: { country, city } }),
-    ).catch(() => {});
+    lookupGeo(ip)
+      .then(({ country, city }) =>
+        visitsCollection.updateOne(
+          { id: visit.id },
+          { $set: { country, city } },
+        ),
+      )
+      .catch(() => {});
   });
 
   app.get("/api/visits", async (req, res) => {
@@ -476,7 +446,9 @@ async function start() {
     const liked = (post.likes || []).includes(username);
     const updated = await postsCollection.findOneAndUpdate(
       { id: req.params.id },
-      liked ? { $pull: { likes: username } } : { $addToSet: { likes: username } },
+      liked
+        ? { $pull: { likes: username } }
+        : { $addToSet: { likes: username } },
       { returnDocument: "after", ...NO_ID_PROJECTION },
     );
     res.json(updated);
@@ -496,7 +468,11 @@ async function start() {
         { id: req.params.id },
         {
           $push: {
-            reports: { username, reason: (reason || "").trim(), time: Date.now() },
+            reports: {
+              username,
+              reason: (reason || "").trim(),
+              time: Date.now(),
+            },
           },
         },
       );
@@ -543,7 +519,8 @@ async function start() {
       id: req.params.id,
       "replies.id": req.params.replyId,
     });
-    if (!post) return res.status(404).json({ error: "Post or reply not found." });
+    if (!post)
+      return res.status(404).json({ error: "Post or reply not found." });
     const reply = post.replies.find((r) => r.id === req.params.replyId);
     const liked = (reply.likes || []).includes(username);
     const updated = await postsCollection.findOneAndUpdate(
@@ -556,11 +533,6 @@ async function start() {
     res.json(updated);
   });
 
-  // Atomically patches fields on one lesson nested inside a course (a Mongo
-  // positional update) instead of requiring the caller to read the whole
-  // course, edit it in memory and PUT the entire lessons array back — that
-  // read-modify-write shape would silently clobber any other edit made to
-  // the course between the read and the write.
   app.patch("/api/courses/:courseId/lessons/:lessonId", async (req, res) => {
     const patch = { ...(req.body || {}) };
     delete patch.id; // the URL is the source of truth for the lesson's id
@@ -569,10 +541,6 @@ async function start() {
     );
     if (!Object.keys(setDoc).length)
       return res.status(400).json({ error: "No fields to update." });
-    // A plain updateOne — the Mongo driver rejects findOneAndUpdate when a
-    // positional ('lessons.$') projection is combined with returning the
-    // post-update document, and the caller here only needs to know it
-    // succeeded (ContentContext already updates its local copy optimistically).
     const result = await coursesCollection.updateOne(
       { id: req.params.courseId, "lessons.id": req.params.lessonId },
       { $set: setDoc },
@@ -582,8 +550,6 @@ async function start() {
     res.json({ id: req.params.lessonId, ...patch });
   });
 
-  // Lesson discussions live embedded on the lesson itself (course.lessons[].discussions)
-  // rather than a separate collection, so they travel with the course document.
   app.get(
     "/api/courses/:courseId/lessons/:lessonId/discussions",
     async (req, res) => {
@@ -607,6 +573,7 @@ async function start() {
           .json({ error: "username, displayName and text are required." });
       }
       const message = {
+        id: crypto.randomUUID(),
         username,
         displayName,
         text: text.trim(),
@@ -619,6 +586,43 @@ async function start() {
       if (!result)
         return res.status(404).json({ error: "Course or lesson not found." });
       res.status(201).json(message);
+    },
+  );
+
+  // Deletes are gated the same way as community posts: only the message's
+  // own author or an admin may remove it. ?requestedBy=<username> names the
+  // caller — the client also hides the delete button for everyone else, but
+  // that's not enforcement, this is.
+  app.delete(
+    "/api/courses/:courseId/lessons/:lessonId/discussions/:messageId",
+    async (req, res) => {
+      const requestedBy = req.query.requestedBy;
+      if (!requestedBy)
+        return res.status(400).json({ error: "requestedBy is required." });
+      const course = await coursesCollection.findOne(
+        { id: req.params.courseId, "lessons.id": req.params.lessonId },
+        { projection: { _id: 0, "lessons.$": 1 } },
+      );
+      if (!course)
+        return res.status(404).json({ error: "Course or lesson not found." });
+      const message = (course.lessons[0].discussions || []).find(
+        (m) => m.id === req.params.messageId,
+      );
+      if (!message)
+        return res.status(404).json({ error: "Message not found." });
+      if (requestedBy !== message.username) {
+        const requester = await usersCollection.findOne({
+          username: requestedBy,
+        });
+        if (requester?.role !== "admin") {
+          return res.status(403).json({ error: "Not allowed to delete this." });
+        }
+      }
+      await coursesCollection.updateOne(
+        { id: req.params.courseId, "lessons.id": req.params.lessonId },
+        { $pull: { "lessons.$.discussions": { id: req.params.messageId } } },
+      );
+      res.json({ removed: true });
     },
   );
 

@@ -79,7 +79,7 @@ function ImageBlockField({ block, onValueChange }) {
   );
 }
 
-function BlockField({ block, onValueChange }) {
+function BlockField({ block, onValueChange, onTitleChange }) {
   if (block.type === "video") {
     return (
       <AdminInput
@@ -92,6 +92,25 @@ function BlockField({ block, onValueChange }) {
   }
   if (block.type === "image") {
     return <ImageBlockField block={block} onValueChange={onValueChange} />;
+  }
+  if (block.type === "link") {
+    return (
+      <>
+        <AdminInput
+          label="Link URL"
+          type="url"
+          placeholder="https://example.com"
+          value={block.value || ""}
+          onChange={(e) => onValueChange(e.target.value)}
+        />
+        <AdminInput
+          label="Link label (optional)"
+          placeholder="e.g. MDN CSS docs"
+          value={block.title || ""}
+          onChange={(e) => onTitleChange(e.target.value)}
+        />
+      </>
+    );
   }
   if (block.type === "body") {
     return (
@@ -144,8 +163,8 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
   const removeBlock = (id) => {
     setBlocks(blocks.filter((b) => b.id !== id));
   };
-  const updateBlock = (id, value) => {
-    setBlocks(blocks.map((b) => (b.id === id ? { ...b, value } : b)));
+  const patchBlock = (id, patch) => {
+    setBlocks(blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
 
   const updateQuestion = (qi, patch) => {
@@ -198,7 +217,7 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-[1fr_140px_140px] gap-3">
+      <div className="grid sm:grid-cols-[1fr_140px_140px_140px] gap-3">
         <AdminInput
           label="Title"
           placeholder="e.g. Variables and Data Types"
@@ -222,6 +241,19 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
           onChange={(e) =>
             onChange({
               estimatedMinutes:
+                e.target.value === "" ? undefined : Number(e.target.value),
+            })
+          }
+        />
+        <AdminInput
+          label="Points (XP)"
+          type="number"
+          min="0"
+          placeholder={isQuiz ? "e.g. 20" : "e.g. 10"}
+          value={lesson.points ?? ""}
+          onChange={(e) =>
+            onChange({
+              points:
                 e.target.value === "" ? undefined : Number(e.target.value),
             })
           }
@@ -253,7 +285,8 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
                     >
                       <BlockField
                         block={block}
-                        onValueChange={(value) => updateBlock(block.id, value)}
+                        onValueChange={(value) => patchBlock(block.id, { value })}
+                        onTitleChange={(title) => patchBlock(block.id, { title })}
                       />
                     </SortableLessonBlock>
                   ))}

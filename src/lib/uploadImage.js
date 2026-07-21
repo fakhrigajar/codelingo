@@ -1,7 +1,7 @@
-import { API_BASE } from './apiBase'
+import { UPLOADS_BASE } from './apiBase'
 
 export async function uploadImage(dataUrl) {
-  const res = await fetch(`${API_BASE}/api/uploads`, {
+  const res = await fetch(`${UPLOADS_BASE}/api/uploads`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ dataUrl }),

@@ -13,8 +13,12 @@ export default function CoursesPage() {
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
 
+  const availableCourses = courses.filter(
+    (c) => c.availability !== "coming-soon",
+  );
+
   const q = query.trim().toLowerCase();
-  const list = courses.filter(
+  const list = availableCourses.filter(
     (c) =>
       (filter === "all" || c.level === filter) &&
       (!q ||
@@ -22,7 +26,7 @@ export default function CoursesPage() {
         c.about.toLowerCase().includes(q)),
   );
 
-  const inProgressCount = courses.filter((c) => {
+  const inProgressCount = availableCourses.filter((c) => {
     const done = completedCount(currentUser, c);
     return done > 0 && done < c.lessons.length;
   }).length;
@@ -48,7 +52,7 @@ export default function CoursesPage() {
             </div>
             <div className="desktop:text-right">
               <div className="text-[1.7rem] font-extrabold leading-none text-ink dark:text-white">
-                {courses.length}
+                {availableCourses.length}
               </div>
               <div className="font-mono text-[.68rem] font-bold uppercase tracking-wide text-ink-soft dark:text-white/50">
                 Total courses

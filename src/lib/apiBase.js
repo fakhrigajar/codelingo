@@ -5,4 +5,7 @@
 // ever moves.
 export const API_BASE =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? '' : 'https://codelingo-production.up.railway.app')
+  (import.meta.env.DEV ? "" : "https://codelingo-production.up.railway.app");
+
+export const UPLOADS_BASE =
+  import.meta.env.VITE_API_URL || "https://codelingo-production.up.railway.app";

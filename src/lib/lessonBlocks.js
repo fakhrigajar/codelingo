@@ -1,15 +1,21 @@
-// Lessons render as an ordered list of content blocks. Video and image are
-// singular (one per lesson) but lesson body and fun fact can repeat, so
-// blocks are stored as instances ({ id, type, value }) rather than a fixed
-// set of keys.
-export const SINGLE_BLOCK_TYPES = ['video', 'image']
-export const MULTI_BLOCK_TYPES = ['body', 'fact']
-export const BLOCK_TYPE_LABELS = { video: 'Video', image: 'Image', body: 'Lesson body', fact: 'Fun fact' }
+// Lessons render as an ordered list of content blocks. Video is singular (one
+// per lesson) but image, lesson body and fun fact can repeat, so blocks are
+// stored as instances ({ id, type, value }) rather than a fixed set of keys.
+export const SINGLE_BLOCK_TYPES = ['video']
+export const MULTI_BLOCK_TYPES = ['image', 'body', 'fact', 'link']
+export const BLOCK_TYPE_LABELS = {
+  video: 'Video',
+  image: 'Image',
+  body: 'Lesson body',
+  fact: 'Fun fact',
+  link: 'Link',
+}
 export const BLOCK_ADD_LABELS = {
   video: '+ Add video',
   image: '+ Add image',
   body: '+ Add lesson body',
   fact: '+ Add fun fact',
+  link: '+ Add link',
 }
 
 // Lessons saved before per-block editing existed only have flat

@@ -29,7 +29,7 @@ export default function QuizPanel({ lesson, done, onComplete }) {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    setTimeout(() => onComplete(20, true), 900);
+    setTimeout(() => onComplete(lesson.points ?? 20, true), 900);
   };
 
   return (

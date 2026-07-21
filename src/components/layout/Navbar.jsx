@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate, Link } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../lib/useTheme";
 import { useBodyScrollLock } from "../../lib/useBodyScrollLock";
+import { TOOLS } from "../../lib/toolsList";
 import ThemeToggle from "../common/ThemeToggle";
 import Avatar from "../common/Avatar";
 import siteLogo from "../../assets/navbar-logo.png";
@@ -11,8 +13,83 @@ const links = [
   { to: "/courses", label: "Courses" },
   { to: "/paths", label: "Paths" },
   { to: "/community", label: "Community" },
-  { to: "/tools", label: "Tools" },
 ];
+
+const navLinkClass = ({ isActive }) =>
+  `px-4 py-2.5 rounded-xl font-bold text-[.98rem] transition-colors ${
+    isActive
+      ? "bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark"
+      : "text-ink-soft hover:bg-[#EAF1FD] hover:text-indigo-dark dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+  }`;
+
+// Hover-triggered dropdown for the "Tools" nav item — there's no more /tools
+// landing page, so this trigger only ever opens the menu; picking an item is
+// the only way in. Click-to-toggle is kept alongside hover so it still works
+// without a mouse (touch, keyboard).
+function ToolsNavDropdown() {
+  const location = useLocation();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const closeTimer = useRef(null);
+  const isActive = location.pathname.startsWith("/tools");
+
+  const openNow = () => {
+    clearTimeout(closeTimer.current);
+    setOpen(true);
+  };
+  const closeSoon = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 150);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const handleEscape = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className={`inline-flex items-center gap-1 ${navLinkClass({ isActive })}`}
+      >
+        Tools
+        <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div role="menu" className="absolute left-0 top-full w-56 pt-2">
+          <div className="bg-white dark:bg-indigo-dark border-2 border-line dark:border-white/15 rounded-2xl shadow-lg py-1.5 overflow-hidden">
+            {TOOLS.map((tool) => (
+              <Link
+                key={tool.to}
+                to={tool.to}
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 font-bold text-[.9rem] text-ink dark:text-white hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors"
+              >
+                <tool.Icon size={16} className="text-violet shrink-0" />
+                {tool.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Navbar() {
   const { currentUser, logout } = useAuth();
@@ -57,13 +134,6 @@ export default function Navbar() {
     logout();
   };
 
-  const navLinkClass = ({ isActive }) =>
-    `px-4 py-2.5 rounded-xl font-bold text-[.98rem] transition-colors ${
-      isActive
-        ? "bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark"
-        : "text-ink-soft hover:bg-[#EAF1FD] hover:text-indigo-dark dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
-    }`;
-
   return (
     <>
       <div className="fixed top-0 inset-x-0 z-[110] bg-bg/90 dark:bg-indigo-dark/90 backdrop-blur-md border-b-2 border-line dark:border-white/10 transition-colors">
@@ -74,7 +144,7 @@ export default function Navbar() {
           >
             <img className="w-28" src={siteLogo} alt="" />
           </Link>
-          <nav className="hidden desktop:flex gap-1 ml-2 flex-1">
+          <nav className="hidden desktop:flex items-center gap-1 ml-2 flex-1">
             {links.map((l) => (
               <NavLink
                 key={l.to}
@@ -85,6 +155,7 @@ export default function Navbar() {
                 {l.label}
               </NavLink>
             ))}
+            <ToolsNavDropdown />
           </nav>
           <div className="flex items-center gap-2.5 ml-auto sm:ml-0">
             <ThemeToggle
@@ -208,6 +279,21 @@ export default function Navbar() {
             className={navLinkClass}
           >
             {l.label}
+          </NavLink>
+        ))}
+        <span className="px-4 pt-3 pb-1 font-bold text-[.75rem] uppercase tracking-wide text-ink-soft/60 dark:text-white/30">
+          Tools
+        </span>
+        {TOOLS.map((tool) => (
+          <NavLink
+            key={tool.to}
+            to={tool.to}
+            tabIndex={navOpen ? 0 : -1}
+            onClick={() => setNavOpen(false)}
+            className={({ isActive }) => `flex items-center gap-2.5 ${navLinkClass({ isActive })}`}
+          >
+            <tool.Icon size={16} />
+            {tool.title}
           </NavLink>
         ))}
         <div className="my-2 border-t-2 border-line dark:border-white/10" />

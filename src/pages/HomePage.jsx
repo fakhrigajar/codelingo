@@ -1,11 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, Rocket, BookOpen } from "lucide-react";
+import {
+  Zap,
+  Rocket,
+  BookOpen,
+  ArrowRight,
+  UserPlus,
+  Compass,
+  CheckCircle2,
+  Award,
+} from "lucide-react";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
 import { listPosts } from "../lib/postApi";
-import CourseCarousel, { ArrowIcon } from "../components/home/CourseCarousel";
+import CourseCard from "../components/courses/CourseCard";
 import HeroFloatingLayer from "../components/home/HeroFloatingLayer";
+import StepsRow from "../components/home/StepsRow";
 import ThemedButton from "../components/common/ThemedButton";
 
 const FEATURES = [
@@ -155,22 +165,22 @@ const FEATURES = [
 
 const STEPS = [
   {
-    num: "STEP 1",
+    icon: UserPlus,
     title: "Make an account",
     body: "Pick a username and jump in — takes ten seconds.",
   },
   {
-    num: "STEP 2",
+    icon: Compass,
     title: "Pick a course",
     body: "Choose from JavaScript, React, backend dev, AI and more.",
   },
   {
-    num: "STEP 3",
+    icon: CheckCircle2,
     title: "Complete lessons",
     body: "Read, try it yourself, then answer a quick quiz.",
   },
   {
-    num: "STEP 4",
+    icon: Award,
     title: "Earn & share",
     body: "Collect badges and share your work with the community.",
   },
@@ -180,8 +190,6 @@ export default function HomePage() {
   const { courses } = useContent();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const carouselRef = useRef(null);
-  const [edges, setEdges] = useState({ atStart: true, atEnd: false });
   const [postCount, setPostCount] = useState(0);
 
   useEffect(() => {
@@ -272,6 +280,34 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="py-10 sm:py-14">
+        <div className="flex justify-center mb-8 sm:mb-10"></div>
+        <div className="grid sm:grid-cols-3 gap-6 max-w-[980px] mx-auto">
+          {courses.slice(0, 3).map((c) => (
+            <CourseCard key={c.id} course={c} interactive={false} />
+          ))}
+        </div>
+        <div className="max-w-[560px] mx-auto text-center mt-10 sm:mt-14">
+          <h2 className="text-[1.8rem] sm:text-[2.2rem] desktop:text-[2.5rem]">
+            Peek at the course library
+          </h2>
+          <p className="text-ink-soft dark:text-white/60 text-[1.05rem] mb-7">
+            {courses.length} course modules covering JavaScript, React, backend
+            development, AI and more.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/courses")}
+            className="group inline-flex items-center gap-3 bg-indigo-dark dark:bg-white text-white dark:text-indigo-dark font-bold pl-6 pr-2 py-2 rounded-full transition-transform hover:scale-[0.97]"
+          >
+            Explore courses
+            <span className="w-9 h-9 rounded-full bg-mint flex items-center justify-center text-white shrink-0 transition-transform group-hover:translate-x-0.5">
+              <ArrowRight size={16} />
+            </span>
+          </button>
+        </div>
+      </section>
+
       <section className="py-16 relative">
         <div className="max-w-[640px] mx-auto mb-10 text-center">
           <div className="eyebrow mx-auto">
@@ -316,66 +352,7 @@ export default function HomePage() {
           </div>
           <h2 className="text-[2.1rem]">Four steps to your first badge</h2>
         </div>
-        <div className="grid sm:grid-cols-4 gap-5">
-          {STEPS.map((s) => (
-            <div
-              key={s.num}
-              className="bg-panel dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-left"
-            >
-              <span className="font-mono font-bold text-violet text-[.85rem] mb-2.5 block">
-                {s.num}
-              </span>
-              <h4 className="text-[1.02rem] mb-1.5">{s.title}</h4>
-              <p className="text-ink-soft dark:text-white/60 text-[.9rem] m-0">
-                {s.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="max-w-[640px] mx-auto mb-10 text-center">
-          <div className="eyebrow mx-auto">
-            <BookOpen size={13} /> courses
-          </div>
-          <h2 className="text-[1.6rem] sm:text-[1.9rem] desktop:text-[2.1rem]">
-            Peek at the course library
-          </h2>
-        </div>
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => carouselRef.current?.scrollPrev()}
-              disabled={edges.atStart}
-              aria-label="Previous courses"
-              className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors disabled:opacity-30 disabled:pointer-events-none"
-            >
-              <ArrowIcon direction="prev" />
-            </button>
-            <button
-              type="button"
-              onClick={() => carouselRef.current?.scrollNext()}
-              disabled={edges.atEnd}
-              aria-label="Next courses"
-              className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-line dark:border-white/15 text-ink-soft dark:text-white/80 hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors disabled:opacity-30 disabled:pointer-events-none"
-            >
-              <ArrowIcon direction="next" />
-            </button>
-          </div>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => navigate("/courses")}
-          >
-            Explore courses →
-          </button>
-        </div>
-        <CourseCarousel
-          ref={carouselRef}
-          courses={courses}
-          onEdgeChange={setEdges}
-        />
+        <StepsRow steps={STEPS} />
       </section>
 
       {!currentUser && (

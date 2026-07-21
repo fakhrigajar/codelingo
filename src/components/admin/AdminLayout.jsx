@@ -7,8 +7,7 @@ import {
   Award,
   Flag,
   Users,
-  Globe,
-  Database,
+  Settings,
   ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -26,8 +25,7 @@ const links = [
   { to: "/admin/badges", label: "Badges", Icon: Award },
   { to: "/admin/posts", label: "Community posts", Icon: Flag },
   { to: "/admin/users", label: "Users", Icon: Users },
-  { to: "/admin/visitors", label: "Visitors", Icon: Globe },
-  { to: "/admin/data", label: "Backup & reset", Icon: Database },
+  { to: "/admin/system", label: "System", Icon: Settings },
 ];
 
 const navLinkClass = ({ isActive }) =>

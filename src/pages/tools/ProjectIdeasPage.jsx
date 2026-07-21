@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Bot } from 'lucide-react'
 import ProjectIdeaForm from '../../components/projects/ProjectIdeaForm'
 import ProjectIdeaList from '../../components/projects/ProjectIdeaList'
@@ -31,9 +30,7 @@ export default function ProjectIdeasPage() {
         aria-label="Breadcrumb"
         className="flex items-center flex-wrap gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 mb-4"
       >
-        <Link to="/tools" className="hover:text-violet dark:hover:text-violet">
-          Tools
-        </Link>
+        <span>Tools</span>
         <span className="text-line dark:text-white/20">/</span>
         <span className="text-ink dark:text-white">Project Ideas</span>
       </nav>

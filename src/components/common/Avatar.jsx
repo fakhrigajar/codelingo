@@ -1,9 +1,12 @@
 import { initials } from "../../lib/helpers";
 import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 
-// Shows a user's uploaded profile photo, falling back to the initials
-// bubble everywhere in the app already used before avatars existed.
-export default function Avatar({ user, size = 40, shape = "circle", className = "" }) {
+export default function Avatar({
+  user,
+  size = 40,
+  shape = "circle",
+  className = "",
+}) {
   const px = typeof size === "number" ? `${size}px` : size;
   const shapeClass = shape === "square" ? "rounded-3xl" : "rounded-full";
 

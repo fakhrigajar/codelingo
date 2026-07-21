@@ -20,3 +20,13 @@ export async function postComment(courseId, lessonId, comment) {
   if (!res.ok) throw new Error(data?.error || `Could not post comment (${res.status}).`)
   return data
 }
+
+export async function deleteComment(courseId, lessonId, messageId, requestedBy) {
+  const res = await fetch(
+    `${discussionsUrl(courseId, lessonId)}/${encodeURIComponent(messageId)}?requestedBy=${encodeURIComponent(requestedBy)}`,
+    { method: 'DELETE' },
+  )
+  const data = await res.json().catch(() => null)
+  if (!res.ok) throw new Error(data?.error || `Could not delete comment (${res.status}).`)
+  return data
+}

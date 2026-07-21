@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Trash2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { usePublicUsers } from "../../context/PublicUsersContext";
 import { useToast } from "../../context/ToastContext";
-import { listComments, postComment as postCommentApi } from "../../lib/discussionApi";
+import {
+  listComments,
+  postComment as postCommentApi,
+  deleteComment as deleteCommentApi,
+} from "../../lib/discussionApi";
 import { initials } from "../../lib/helpers";
 import Avatar from "../common/Avatar";
 
@@ -48,6 +52,16 @@ export default function LessonDiscussion({ course, lesson }) {
     }
   };
 
+  const handleDelete = async (messageId) => {
+    if (!confirm("Delete this message? This cannot be undone.")) return;
+    try {
+      await deleteCommentApi(course.id, lesson.id, messageId, currentUser.username);
+      setComments((prev) => prev.filter((c) => c.id !== messageId));
+    } catch {
+      toast("Could not delete that message — try again.");
+    }
+  };
+
   return (
     <div className="mt-6 pt-6 border-t-2 border-line dark:border-white/10">
       <h3 className="text-[1.05rem] font-bold mb-3 inline-flex items-center gap-1.5">
@@ -66,6 +80,7 @@ export default function LessonDiscussion({ course, lesson }) {
           comments.map((c, i) => {
             const mine = currentUser && c.username === currentUser.username;
             const authorUser = mine ? currentUser : getUser(c.username);
+            const canDelete = c.id && currentUser && (mine || currentUser.role === "admin");
             const time = new Date(c.time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
@@ -73,8 +88,8 @@ export default function LessonDiscussion({ course, lesson }) {
             });
             return (
               <div
-                key={i}
-                className={`flex gap-3 max-w-[85%] ${mine ? "flex-row-reverse ml-auto" : ""}`}
+                key={c.id || i}
+                className={`flex items-start gap-3 max-w-[85%] ${mine ? "flex-row-reverse ml-auto" : ""}`}
               >
                 {authorUser?.avatarUrl || authorUser?.avatarGradient ? (
                   <Avatar user={authorUser} size={32} className="flex-shrink-0" />
@@ -82,6 +97,16 @@ export default function LessonDiscussion({ course, lesson }) {
                   <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-mint to-violet flex items-center justify-center text-white font-extrabold text-[.72rem] flex-shrink-0">
                     {initials(c.displayName)}
                   </div>
+                )}
+                {canDelete && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(c.id)}
+                    aria-label="Delete message"
+                    className="shrink-0 text-ink-soft dark:text-white/40 hover:text-coral p-1"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 )}
                 <div
                   className={`rounded-xl px-3.5 py-2.5 ${

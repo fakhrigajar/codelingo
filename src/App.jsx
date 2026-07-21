@@ -16,14 +16,10 @@ const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));
 const PathsPage = lazy(() => import("./pages/PathsPage"));
 const PathDetailPage = lazy(() => import("./pages/PathDetailPage"));
 const CommunityPage = lazy(() => import("./pages/CommunityPage"));
-const ToolsPage = lazy(() => import("./pages/tools/ToolsPage"));
 const CvAnalyzerPage = lazy(() => import("./pages/tools/CvAnalyzerPage"));
 const InterviewPrepPage = lazy(() => import("./pages/tools/InterviewPrepPage"));
 const ProjectIdeasPage = lazy(() => import("./pages/tools/ProjectIdeasPage"));
 const LearningPathPage = lazy(() => import("./pages/tools/LearningPathPage"));
-const DailyChallengePage = lazy(
-  () => import("./pages/tools/DailyChallengePage"),
-);
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
@@ -36,8 +32,7 @@ const AdminCoursesPage = lazy(() => import("./pages/AdminCoursesPage"));
 const AdminBadgesPage = lazy(() => import("./pages/AdminBadgesPage"));
 const AdminPostsPage = lazy(() => import("./pages/AdminPostsPage"));
 const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage"));
-const AdminVisitorsPage = lazy(() => import("./pages/AdminVisitorsPage"));
-const AdminDataPage = lazy(() => import("./pages/AdminDataPage"));
+const AdminSystemPage = lazy(() => import("./pages/AdminSystemPage"));
 
 function AppRoutes() {
   const { ready } = useContent();
@@ -56,7 +51,6 @@ function AppRoutes() {
             <Route path="/paths" element={<PathsPage />} />
             <Route path="/paths/:pathId" element={<PathDetailPage />} />
             <Route path="/community" element={<CommunityPage />} />
-            <Route path="/tools" element={<ToolsPage />} />
             <Route
               path="/tools/cv-analyzer"
               element={
@@ -86,14 +80,6 @@ function AppRoutes() {
               element={
                 <RequireAuth>
                   <LearningPathPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/tools/daily-challenge"
-              element={
-                <RequireAuth>
-                  <DailyChallengePage />
                 </RequireAuth>
               }
             />
@@ -130,8 +116,7 @@ function AppRoutes() {
             <Route path="badges" element={<AdminBadgesPage />} />
             <Route path="posts" element={<AdminPostsPage />} />
             <Route path="users" element={<AdminUsersPage />} />
-            <Route path="visitors" element={<AdminVisitorsPage />} />
-            <Route path="data" element={<AdminDataPage />} />
+            <Route path="system" element={<AdminSystemPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

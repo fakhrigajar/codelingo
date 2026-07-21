@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
         xp: 0,
         badges: [],
         completed: {},
+        favorites: [],
         joined: new Date().toISOString(),
       };
       try {

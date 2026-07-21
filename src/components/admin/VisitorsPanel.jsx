@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { listVisits, clearVisits } from "../lib/visitApi";
-import { useToast } from "../context/ToastContext";
-import AdminCard from "../components/admin/AdminCard";
-import { AdminButton } from "../components/admin/AdminFields";
+import { listVisits, clearVisits } from "../../lib/visitApi";
+import { useToast } from "../../context/ToastContext";
+import AdminCard from "./AdminCard";
+import { AdminButton } from "./AdminFields";
 
-export default function AdminVisitorsPage() {
+export default function VisitorsPanel() {
   const [visits, setVisits] = useState([]);
   const [ready, setReady] = useState(false);
   const toast = useToast();
@@ -27,7 +27,6 @@ export default function AdminVisitorsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl mb-1">Visitors</h1>
       <p className="text-ink-soft dark:text-white/60 mb-6">
         {visits.length} recorded visit{visits.length === 1 ? "" : "s"}
         {visits.length >= 500 ? " (showing the most recent 500)" : ""}.

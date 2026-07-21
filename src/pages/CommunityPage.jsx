@@ -1,30 +1,29 @@
-import { useEffect, useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useToast } from '../context/ToastContext'
-import { listPosts, createPost as createPostApi } from '../lib/postApi'
-import { uid } from '../lib/helpers'
-import PostComposer from '../components/community/PostComposer'
-import PostCard from '../components/community/PostCard'
-import AntdThemeProvider from '../components/common/AntdThemeProvider'
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { listPosts, createPost as createPostApi } from "../lib/postApi";
+import { uid } from "../lib/helpers";
+import PostComposer from "../components/community/PostComposer";
+import PostCard from "../components/community/PostCard";
+import AntdThemeProvider from "../components/common/AntdThemeProvider";
 
 export default function CommunityPage() {
-  const { currentUser, saveCurrentUser } = useAuth()
-  const toast = useToast()
+  const { currentUser, saveCurrentUser } = useAuth();
+  const toast = useToast();
 
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     listPosts()
       .then(setPosts)
-      .catch(() => toast('Could not load community posts.'))
-      .finally(() => setLoading(false))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+      .catch(() => toast("Could not load community posts."))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleCreate = async ({ text, image, document }) => {
     const post = {
-      id: uid('post'),
+      id: uid("post"),
       username: currentUser.username,
       displayName: currentUser.displayName,
       text,
@@ -34,28 +33,31 @@ export default function CommunityPage() {
       likes: [],
       reports: [],
       replies: [],
-    }
-    setPosts((prev) => [post, ...prev])
+    };
+    setPosts((prev) => [post, ...prev]);
     try {
-      await createPostApi(post)
+      await createPostApi(post);
     } catch {
-      setPosts((prev) => prev.filter((p) => p.id !== post.id))
-      toast('Could not publish that post — try again.')
-      return
+      setPosts((prev) => prev.filter((p) => p.id !== post.id));
+      toast("Could not publish that post — try again.");
+      return;
     }
-    if (!currentUser.badges.includes('chatterbox')) {
-      saveCurrentUser({ ...currentUser, badges: [...currentUser.badges, 'chatterbox'] })
-      toast('New badge: Chatterbox')
+    if (!currentUser.badges.includes("chatterbox")) {
+      saveCurrentUser({
+        ...currentUser,
+        badges: [...currentUser.badges, "chatterbox"],
+      });
+      toast("New badge: Chatterbox");
     }
-  }
+  };
 
   const patchPost = (id, patch) => {
-    setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)))
-  }
+    setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  };
 
   const removePostLocal = (id) => {
-    setPosts((prev) => prev.filter((p) => p.id !== id))
-  }
+    setPosts((prev) => prev.filter((p) => p.id !== id));
+  };
 
   return (
     <AntdThemeProvider>
@@ -63,15 +65,18 @@ export default function CommunityPage() {
         <div className="pt-12 pb-2.5">
           <h1 className="text-[2.2rem]">Community</h1>
           <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
-            Share what you&apos;re building, ask questions, and help other learners — post a
-            message, image or document, and reply, like or report what others share.
+            Share what you&apos;re building, ask questions, and help other
+            learners — post a message, image or document, and reply, like or
+            report what others share.
           </p>
         </div>
 
         <PostComposer onSubmit={handleCreate} />
 
         {loading ? (
-          <p className="text-ink-soft dark:text-white/60 text-center py-10">Loading posts…</p>
+          <p className="text-ink-soft dark:text-white/60 text-center py-10">
+            Loading posts…
+          </p>
         ) : posts.length === 0 ? (
           <p className="text-ink-soft dark:text-white/60 text-center py-10">
             No posts yet — be the first to share something!
@@ -90,5 +95,5 @@ export default function CommunityPage() {
         )}
       </div>
     </AntdThemeProvider>
-  )
+  );
 }

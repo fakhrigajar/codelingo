@@ -37,6 +37,9 @@ export default function ProfilePage() {
   const studyingCourses = courses.filter(
     (c) => (currentUser.completed[c.id] || []).length > 0,
   );
+  const favoriteCourses = courses.filter((c) =>
+    (currentUser.favorites || []).includes(c.id),
+  );
   const significantGaps = getSignificantGaps(currentUser.username);
 
   const patchMyPost = (id, patch) => {
@@ -120,6 +123,17 @@ export default function ProfilePage() {
             />
           ))}
         </div>
+      )}
+
+      {favoriteCourses.length > 0 && (
+        <>
+          <h3 className="mt-9">Favorite courses</h3>
+          <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
+            {favoriteCourses.map((c) => (
+              <CourseCard key={c.id} course={c} currentUser={currentUser} />
+            ))}
+          </div>
+        </>
       )}
 
       <h3 className="mt-9">My posts</h3>

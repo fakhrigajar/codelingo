@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react'
-import { useContent } from '../context/ContentContext'
-import { useToast } from '../context/ToastContext'
-import AdminCard from '../components/admin/AdminCard'
-import { AdminButton } from '../components/admin/AdminFields'
+import { useContent } from '../../context/ContentContext'
+import { useToast } from '../../context/ToastContext'
+import AdminCard from './AdminCard'
+import { AdminButton } from './AdminFields'
 
-export default function AdminDataPage() {
+export default function BackupResetPanel() {
   const { exportData, importData, resetToDefault } = useContent()
   const toast = useToast()
   const fileRef = useRef(null)
@@ -47,7 +47,6 @@ export default function AdminDataPage() {
 
   return (
     <div>
-      <h1 className="text-2xl mb-1">Backup &amp; reset</h1>
       <p className="text-ink-soft dark:text-white/60 mb-6">Save your edits to a file, restore from a file, or start over.</p>
 
       <AdminCard title="Export content" className="mb-4">

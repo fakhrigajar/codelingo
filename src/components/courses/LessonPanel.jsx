@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { BookOpen, Lightbulb, Check, ArrowRight, Video } from "lucide-react";
+import {
+  BookOpen,
+  Lightbulb,
+  Check,
+  ArrowRight,
+  Video,
+  ExternalLink,
+} from "lucide-react";
 import { getLessonBlocks } from "../../lib/lessonBlocks";
 import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 import { getYouTubeVideoId, getVideoEmbedUrl } from "../../lib/videoEmbed";
@@ -166,11 +173,26 @@ function LessonBlock({ block }) {
       />
     ) : null;
   }
+  if (block.type === "link") {
+    return block.value ? (
+      <a
+        href={block.value}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 bg-[#EAF1FD] dark:bg-white/10 text-indigo-dark dark:text-white font-bold rounded-xl px-4 py-3.5 mb-4 hover:bg-[#DCE8FC] dark:hover:bg-white/15 transition-colors"
+      >
+        <span className="truncate">{block.title || block.value}</span>
+        <ExternalLink
+          size={14}
+          className="shrink-0 ml-auto text-ink-soft dark:text-white/50"
+        />
+      </a>
+    ) : null;
+  }
   if (block.type === "fact") {
     return block.value ? (
       <div className="bg-[#FFF3D6] text-[#8A5B00] dark:bg-[#3A2E12] dark:text-[#FFD98A] rounded-xl px-4 py-3.5 mb-4 flex items-start gap-2">
-        <Lightbulb size={16} className="shrink-0 mt-0.5" /> Fun fact:{" "}
-        {block.value}
+        <Lightbulb size={16} className="shrink-0 mt-0.5" /> {block.value}
       </div>
     ) : null;
   }
@@ -184,7 +206,7 @@ function NextButton({ nextLesson, onNext }) {
       onClick={onNext}
       className="btn btn-gold inline-flex items-center justify-center gap-1.5"
     >
-      {nextLesson ? `Next: ${nextLesson.title}` : "Back to overview"}
+      {nextLesson ? `Next` : "Back to overview"}
       <ArrowRight size={16} />
     </button>
   );
@@ -303,7 +325,9 @@ export default function LessonPanel({
           className={`btn ${done ? "btn-outline" : "btn-primary"} inline-flex items-center justify-center gap-1.5`}
           disabled={done || !videoWatched}
           onClick={() =>
-            !done && videoWatched && onComplete(course, lesson, 10, false)
+            !done &&
+            videoWatched &&
+            onComplete(course, lesson, lesson.points ?? 10, false)
           }
         >
           {done ? (
@@ -313,7 +337,7 @@ export default function LessonPanel({
           ) : videoBlock ? (
             "Submit"
           ) : (
-            "Mark as complete (+10 XP)"
+            `Mark as complete (+${lesson.points ?? 10} XP)`
           )}
         </button>
         <NextButton nextLesson={nextLesson} onNext={onNext} />

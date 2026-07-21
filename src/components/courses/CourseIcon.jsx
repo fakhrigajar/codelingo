@@ -1,12 +1,21 @@
 export function isImageIcon(icon) {
-  return typeof icon === "string" && (icon.startsWith("data:image") || /^https?:\/\//.test(icon));
+  return (
+    typeof icon === "string" &&
+    (icon.startsWith("data:image") || /^https?:\/\//.test(icon))
+  );
 }
 
 export default function CourseIcon({ course, size = 64, className = "" }) {
   return (
     <div
-      className={`flex items-center justify-center overflow-hidden rounded-[14px] ${className}`}
-      style={{ width: size, height: size, background: course.color }}
+      className={`flex items-center justify-center bg-white dark:bg-white/5 overflow-hidden rounded-[14px] ${className}`}
+      style={{
+        width: size,
+        height: size,
+        background: course.icon ? "" : course.color,
+        boxShadow:
+          "rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset",
+      }}
     >
       {isImageIcon(course.icon) ? (
         <img src={course.icon} alt="" className="w-full h-full object-cover" />

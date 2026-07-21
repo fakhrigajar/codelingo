@@ -78,10 +78,6 @@ export default function PostCard({ post, onChange, onRemove }) {
   const liked = currentUser && likes.includes(currentUser.username);
   const reported =
     currentUser && reports.some((r) => r.username === currentUser.username);
-  // Inline delete is owner-only — an admin deleting someone else's post is a
-  // moderation action that belongs on the admin "All posts" page (with a
-  // reason it's visible there), not a stray trash icon in the public feed.
-  // The server still allows admin deletes; this only narrows the UI.
   const canDelete = currentUser && currentUser.username === post.username;
   const { roots: comments, branches } = buildBranches(replies);
   const authorUser =

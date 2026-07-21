@@ -80,7 +80,14 @@ export default function CourseEditor({ course, onChange }) {
     const id = uid("l");
     commit([
       ...course.lessons,
-      { id, type: "lesson", title: "New lesson", unit: unitNumber, blocks: [] },
+      {
+        id,
+        type: "lesson",
+        title: "New lesson",
+        unit: unitNumber,
+        blocks: [],
+        points: 10,
+      },
     ]);
     setOpenLessonId(id);
   };
@@ -93,6 +100,7 @@ export default function CourseEditor({ course, onChange }) {
         type: "quiz",
         title: "New quiz",
         unit: unitNumber,
+        points: 20,
         questions: [
           { q: "New question?", options: ["Option A", "Option B"], correct: 0 },
         ],
