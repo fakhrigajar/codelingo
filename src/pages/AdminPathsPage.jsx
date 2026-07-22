@@ -24,6 +24,7 @@ import {
   AdminButton,
 } from "../components/admin/AdminFields";
 import SortableCourseRow from "../components/admin/SortableCourseRow";
+import FadeIn from "../components/common/FadeIn";
 
 const LEVELS = ["Beginner", "Intermediate", "Advanced"];
 
@@ -208,120 +209,126 @@ export default function AdminPathsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl mb-1">Paths</h1>
-      <p className="text-ink-soft dark:text-white/60 mb-6">
-        Edit the header shown at the top of the Paths page, then build each
-        path's ordered list of courses. Edits are staged until you save.
-      </p>
+      <FadeIn delay={0.05}>
+        <h1 className="text-2xl mb-1">Paths</h1>
+        <p className="text-ink-soft dark:text-white/60 mb-6">
+          Edit the header shown at the top of the Paths page, then build each
+          path's ordered list of courses. Edits are staged until you save.
+        </p>
+      </FadeIn>
 
-      <AdminCard title="Section header" className="mb-6">
-        <AdminInput
-          label="Page title"
-          placeholder="e.g. Learning paths"
-          value={pageTextDraft.pathsTitle}
-          onChange={(e) =>
-            setPageTextDraft((prev) => ({
-              ...prev,
-              pathsTitle: e.target.value,
-            }))
-          }
-        />
-        <AdminTextarea
-          label="Page subtitle"
-          placeholder="A short description shown under the page title"
-          value={pageTextDraft.pathsSubtitle}
-          onChange={(e) =>
-            setPageTextDraft((prev) => ({
-              ...prev,
-              pathsSubtitle: e.target.value,
-            }))
-          }
-        />
-      </AdminCard>
+      <FadeIn delay={0.15}>
+        <AdminCard title="Section header" className="mb-6">
+          <AdminInput
+            label="Page title"
+            placeholder="e.g. Learning paths"
+            value={pageTextDraft.pathsTitle}
+            onChange={(e) =>
+              setPageTextDraft((prev) => ({
+                ...prev,
+                pathsTitle: e.target.value,
+              }))
+            }
+          />
+          <AdminTextarea
+            label="Page subtitle"
+            placeholder="A short description shown under the page title"
+            value={pageTextDraft.pathsSubtitle}
+            onChange={(e) =>
+              setPageTextDraft((prev) => ({
+                ...prev,
+                pathsSubtitle: e.target.value,
+              }))
+            }
+          />
+        </AdminCard>
+      </FadeIn>
 
-      <div className="flex justify-between items-center mb-3">
+      <FadeIn delay={0.25} className="flex justify-between items-center mb-3">
         <h2 className="text-lg m-0">Paths</h2>
         <AdminButton onClick={handleAddPath}>+ Add path</AdminButton>
-      </div>
+      </FadeIn>
 
-      <div className="space-y-4">
-        {paths.map((path) => {
+      <FadeIn delay={0.35} className="space-y-4">
+        {paths.map((path, i) => {
           const open = openPathId === path.id;
           const draft = drafts[path.id] ?? path;
           return (
-            <AdminCard key={path.id}>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="font-extrabold truncate">
-                    {path.label || "Untitled path"}
+            <FadeIn key={path.id} delay={Math.min(0.35 + i * 0.05, 0.4)}>
+              <AdminCard>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-extrabold truncate">
+                      {path.label || "Untitled path"}
+                    </div>
+                    <div className="text-ink-soft dark:text-white/50 text-sm mt-0.5">
+                      {path.level} · {path.courseIds.length} course
+                      {path.courseIds.length === 1 ? "" : "s"}
+                    </div>
                   </div>
-                  <div className="text-ink-soft dark:text-white/50 text-sm mt-0.5">
-                    {path.level} · {path.courseIds.length} course
-                    {path.courseIds.length === 1 ? "" : "s"}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
-                  <AdminButton
-                    variant="primary"
-                    onClick={() => toggleOpen(path.id)}
-                  >
-                    {open ? (
-                      <span className="inline-flex items-center justify-center gap-1">
-                        Close <ChevronUp size={14} />
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center justify-center gap-1">
-                        Edit <ChevronDown size={14} />
-                      </span>
-                    )}
-                  </AdminButton>
-                  <AdminButton
-                    variant="danger"
-                    onClick={() => handleRemovePath(path.id)}
-                    aria-label="Delete path"
-                  >
-                    <Trash2 size={14} className="mx-auto" />
-                  </AdminButton>
-                </div>
-              </div>
-
-              {open && (
-                <div className="mt-4 pt-4 border-t border-line dark:border-white/10">
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <AdminInput
-                      label="Path label"
-                      placeholder="e.g. Frontend Developer"
-                      value={draft.label}
-                      onChange={(e) =>
-                        patchDraft(path.id, { label: e.target.value })
-                      }
-                    />
-                    <AdminSelect
-                      label="Level"
-                      value={draft.level}
-                      onChange={(e) =>
-                        patchDraft(path.id, { level: e.target.value })
-                      }
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+                    <AdminButton
+                      variant="primary"
+                      onClick={() => toggleOpen(path.id)}
                     >
-                      {LEVELS.map((l) => (
-                        <option key={l} value={l}>
-                          {l}
-                        </option>
-                      ))}
-                    </AdminSelect>
+                      {open ? (
+                        <span className="inline-flex items-center justify-center gap-1">
+                          Close <ChevronUp size={14} />
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center justify-center gap-1">
+                          Edit <ChevronDown size={14} />
+                        </span>
+                      )}
+                    </AdminButton>
+                    <AdminButton
+                      variant="danger"
+                      onClick={() => handleRemovePath(path.id)}
+                      aria-label="Delete path"
+                    >
+                      <Trash2 size={14} className="mx-auto" />
+                    </AdminButton>
                   </div>
-
-                  <PathCourseEditor
-                    path={path}
-                    courses={courses}
-                    updatePath={updatePath}
-                  />
                 </div>
-              )}
-            </AdminCard>
+
+                {open && (
+                  <div className="mt-4 pt-4 border-t border-line dark:border-white/10">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <AdminInput
+                        label="Path label"
+                        placeholder="e.g. Frontend Developer"
+                        value={draft.label}
+                        onChange={(e) =>
+                          patchDraft(path.id, { label: e.target.value })
+                        }
+                      />
+                      <AdminSelect
+                        label="Level"
+                        value={draft.level}
+                        onChange={(e) =>
+                          patchDraft(path.id, { level: e.target.value })
+                        }
+                      >
+                        {LEVELS.map((l) => (
+                          <option key={l} value={l}>
+                            {l}
+                          </option>
+                        ))}
+                      </AdminSelect>
+                    </div>
+
+                    <PathCourseEditor
+                      path={path}
+                      courses={courses}
+                      updatePath={updatePath}
+                    />
+                  </div>
+                )}
+              </AdminCard>
+            </FadeIn>
           );
         })}
-      </div>
+      </FadeIn>
     </div>
   );
 }

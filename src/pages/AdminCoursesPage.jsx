@@ -8,6 +8,7 @@ import { uid } from '../lib/helpers'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminInput, AdminTextarea, AdminButton } from '../components/admin/AdminFields'
 import SortableCourseAdminItem from '../components/admin/SortableCourseAdminItem'
+import FadeIn from '../components/common/FadeIn'
 
 export default function AdminCoursesPage() {
   const { courses, addCourse, updateCourse, removeCourse, reorderCourses, pageText, setPageText } = useContent()
@@ -102,47 +103,53 @@ export default function AdminCoursesPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-1 flex-wrap gap-2">
-        <h1 className="text-2xl m-0">Courses</h1>
-        <AdminButton onClick={handleAdd}>+ Add course</AdminButton>
-      </div>
-      <p className="text-ink-soft dark:text-white/60 mb-6">
-        Edit the header shown at the top of the Courses page, then drag to reorder courses. Click Edit to change a
-        course's info, lessons and quizzes — edits are staged until you save.
-      </p>
+      <FadeIn delay={0.05}>
+        <div className="flex justify-between items-center mb-1 flex-wrap gap-2">
+          <h1 className="text-2xl m-0">Courses</h1>
+          <AdminButton onClick={handleAdd}>+ Add course</AdminButton>
+        </div>
+        <p className="text-ink-soft dark:text-white/60 mb-6">
+          Edit the header shown at the top of the Courses page, then drag to reorder courses. Click Edit to change a
+          course's info, lessons and quizzes — edits are staged until you save.
+        </p>
+      </FadeIn>
 
-      <AdminCard title="Section header" className="mb-6">
-        <AdminInput
-          label="Page title"
-          placeholder="e.g. Course library"
-          value={pageTextDraft.coursesTitle}
-          onChange={(e) => setPageTextDraft((prev) => ({ ...prev, coursesTitle: e.target.value }))}
-        />
-        <AdminTextarea
-          label="Page subtitle"
-          placeholder="A short description shown under the page title"
-          value={pageTextDraft.coursesSubtitle}
-          onChange={(e) => setPageTextDraft((prev) => ({ ...prev, coursesSubtitle: e.target.value }))}
-        />
-      </AdminCard>
+      <FadeIn delay={0.15}>
+        <AdminCard title="Section header" className="mb-6">
+          <AdminInput
+            label="Page title"
+            placeholder="e.g. Course library"
+            value={pageTextDraft.coursesTitle}
+            onChange={(e) => setPageTextDraft((prev) => ({ ...prev, coursesTitle: e.target.value }))}
+          />
+          <AdminTextarea
+            label="Page subtitle"
+            placeholder="A short description shown under the page title"
+            value={pageTextDraft.coursesSubtitle}
+            onChange={(e) => setPageTextDraft((prev) => ({ ...prev, coursesSubtitle: e.target.value }))}
+          />
+        </AdminCard>
+      </FadeIn>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={courses.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-4">
-            {courses.map((course) => (
-              <SortableCourseAdminItem
-                key={course.id}
-                course={course}
-                draftCourse={drafts[course.id] ?? course}
-                isOpen={openId === course.id}
-                onToggleEdit={() => toggleEdit(course.id)}
-                onPatch={(patch) => patchDraft(course.id, patch)}
-                onRemove={() => handleRemove(course.id)}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <FadeIn delay={0.25}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={courses.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-4">
+              {courses.map((course) => (
+                <SortableCourseAdminItem
+                  key={course.id}
+                  course={course}
+                  draftCourse={drafts[course.id] ?? course}
+                  isOpen={openId === course.id}
+                  onToggleEdit={() => toggleEdit(course.id)}
+                  onPatch={(patch) => patchDraft(course.id, patch)}
+                  onRemove={() => handleRemove(course.id)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </FadeIn>
     </div>
   )
 }

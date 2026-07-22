@@ -296,13 +296,17 @@ export default function SettingsPage() {
     <div className="py-5">
       <Link
         to="/profile"
-        className="inline-block text-[.82rem] font-bold text-ink-soft dark:text-white/50 hover:text-violet mb-4"
+        className="inline-block text-[.82rem] font-bold text-ink-soft dark:text-white/50 hover:text-violet mb-4 animate-fadeUp"
+        style={{ animationDelay: "0.05s" }}
       >
         ← Back to profile
       </Link>
 
       <div className="flex flex-col sm:flex-row gap-6 items-start">
-        <nav className="w-full sm:w-[240px] shrink-0 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-3 sm:sticky sm:top-24">
+        <nav
+          className="w-full sm:w-[240px] shrink-0 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-3 sm:sticky sm:top-24 animate-fadeUp"
+          style={{ animationDelay: "0.15s" }}
+        >
           {SECTIONS.map((s) => (
             <button
               key={s.id}
@@ -322,7 +326,10 @@ export default function SettingsPage() {
           ))}
         </nav>
 
-        <div className="flex-1 w-full bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-9">
+        <div
+          className="flex-1 w-full bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-9 animate-fadeUp"
+          style={{ animationDelay: "0.25s" }}
+        >
           {section === "profile" ? (
             <form onSubmit={handleProfileSubmit}>
               <h1 className="text-[1.5rem] mb-1">Profile settings</h1>

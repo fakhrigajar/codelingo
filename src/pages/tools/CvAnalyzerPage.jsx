@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Bot } from 'lucide-react'
 import CvAnalyzer from '../../components/cv/CvAnalyzer'
+import FadeIn from '../../components/common/FadeIn'
 
 export default function CvAnalyzerPage() {
   const [analyzeData, setAnalyzeData] = useState({ text: '', fileName: '', targetRole: '' })
@@ -20,21 +21,25 @@ export default function CvAnalyzerPage() {
         <span className="text-ink dark:text-white">CV Analyzer</span>
       </nav>
 
-      <span className="eyebrow">
-        <Bot size={13} /> AI career tools
-      </span>
-      <h1 className="text-[2rem]">AI-Powered CV Analyzer</h1>
-      <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Upload your CV and get a live ATS-friendliness score with concrete, AI-powered tips to
-        improve it.
-      </p>
+      <FadeIn delay={0.05}>
+        <span className="eyebrow">
+          <Bot size={13} /> AI career tools
+        </span>
+        <h1 className="text-[2rem]">AI-Powered CV Analyzer</h1>
+        <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
+          Upload your CV and get a live ATS-friendliness score with concrete, AI-powered tips to
+          improve it.
+        </p>
+      </FadeIn>
 
-      <CvAnalyzer
-        text={analyzeData.text}
-        fileName={analyzeData.fileName}
-        targetRole={analyzeData.targetRole}
-        onChange={handleAnalyzeChange}
-      />
+      <FadeIn delay={0.15}>
+        <CvAnalyzer
+          text={analyzeData.text}
+          fileName={analyzeData.fileName}
+          targetRole={analyzeData.targetRole}
+          onChange={handleAnalyzeChange}
+        />
+      </FadeIn>
     </div>
   )
 }

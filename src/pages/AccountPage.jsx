@@ -93,7 +93,10 @@ export default function AccountPage() {
       transition={{ layout: { duration: 0.25, ease: "easeInOut" } }}
       className="max-w-[440px] mx-auto my-16 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[20px] p-9 overflow-hidden"
     >
-      <div className="flex gap-2 mb-6 bg-[#F1F5FD] dark:bg-white/5 rounded-xl p-1">
+      <div
+        className="flex gap-2 mb-6 bg-[#F1F5FD] dark:bg-white/5 rounded-xl p-1 animate-fadeUp"
+        style={{ animationDelay: ".05s" }}
+      >
         <button
           onClick={() => switchTab("login")}
           className={`relative flex-1 py-2.5 rounded-[9px] font-extrabold transition-colors ${
@@ -131,7 +134,10 @@ export default function AccountPage() {
       </div>
 
       {error && (
-        <div className="bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-4">
+        <div
+          className="bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-4 animate-fadeUp"
+          style={{ animationDelay: ".15s" }}
+        >
           {error}
         </div>
       )}

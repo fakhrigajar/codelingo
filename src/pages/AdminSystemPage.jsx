@@ -2,6 +2,7 @@ import { useState } from "react";
 import AdminTabs from "../components/admin/AdminTabs";
 import BackupResetPanel from "../components/admin/BackupResetPanel";
 import ApiUsagePanel from "../components/admin/ApiUsagePanel";
+import FadeIn from "../components/common/FadeIn";
 
 const TABS = [
   { value: "backup", label: "Backup & reset" },
@@ -13,9 +14,15 @@ export default function AdminSystemPage() {
 
   return (
     <div>
-      <h1 className="text-2xl mb-1">System</h1>
-      <AdminTabs tabs={TABS} active={tab} onChange={setTab} />
-      {tab === "backup" ? <BackupResetPanel /> : <ApiUsagePanel />}
+      <FadeIn as="h1" delay={0.05} className="text-2xl mb-1">
+        System
+      </FadeIn>
+      <FadeIn delay={0.15}>
+        <AdminTabs tabs={TABS} active={tab} onChange={setTab} />
+      </FadeIn>
+      <FadeIn delay={0.25}>
+        {tab === "backup" ? <BackupResetPanel /> : <ApiUsagePanel />}
+      </FadeIn>
     </div>
   );
 }

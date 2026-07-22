@@ -263,7 +263,6 @@ function makeCrudRoutes(
 }
 
 async function start() {
-  await mongoClient.connect();
   const db = mongoClient.db("codelingo");
   const coursesCollection = db.collection("courses");
   const pathsCollection = db.collection("paths");
@@ -272,55 +271,6 @@ async function start() {
   const postDeletionsCollection = db.collection("postDeletions");
   const badgesCollection = db.collection("badges");
   const visitsCollection = db.collection("visits");
-
-  if ((await pathsCollection.countDocuments()) === 0) {
-    const legacyGrades = await db.collection("grades").find({}).toArray();
-    if (legacyGrades.length) {
-      await pathsCollection.insertMany(
-        legacyGrades.map((g) => ({
-          id: g.id,
-          label: g.label,
-          level: "Beginner",
-          courseIds: [],
-        })),
-      );
-    }
-  }
-
-  if ((await badgesCollection.countDocuments()) === 0) {
-    await badgesCollection.insertMany([
-      {
-        id: "first-steps",
-        icon: "sprout",
-        name: "First Steps",
-        desc: "Complete your first lesson",
-      },
-      {
-        id: "course-champion",
-        icon: "trophy",
-        name: "Course Champion",
-        desc: "Finish an entire course",
-      },
-      {
-        id: "quiz-whiz",
-        icon: "brain",
-        name: "Quiz Whiz",
-        desc: "Pass your first quiz",
-      },
-      {
-        id: "chatterbox",
-        icon: "message-circle",
-        name: "Chatterbox",
-        desc: "Share your first community post",
-      },
-      {
-        id: "triple-threat",
-        icon: "zap",
-        name: "Triple Threat",
-        desc: "Make progress in 3 different courses",
-      },
-    ]);
-  }
 
   makeCrudRoutes("/api/courses", coursesCollection, {
     sort: { order: 1, _id: 1 },
@@ -626,9 +576,69 @@ async function start() {
     },
   );
 
+  // Start accepting connections right away instead of waiting on Mongo —
+  // Vite starts almost instantly and proxies /api here, so if this blocked
+  // on mongoClient.connect() first (which can take a moment, especially
+  // against a remote cluster), the very first requests would hit
+  // ECONNREFUSED before this was even listening. The routes above are safe
+  // to register now: the driver queues each operation until the connection
+  // below is ready, so requests that land early just wait briefly instead
+  // of failing outright.
   app.listen(PORT, () => {
     console.log(`AI tools proxy listening on http://localhost:${PORT}`);
   });
+
+  await mongoClient.connect();
+
+  // One-time legacy migrations, now that we know we're connected.
+  if ((await pathsCollection.countDocuments()) === 0) {
+    const legacyGrades = await db.collection("grades").find({}).toArray();
+    if (legacyGrades.length) {
+      await pathsCollection.insertMany(
+        legacyGrades.map((g) => ({
+          id: g.id,
+          label: g.label,
+          level: "Beginner",
+          courseIds: [],
+        })),
+      );
+    }
+  }
+
+  if ((await badgesCollection.countDocuments()) === 0) {
+    await badgesCollection.insertMany([
+      {
+        id: "first-steps",
+        icon: "sprout",
+        name: "First Steps",
+        desc: "Complete your first lesson",
+      },
+      {
+        id: "course-champion",
+        icon: "trophy",
+        name: "Course Champion",
+        desc: "Finish an entire course",
+      },
+      {
+        id: "quiz-whiz",
+        icon: "brain",
+        name: "Quiz Whiz",
+        desc: "Pass your first quiz",
+      },
+      {
+        id: "chatterbox",
+        icon: "message-circle",
+        name: "Chatterbox",
+        desc: "Share your first community post",
+      },
+      {
+        id: "triple-threat",
+        icon: "zap",
+        name: "Triple Threat",
+        desc: "Make progress in 3 different courses",
+      },
+    ]);
+  }
 }
 
 start().catch((err) => {

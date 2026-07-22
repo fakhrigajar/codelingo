@@ -3,6 +3,7 @@ import { Bot } from 'lucide-react'
 import LearningPathForm from '../../components/learning-path/LearningPathForm'
 import LearningPathDiagram from '../../components/learning-path/LearningPathDiagram'
 import { generateLearningPath } from '../../lib/learningPath'
+import FadeIn from '../../components/common/FadeIn'
 
 export default function LearningPathPage() {
   const [status, setStatus] = useState('idle') // idle | loading | error
@@ -35,27 +36,34 @@ export default function LearningPathPage() {
         <span className="text-ink dark:text-white">Learning Path</span>
       </nav>
 
-      <span className="eyebrow">
-        <Bot size={13} /> AI career tools
-      </span>
-      <h1 className="text-[2rem]">Learning Path</h1>
-      <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Tell us your age, experience, and goal — AI builds a personalized step-by-step path to get
-        you there.
-      </p>
+      <FadeIn delay={0.05}>
+        <span className="eyebrow">
+          <Bot size={13} /> AI career tools
+        </span>
+        <h1 className="text-[2rem]">Learning Path</h1>
+        <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
+          Tell us your age, experience, and goal — AI builds a personalized step-by-step path to get
+          you there.
+        </p>
+      </FadeIn>
 
-      <LearningPathForm onGenerate={handleGenerate} status={status} />
+      <FadeIn delay={0.15}>
+        <LearningPathForm onGenerate={handleGenerate} status={status} />
+      </FadeIn>
 
       {error && (
-        <div className="max-w-[560px] mx-auto bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mt-4 text-center">
+        <FadeIn
+          delay={0.25}
+          className="max-w-[560px] mx-auto bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mt-4 text-center"
+        >
           {error}
-        </div>
+        </FadeIn>
       )}
 
       {steps && (
-        <div className="mt-9">
+        <FadeIn delay={0.35} className="mt-9">
           <LearningPathDiagram goal={goal} steps={steps} />
-        </div>
+        </FadeIn>
       )}
     </div>
   )

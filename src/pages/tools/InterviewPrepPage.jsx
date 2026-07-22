@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Bot } from 'lucide-react'
 import InterviewSetupForm from '../../components/interview/InterviewSetupForm'
 import InterviewQuizGame from '../../components/interview/InterviewQuizGame'
+import FadeIn from '../../components/common/FadeIn'
 
 export default function InterviewPrepPage() {
   const [session, setSession] = useState(null) // { role, questions }
@@ -17,24 +18,28 @@ export default function InterviewPrepPage() {
         <span className="text-ink dark:text-white">Interview Prep</span>
       </nav>
 
-      <span className="eyebrow">
-        <Bot size={13} /> AI career tools
-      </span>
-      <h1 className="text-[2rem]">Interview Prep</h1>
-      <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Get AI-generated interview FAQs for any role, then quiz yourself game-style to check your
-        knowledge.
-      </p>
+      <FadeIn delay={0.05}>
+        <span className="eyebrow">
+          <Bot size={13} /> AI career tools
+        </span>
+        <h1 className="text-[2rem]">Interview Prep</h1>
+        <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
+          Get AI-generated interview FAQs for any role, then quiz yourself game-style to check your
+          knowledge.
+        </p>
+      </FadeIn>
 
-      {session ? (
-        <InterviewQuizGame
-          role={session.role}
-          questions={session.questions}
-          onRestart={() => setSession(null)}
-        />
-      ) : (
-        <InterviewSetupForm onReady={setSession} />
-      )}
+      <FadeIn delay={0.15}>
+        {session ? (
+          <InterviewQuizGame
+            role={session.role}
+            questions={session.questions}
+            onRestart={() => setSession(null)}
+          />
+        ) : (
+          <InterviewSetupForm onReady={setSession} />
+        )}
+      </FadeIn>
     </div>
   )
 }

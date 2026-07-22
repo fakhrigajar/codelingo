@@ -9,6 +9,7 @@ import PostCard from "../components/community/PostCard";
 import Avatar from "../components/common/Avatar";
 import Banner from "../components/common/Banner";
 import ThemeBadge from "../components/common/ThemeBadge";
+import FadeIn from "../components/common/FadeIn";
 
 export default function ProfilePage() {
   const { currentUser } = useAuth();
@@ -53,24 +54,29 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <div className="relative mb-10">
-        <Banner user={currentUser} className="h-60 rounded-3xl mt-8" />
-        <Avatar
-          className="absolute -bottom-10 left-1/2 -translate-x-1/2 border-bg dark:border-indigo-dark border-4 "
-          user={currentUser}
-          size={150}
-          shape="square"
-        />
-      </div>
-      <div className="flex gap-6 items-center justify-center py-7 flex-wrap">
-        <div className="flex flex-col items-center">
-          <h1 className="text-[1.9rem]">{currentUser.displayName}</h1>
-          <p className="font-mono text-ink-soft dark:text-white/50 text-[1rem]">
-            @{currentUser.username}
-          </p>
+      <FadeIn delay={0.05}>
+        <div className="relative mb-10">
+          <Banner user={currentUser} className="h-60 rounded-3xl mt-8" />
+          <Avatar
+            className="absolute -bottom-10 left-1/2 -translate-x-1/2 border-bg dark:border-indigo-dark border-4 "
+            user={currentUser}
+            size={150}
+            shape="square"
+          />
         </div>
-      </div>
-      <div className="grid sm:grid-cols-3 gap-4 my-7">
+        <div className="flex gap-6 items-center justify-center py-7 flex-wrap">
+          <div className="flex flex-col items-center">
+            <h1 className="text-[1.9rem]">{currentUser.displayName}</h1>
+            <p className="font-mono text-ink-soft dark:text-white/50 text-[1rem]">
+              @{currentUser.username}
+            </p>
+          </div>
+        </div>
+      </FadeIn>
+      <div
+        className="grid sm:grid-cols-3 gap-4 my-7 animate-fadeUp"
+        style={{ animationDelay: "0.15s" }}
+      >
         <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-2xl p-5 text-center">
           <b className="block font-mono text-[1.7rem] text-indigo-dark dark:text-white">
             {currentUser.xp}
@@ -97,76 +103,98 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <h3 className="mt-9">Badges</h3>
-      <ThemeBadge />
+      <FadeIn delay={0.25}>
+        <h3 className="mt-9">Badges</h3>
+        <ThemeBadge />
+      </FadeIn>
 
-      <h3 className="mt-9">Course progress</h3>
-      {studyingCourses.length === 0 ? (
-        <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
-          You haven't started any courses yet.{" "}
-          <button
-            className="text-violet font-bold hover:underline"
-            onClick={() => navigate("/courses")}
-          >
-            Browse courses
-          </button>{" "}
-          to get going.
-        </p>
-      ) : (
-        <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
-          {studyingCourses.map((c) => (
-            <CourseCard
-              key={c.id}
-              course={c}
-              currentUser={currentUser}
-              showProgress
-            />
-          ))}
-        </div>
-      )}
-
-      {favoriteCourses.length > 0 && (
-        <>
-          <h3 className="mt-9">Favorite courses</h3>
+      <FadeIn delay={0.25}>
+        <h3 className="mt-9">Course progress</h3>
+        {studyingCourses.length === 0 ? (
+          <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
+            You haven't started any courses yet.{" "}
+            <button
+              className="text-violet font-bold hover:underline"
+              onClick={() => navigate("/courses")}
+            >
+              Browse courses
+            </button>{" "}
+            to get going.
+          </p>
+        ) : (
           <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
-            {favoriteCourses.map((c) => (
-              <CourseCard key={c.id} course={c} currentUser={currentUser} />
+            {studyingCourses.map((c, index) => (
+              <div
+                key={c.id}
+                className="animate-fadeUp"
+                style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
+              >
+                <CourseCard
+                  course={c}
+                  currentUser={currentUser}
+                  showProgress
+                />
+              </div>
             ))}
           </div>
-        </>
+        )}
+      </FadeIn>
+
+      {favoriteCourses.length > 0 && (
+        <FadeIn delay={0.35}>
+          <h3 className="mt-9">Favorite courses</h3>
+          <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6 mt-4">
+            {favoriteCourses.map((c, index) => (
+              <div
+                key={c.id}
+                className="animate-fadeUp"
+                style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
+              >
+                <CourseCard course={c} currentUser={currentUser} />
+              </div>
+            ))}
+          </div>
+        </FadeIn>
       )}
 
-      <h3 className="mt-9">My posts</h3>
-      {postsLoading ? (
-        <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
-          Loading…
-        </p>
-      ) : myPosts.length === 0 ? (
-        <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
-          You haven't posted in the community yet.{" "}
-          <Link
-            to="/community"
-            className="text-violet font-bold hover:underline"
-          >
-            Say hello
-          </Link>
-          .
-        </p>
-      ) : (
-        <div className="flex flex-col gap-5 mt-4">
-          {myPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onChange={(patch) => patchMyPost(post.id, patch)}
-              onRemove={removeMyPost}
-            />
-          ))}
-        </div>
-      )}
+      <FadeIn delay={0.35}>
+        <h3 className="mt-9">My posts</h3>
+        {postsLoading ? (
+          <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
+            Loading…
+          </p>
+        ) : myPosts.length === 0 ? (
+          <p className="text-ink-soft dark:text-white/50 text-[.9rem] mt-2.5">
+            You haven't posted in the community yet.{" "}
+            <Link
+              to="/community"
+              className="text-violet font-bold hover:underline"
+            >
+              Say hello
+            </Link>
+            .
+          </p>
+        ) : (
+          <div className="flex flex-col gap-5 mt-4">
+            {myPosts.map((post, index) => (
+              <div
+                key={post.id}
+                className="animate-fadeUp"
+                style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
+              >
+                <PostCard
+                  post={post}
+                  onChange={(patch) => patchMyPost(post.id, patch)}
+                  onRemove={removeMyPost}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </FadeIn>
 
       {significantGaps.length > 0 && (
-        <>
+        <FadeIn delay={0.35}>
           <h3 className="mt-9">Significant gaps</h3>
           <p className="text-ink-soft dark:text-white/50 text-[.85rem] mt-1 mb-3">
             Topics you've missed most in{" "}
@@ -179,10 +207,11 @@ export default function ProfilePage() {
             quizzes.
           </p>
           <div className="flex flex-wrap gap-2.5">
-            {significantGaps.map((gap) => (
+            {significantGaps.map((gap, index) => (
               <div
                 key={gap.title}
-                className="flex items-center gap-2 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-xl px-3.5 py-2"
+                className="flex items-center gap-2 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-xl px-3.5 py-2 animate-fadeUp"
+                style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
               >
                 <span className="font-bold text-[.85rem]">{gap.title}</span>
                 {gap.count > 1 && (
@@ -193,7 +222,7 @@ export default function ProfilePage() {
               </div>
             ))}
           </div>
-        </>
+        </FadeIn>
       )}
     </div>
   );

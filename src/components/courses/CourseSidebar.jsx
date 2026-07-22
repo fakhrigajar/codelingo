@@ -90,7 +90,7 @@ export default function CourseSidebar({
   };
 
   return (
-    <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-5 desktop:sticky desktop:top-24 h-fit">
+    <div className="min-w-0 bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-5 desktop:sticky desktop:top-24 h-fit">
       <div className="mb-4">
         <div className="font-bold truncate">{course.title}</div>
         <div className="font-mono text-[.68rem] text-ink-soft dark:text-white/50">

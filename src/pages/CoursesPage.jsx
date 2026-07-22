@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { completedCount } from "../lib/helpers";
 import CourseCard from "../components/courses/CourseCard";
 import FilterRow from "../components/common/FilterRow";
+import FadeIn from "../components/common/FadeIn";
 
 const LEVELS = ["all", "Beginner", "Intermediate", "Advanced"];
 
@@ -34,7 +35,10 @@ export default function CoursesPage() {
   return (
     <div>
       <div className="pt-12 pb-2.5">
-        <div className="flex items-start justify-between gap-6 desktop:flex-row flex-col">
+        <FadeIn
+          delay={0.05}
+          className="flex items-start justify-between gap-6 desktop:flex-row flex-col"
+        >
           <div>
             <h1 className="text-[2.2rem]">{pageText.coursesTitle}</h1>
             <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
@@ -59,9 +63,9 @@ export default function CoursesPage() {
               </div>
             </div>
           </div>
-        </div>
+        </FadeIn>
 
-        <div className="relative mt-6">
+        <FadeIn delay={0.15} className="relative mt-6">
           <svg
             width="18"
             height="18"
@@ -90,27 +94,39 @@ export default function CoursesPage() {
             placeholder="Search courses by title or topic..."
             className="w-full bg-white dark:bg-white/5 border-2 border-line dark:border-white/15 dark:text-white rounded-xl pl-10 pr-3.5 py-3 font-body text-[.95rem] focus:border-violet outline-none"
           />
-        </div>
+        </FadeIn>
 
-        <FilterRow
-          options={LEVELS.map((l) => ({
-            value: l,
-            label: l === "all" ? "All courses" : l,
-          }))}
-          active={filter}
-          onChange={setFilter}
-        />
+        <FadeIn delay={0.25}>
+          <FilterRow
+            options={LEVELS.map((l) => ({
+              value: l,
+              label: l === "all" ? "All courses" : l,
+            }))}
+            active={filter}
+            onChange={setFilter}
+          />
+        </FadeIn>
       </div>
       {list.length ? (
-        <div className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6">
-          {list.map((c) => (
-            <CourseCard key={c.id} course={c} currentUser={currentUser} />
+        <FadeIn delay={0.35} className="grid sm:grid-cols-2 desktop:grid-cols-3 gap-6">
+          {list.map((c, index) => (
+            <div
+              key={c.id}
+              className="animate-fadeUp"
+              style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
+            >
+              <CourseCard course={c} currentUser={currentUser} />
+            </div>
           ))}
-        </div>
+        </FadeIn>
       ) : (
-        <p className="text-ink-soft dark:text-white/50 py-10 text-center">
+        <FadeIn
+          delay={0.35}
+          as="p"
+          className="text-ink-soft dark:text-white/50 py-10 text-center"
+        >
           {q ? `No courses match "${query}".` : "No courses match this filter."}
-        </p>
+        </FadeIn>
       )}
     </div>
   );

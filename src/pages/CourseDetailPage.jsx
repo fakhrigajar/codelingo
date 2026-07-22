@@ -15,6 +15,7 @@ import { probeVideoDuration } from "../lib/probeVideoDuration";
 import LessonPanel from "../components/courses/LessonPanel";
 import AboutPanel from "../components/courses/AboutPanel";
 import CourseSidebar from "../components/courses/CourseSidebar";
+import FadeIn from "../components/common/FadeIn";
 
 const ABOUT_ID = "about";
 
@@ -179,7 +180,8 @@ export default function CourseDetailPage() {
     <div className="pt-8">
       <nav
         aria-label="Breadcrumb"
-        className="flex items-center flex-wrap gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 mb-4"
+        className="flex items-center flex-wrap gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 mb-4 animate-fadeUp"
+        style={{ animationDelay: ".05s" }}
       >
         <Link to="/courses" className="hover:text-violet dark:hover:text-violet">
           Courses
@@ -203,7 +205,10 @@ export default function CourseDetailPage() {
         )}
       </nav>
 
-      <div className="grid desktop:grid-cols-[340px_1fr] gap-6 items-start">
+      <FadeIn
+        delay={0.15}
+        className="grid desktop:grid-cols-[340px_1fr] gap-6 items-start"
+      >
         <CourseSidebar
           course={course}
           currentUser={currentUser}
@@ -234,7 +239,7 @@ export default function CourseDetailPage() {
             )
           )}
         </div>
-      </div>
+      </FadeIn>
     </div>
   );
 }

@@ -280,13 +280,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-10 sm:py-14">
-        <div className="flex justify-center mb-8 sm:mb-10"></div>
-        <div className="grid sm:grid-cols-3 gap-6 max-w-[980px] mx-auto">
-          {courses.slice(0, 3).map((c) => (
-            <CourseCard key={c.id} course={c} interactive={false} />
-          ))}
-        </div>
+      <section className="py-10 sm:py-14 flex flex-col gap-10">
         <div className="max-w-[560px] mx-auto text-center mt-10 sm:mt-14">
           <h2 className="text-[1.8rem] sm:text-[2.2rem] desktop:text-[2.5rem]">
             Peek at the course library
@@ -295,6 +289,13 @@ export default function HomePage() {
             {courses.length} course modules covering JavaScript, React, backend
             development, AI and more.
           </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-6 max-w-[980px] mx-auto">
+          {courses.slice(0, 3).map((c) => (
+            <CourseCard key={c.id} course={c} interactive={false} />
+          ))}
+        </div>
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={() => navigate("/courses")}
@@ -347,9 +348,6 @@ export default function HomePage() {
 
       <section className="py-16">
         <div className="max-w-[640px] mx-auto mb-10 text-center">
-          <div className="eyebrow mx-auto">
-            <Rocket size={13} /> how it works
-          </div>
           <h2 className="text-[2.1rem]">Four steps to your first badge</h2>
         </div>
         <StepsRow steps={STEPS} />

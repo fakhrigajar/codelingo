@@ -265,7 +265,7 @@ export default function Navbar() {
         </div>
       </div>
       <nav
-        className={`desktop:hidden flex flex-col gap-1 px-6 pb-4 pt-[6rem] fixed inset-0 z-[105] bg-bg dark:bg-indigo-dark transform transition-transform duration-300 ease-in-out ${
+        className={`desktop:hidden flex flex-col gap-1 px-6 pb-4 pt-[6rem] fixed inset-0 z-[105] overflow-y-auto overscroll-contain bg-bg dark:bg-indigo-dark transform transition-transform duration-300 ease-in-out ${
           navOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
       >

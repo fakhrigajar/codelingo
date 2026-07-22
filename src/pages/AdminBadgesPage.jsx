@@ -11,6 +11,7 @@ import {
   AdminSelect,
   AdminButton,
 } from "../components/admin/AdminFields";
+import FadeIn from "../components/common/FadeIn";
 
 export default function AdminBadgesPage() {
   const { badges, addBadge, updateBadge, removeBadge } = useContent();
@@ -71,55 +72,62 @@ export default function AdminBadgesPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-1 flex-wrap gap-2">
-        <h1 className="text-2xl m-0">Badges</h1>
-        <AdminButton onClick={handleAdd}>+ Add badge</AdminButton>
-      </div>
-      <p className="text-ink-soft dark:text-white/60 mb-6">
-        Change the icon, name and description shown on learner profiles. Edits
-        are staged until you save.
-      </p>
+      <FadeIn delay={0.05}>
+        <div className="flex justify-between items-center mb-1 flex-wrap gap-2">
+          <h1 className="text-2xl m-0">Badges</h1>
+          <AdminButton onClick={handleAdd}>+ Add badge</AdminButton>
+        </div>
+        <p className="text-ink-soft dark:text-white/60 mb-6">
+          Change the icon, name and description shown on learner profiles.
+          Edits are staged until you save.
+        </p>
+      </FadeIn>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        {draft.map((b) => {
+      <FadeIn delay={0.15} className="grid sm:grid-cols-2 gap-4">
+        {draft.map((b, i) => {
           const Icon = getBadgeIcon(b.icon);
           return (
-            <AdminCard key={b.id}>
-              <div className="grid grid-cols-[70px_1fr] gap-3 items-end">
-                <div className="w-full h-[42px] flex items-center justify-center border-2 border-line dark:border-white/15 rounded-[10px] text-violet mb-3">
-                  <Icon size={20} />
+            <FadeIn key={b.id} delay={Math.min(0.25 + i * 0.05, 0.4)}>
+              <AdminCard>
+                <div className="grid grid-cols-[70px_1fr] gap-3 items-end">
+                  <div className="w-full h-[42px] flex items-center justify-center border-2 border-line dark:border-white/15 rounded-[10px] text-violet mb-3">
+                    <Icon size={20} />
+                  </div>
+                  <AdminSelect
+                    label="Icon"
+                    value={b.icon}
+                    onChange={(e) => patchDraft(b.id, { icon: e.target.value })}
+                  >
+                    {BADGE_ICON_NAMES.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </AdminSelect>
                 </div>
-                <AdminSelect
-                  label="Icon"
-                  value={b.icon}
-                  onChange={(e) => patchDraft(b.id, { icon: e.target.value })}
+                <AdminInput
+                  label="Name"
+                  placeholder="e.g. First Steps"
+                  value={b.name}
+                  onChange={(e) => patchDraft(b.id, { name: e.target.value })}
+                />
+                <AdminTextarea
+                  label="Description"
+                  placeholder="What does a learner need to do to earn this badge?"
+                  value={b.desc}
+                  onChange={(e) => patchDraft(b.id, { desc: e.target.value })}
+                />
+                <AdminButton
+                  variant="danger"
+                  onClick={() => handleRemove(b.id)}
                 >
-                  {BADGE_ICON_NAMES.map((name) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </AdminSelect>
-              </div>
-              <AdminInput
-                label="Name"
-                placeholder="e.g. First Steps"
-                value={b.name}
-                onChange={(e) => patchDraft(b.id, { name: e.target.value })}
-              />
-              <AdminTextarea
-                label="Description"
-                placeholder="What does a learner need to do to earn this badge?"
-                value={b.desc}
-                onChange={(e) => patchDraft(b.id, { desc: e.target.value })}
-              />
-              <AdminButton variant="danger" onClick={() => handleRemove(b.id)}>
-                Delete
-              </AdminButton>
-            </AdminCard>
+                  Delete
+                </AdminButton>
+              </AdminCard>
+            </FadeIn>
           );
         })}
-      </div>
+      </FadeIn>
     </div>
   );
 }

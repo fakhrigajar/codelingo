@@ -23,11 +23,41 @@ export function AuthProvider({ children }) {
       setReady(true);
       return;
     }
-    usersApi
-      .get(session)
-      .then((user) => setCurrentUser(user))
-      .catch(() => storageRemove(SESSION_KEY))
-      .finally(() => setReady(true));
+
+    let cancelled = false;
+
+    // The API server can still be finishing its MongoDB connection right as
+    // the page loads (same race ContentContext's loader retries around), so
+    // a failed lookup here isn't proof the session is invalid — only a
+    // confirmed 404 means the account is actually gone. Retry with backoff
+    // instead of logging a real user out because of a transient failure.
+    function load(attempt = 0) {
+      usersApi
+        .get(session)
+        .then((user) => {
+          if (cancelled) return;
+          setCurrentUser(user);
+          setReady(true);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          if (err.status === 404) {
+            storageRemove(SESSION_KEY);
+            setReady(true);
+            return;
+          }
+          if (attempt < 5) {
+            setTimeout(() => load(attempt + 1), 500 * (attempt + 1));
+          } else {
+            setReady(true);
+          }
+        });
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(async (username, password) => {
