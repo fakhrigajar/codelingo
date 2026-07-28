@@ -20,6 +20,7 @@ const CvAnalyzerPage = lazy(() => import("./pages/tools/CvAnalyzerPage"));
 const InterviewPrepPage = lazy(() => import("./pages/tools/InterviewPrepPage"));
 const ProjectIdeasPage = lazy(() => import("./pages/tools/ProjectIdeasPage"));
 const LearningPathPage = lazy(() => import("./pages/tools/LearningPathPage"));
+const CourseQuizPage = lazy(() => import("./pages/tools/CourseQuizPage"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
@@ -80,6 +81,14 @@ function AppRoutes() {
               element={
                 <RequireAuth>
                   <LearningPathPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/tools/quiz"
+              element={
+                <RequireAuth>
+                  <CourseQuizPage />
                 </RequireAuth>
               }
             />

@@ -16,7 +16,6 @@ export default function SortableUnitBlock({
   onRemoveUnit,
   onRenameUnit,
   onAddLesson,
-  onAddQuiz,
 }) {
   const isRealUnit = group.number != null
 
@@ -114,18 +113,11 @@ export default function SortableUnitBlock({
         )}
       </div>
 
-      {(onAddLesson || onAddQuiz) && (
+      {onAddLesson && (
         <div className="flex gap-2 mt-3">
-          {onAddLesson && (
-            <AdminButton variant="outline" onClick={onAddLesson}>
-              + Add lesson
-            </AdminButton>
-          )}
-          {onAddQuiz && (
-            <AdminButton variant="outline" onClick={onAddQuiz}>
-              + Add quiz
-            </AdminButton>
-          )}
+          <AdminButton variant="outline" onClick={onAddLesson}>
+            + Add lesson
+          </AdminButton>
         </div>
       )}
     </div>

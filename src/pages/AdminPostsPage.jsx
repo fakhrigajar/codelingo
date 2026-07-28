@@ -9,7 +9,6 @@ import AdminCard from '../components/admin/AdminCard'
 import { AdminButton } from '../components/admin/AdminFields'
 import DocumentViewerModal from '../components/community/DocumentViewerModal'
 import AntdThemeProvider from '../components/common/AntdThemeProvider'
-import FadeIn from '../components/common/FadeIn'
 
 function PostRow({ post, onDelete, reportBadge }) {
   const [docOpen, setDocOpen] = useState(false)
@@ -116,10 +115,8 @@ export default function AdminPostsPage() {
           </AdminCard>
         ) : (
           <div className="space-y-4">
-            {posts.map((post, i) => (
-              <FadeIn key={post.id} delay={Math.min(i * 0.05, 0.4)}>
-                <PostRow post={post} onDelete={handleDelete} />
-              </FadeIn>
+            {posts.map((post) => (
+              <PostRow key={post.id} post={post} onDelete={handleDelete} />
             ))}
           </div>
         ),
@@ -136,19 +133,18 @@ export default function AdminPostsPage() {
           </AdminCard>
         ) : (
           <div className="space-y-4">
-            {reported.map((post, i) => (
-              <FadeIn key={post.id} delay={Math.min(i * 0.05, 0.4)}>
-                <PostRow
-                  post={post}
-                  onDelete={handleDelete}
-                  reportBadge={
-                    <span className="inline-flex items-center gap-1 text-coral font-bold">
-                      <Flag size={12} /> Reported {post.reports.length} time
-                      {post.reports.length === 1 ? '' : 's'}
-                    </span>
-                  }
-                />
-              </FadeIn>
+            {reported.map((post) => (
+              <PostRow
+                key={post.id}
+                post={post}
+                onDelete={handleDelete}
+                reportBadge={
+                  <span className="inline-flex items-center gap-1 text-coral font-bold">
+                    <Flag size={12} /> Reported {post.reports.length} time
+                    {post.reports.length === 1 ? '' : 's'}
+                  </span>
+                }
+              />
             ))}
           </div>
         ),
@@ -168,11 +164,10 @@ export default function AdminPostsPage() {
             </p>
           ) : (
             <div className="space-y-3">
-              {deletions.map((d, i) => (
+              {deletions.map((d) => (
                 <div
                   key={d.id}
-                  className="text-[.85rem] border-b border-line dark:border-white/10 pb-2.5 last:border-0 last:pb-0 animate-fadeUp"
-                  style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}
+                  className="text-[.85rem] border-b border-line dark:border-white/10 pb-2.5 last:border-0 last:pb-0"
                 >
                   <div>
                     <strong className="text-ink dark:text-white">{d.deletedBy}</strong>{' '}
@@ -198,20 +193,16 @@ export default function AdminPostsPage() {
   return (
     <AntdThemeProvider>
       <div>
-        <FadeIn delay={0.05}>
-          <h1 className="text-2xl mb-1">Community posts</h1>
-          <p className="text-ink-soft dark:text-white/60 mb-6">
-            Manage everything posted in the community — view content, delete posts, and review
-            reports.
-          </p>
-        </FadeIn>
-        <FadeIn delay={0.15}>
-          {loading ? (
-            <p className="text-ink-soft dark:text-white/60">Loading…</p>
-          ) : (
-            <Tabs items={items} />
-          )}
-        </FadeIn>
+        <h1 className="text-2xl mb-1">Community posts</h1>
+        <p className="text-ink-soft dark:text-white/60 mb-6">
+          Manage everything posted in the community — view content, delete posts, and review
+          reports.
+        </p>
+        {loading ? (
+          <p className="text-ink-soft dark:text-white/60">Loading…</p>
+        ) : (
+          <Tabs items={items} />
+        )}
       </div>
     </AntdThemeProvider>
   )

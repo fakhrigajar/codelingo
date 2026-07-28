@@ -1,6 +1,3 @@
-// A native `title` attribute has an inconsistent OS-controlled delay and no
-// animation — this renders its own tooltip above the button that fades and
-// slides up on hover, so it always looks and behaves the same everywhere.
 export default function IconButtonWithTooltip({
   icon: Icon,
   tooltip,

@@ -11,7 +11,9 @@ import { getLessonBlocks } from "../../lib/lessonBlocks";
 import { resolveUploadUrl } from "../../lib/resolveUploadUrl";
 import { getYouTubeVideoId, getVideoEmbedUrl } from "../../lib/videoEmbed";
 import { loadYouTubeIframeApi } from "../../lib/youtubeApi";
+import { useToast } from "../../context/ToastContext";
 import QuizPanel from "./QuizPanel";
+import LessonPracticeQuiz from "./LessonPracticeQuiz";
 import LessonDiscussion from "./LessonDiscussion";
 
 function useLatestRef(value) {
@@ -221,11 +223,29 @@ export default function LessonPanel({
   onNext,
   onVideoProgress,
   onVideoDuration,
+  onQuizAttempt,
 }) {
+  const toast = useToast();
   const done =
     currentUser && (currentUser.completed[course.id] || []).includes(lesson.id);
   const blocks = getLessonBlocks(lesson);
   const videoBlock = blocks.find((b) => b.type === "video" && b.value);
+
+  // Only a lesson's very first quiz attempt can complete it — fail that once
+  // and the quiz becomes practice-only; the only way left to complete the
+  // lesson is watching the whole video. Retries are still allowed (and still
+  // scored), they just no longer count toward completion.
+  const quizAttempted =
+    !!currentUser?.quizAttempted?.[course.id]?.includes(lesson.id);
+
+  const handleQuizChecked = (isPerfect) => {
+    if (quizAttempted) return;
+    onQuizAttempt?.(lesson.id);
+    if (isPerfect && !done) {
+      onComplete(course, lesson, lesson.points ?? 10, false);
+      toast("Perfect score! Lesson marked complete.");
+    }
+  };
 
   const watchedRef = useRef(
     currentUser?.videoProgress?.[course.id]?.[lesson.id] || 0,
@@ -254,7 +274,6 @@ export default function LessonPanel({
       window.removeEventListener("pagehide", flush);
       flush();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course.id, lesson.id]);
 
   const handleTick = (delta) => {
@@ -286,6 +305,7 @@ export default function LessonPanel({
     return (
       <div className="bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-7">
         <QuizPanel
+          key={lesson.id}
           lesson={lesson}
           done={done}
           onComplete={(xp, isQuiz) => onComplete(course, lesson, xp, isQuiz)}
@@ -320,6 +340,13 @@ export default function LessonPanel({
         }
         return <LessonBlock key={block.id} block={block} />;
       })}
+      {lesson.practiceQuiz?.length > 0 && (
+        <LessonPracticeQuiz
+          key={lesson.id}
+          questions={lesson.practiceQuiz}
+          onChecked={handleQuizChecked}
+        />
+      )}
       <div className="flex justify-between gap-3">
         <button
           className={`btn ${done ? "btn-outline" : "btn-primary"} inline-flex items-center justify-center gap-1.5`}
@@ -342,15 +369,6 @@ export default function LessonPanel({
         </button>
         <NextButton nextLesson={nextLesson} onNext={onNext} />
       </div>
-      {videoBlock && !done && !videoWatched && (
-        <p className="text-[.8rem] text-ink-soft dark:text-white/50 mt-5">
-          Watch the full video to unlock Submit —{" "}
-          {videoDuration
-            ? Math.min(100, Math.floor((watchedSeconds / videoDuration) * 100))
-            : 0}
-          %
-        </p>
-      )}
       {!currentUser && (
         <p className="text-[.82rem] text-ink-soft dark:text-white/50 mt-3">
           Log in to save your progress.

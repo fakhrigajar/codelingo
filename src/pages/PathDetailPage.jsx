@@ -4,7 +4,6 @@ import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
 import { pathCourses, pathStats, progressPct } from "../lib/helpers";
 import PathCourseNode from "../components/paths/PathCourseNode";
-import FadeIn from "../components/common/FadeIn";
 
 export default function PathDetailPage() {
   const { pathId } = useParams();
@@ -28,53 +27,38 @@ export default function PathDetailPage() {
 
   return (
     <div className="pt-8">
-      <FadeIn delay={0.05}>
-        <nav
-          aria-label="Breadcrumb"
-          className="flex items-center flex-wrap gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 mb-4"
-        >
-          <Link to="/paths" className="hover:text-violet dark:hover:text-violet">
-            Paths
-          </Link>
-          <span className="text-line dark:text-white/20">/</span>
-          <span className="text-ink dark:text-white">{path.label}</span>
-        </nav>
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center flex-wrap gap-1.5 text-[.85rem] font-bold text-ink-soft dark:text-white/50 mb-4"
+      >
+        <Link to="/paths" className="hover:text-violet dark:hover:text-violet">
+          Paths
+        </Link>
+        <span className="text-line dark:text-white/20">/</span>
+        <span className="text-ink dark:text-white">{path.label}</span>
+      </nav>
 
-        <h1 className="text-[2rem] mb-1">{path.label}</h1>
-        <p className="text-ink-soft dark:text-white/60 font-mono text-[.85rem] mb-7">
-          {path.level} · {linked.length} course{linked.length === 1 ? "" : "s"} · {points} pts · {hours}h
-        </p>
-      </FadeIn>
+      <h1 className="text-[2rem] mb-1">{path.label}</h1>
+      <p className="text-ink-soft dark:text-white/60 font-mono text-[.85rem] mb-7">
+        {path.level} · {linked.length} course{linked.length === 1 ? "" : "s"} · {points} pts · {hours}h
+      </p>
 
       {linked.length === 0 ? (
         <p className="text-ink-soft dark:text-white/60">No courses have been added to this path yet.</p>
       ) : (
-        <FadeIn
-          delay={0.15}
-          className="relative ml-[22px] border-l-[3px] border-dashed border-line dark:border-white/15 pl-[38px]"
-        >
+        <div className="relative ml-[22px] border-l-[3px] border-dashed border-line dark:border-white/15 pl-[38px]">
           {visibleStops.map((s, i) => (
-            <div
+            <PathCourseNode
               key={s.course.id}
-              className="animate-fadeUp"
-              style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}
-            >
-              <PathCourseNode
-                index={i}
-                course={s.course}
-                currentUser={currentUser}
-                done={s.done}
-                locked={i === firstLockedIndex}
-              />
-            </div>
+              index={i}
+              course={s.course}
+              currentUser={currentUser}
+              done={s.done}
+              locked={i === firstLockedIndex}
+            />
           ))}
           {showFinish && (
-            <div
-              className="relative h-[34px] animate-fadeUp"
-              style={{
-                animationDelay: `${Math.min(visibleStops.length * 0.05, 0.4)}s`,
-              }}
-            >
+            <div className="relative h-[34px]">
               <div
                 className={`absolute -left-[55px] top-0 w-[34px] h-[34px] rounded-full border-[3px] flex items-center justify-center text-base z-10 ${
                   allDone ? "bg-sun border-sun" : "bg-bg dark:bg-indigo-dark border-line dark:border-white/15"
@@ -87,7 +71,7 @@ export default function PathDetailPage() {
               </span>
             </div>
           )}
-        </FadeIn>
+        </div>
       )}
     </div>
   );

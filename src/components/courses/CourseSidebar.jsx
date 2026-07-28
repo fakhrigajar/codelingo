@@ -25,7 +25,39 @@ function ChevronIcon({ open }) {
   );
 }
 
-function ItemIcon({ item, isDone }) {
+// Shown in place of the book icon while a lesson's video is in progress
+// (started but not yet enough to count as done) — a quick "you're partway
+// through this one" signal without opening the lesson.
+function CircularProgressIcon({ pct }) {
+  const radius = 6;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - pct / 100);
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle
+        cx="8"
+        cy="8"
+        r={radius}
+        stroke="currentColor"
+        strokeWidth="2"
+        opacity="0.25"
+      />
+      <circle
+        cx="8"
+        cy="8"
+        r={radius}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        transform="rotate(-90 8 8)"
+      />
+    </svg>
+  );
+}
+
+function ItemIcon({ item, isDone, progressPct }) {
   if (isDone) {
     return (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -37,6 +69,9 @@ function ItemIcon({ item, isDone }) {
         />
       </svg>
     );
+  }
+  if (progressPct > 0) {
+    return <CircularProgressIcon pct={progressPct} />;
   }
   if (item.type === "quiz") {
     return (
@@ -84,7 +119,6 @@ export default function CourseSidebar({
     });
     return initial;
   });
-
   const toggleUnit = (unit) => {
     setOpenUnits((prev) => ({ ...prev, [unit]: !prev[unit] }));
   };
@@ -158,6 +192,16 @@ export default function CourseSidebar({
                   {u.items.map((item) => {
                     const isDone = doneIds.includes(item.id);
                     const isActive = activeLessonId === item.id;
+                    const watchedSeconds =
+                      currentUser?.videoProgress?.[course.id]?.[item.id] || 0;
+                    const durationSeconds = (item.videoMinutes || 0) * 60;
+                    const progressPct =
+                      !isDone && durationSeconds > 0
+                        ? Math.min(
+                            100,
+                            Math.round((watchedSeconds / durationSeconds) * 100),
+                          )
+                        : 0;
                     return (
                       <button
                         key={item.id}
@@ -176,7 +220,11 @@ export default function CourseSidebar({
                               : "text-ink-soft dark:text-white/50"
                           }
                         >
-                          <ItemIcon item={item} isDone={isDone} />
+                          <ItemIcon
+                            item={item}
+                            isDone={isDone}
+                            progressPct={progressPct}
+                          />
                         </span>
                         <span
                           className={`flex-1 min-w-0 truncate text-[.82rem] font-bold ${

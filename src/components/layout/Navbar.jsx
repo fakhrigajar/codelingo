@@ -22,10 +22,6 @@ const navLinkClass = ({ isActive }) =>
       : "text-ink-soft hover:bg-[#EAF1FD] hover:text-indigo-dark dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
   }`;
 
-// Hover-triggered dropdown for the "Tools" nav item — there's no more /tools
-// landing page, so this trigger only ever opens the menu; picking an item is
-// the only way in. Click-to-toggle is kept alongside hover so it still works
-// without a mouse (touch, keyboard).
 function ToolsNavDropdown() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -58,7 +54,12 @@ function ToolsNavDropdown() {
   }, [open]);
 
   return (
-    <div ref={ref} className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
+    <div
+      ref={ref}
+      className="relative"
+      onMouseEnter={openNow}
+      onMouseLeave={closeSoon}
+    >
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -67,7 +68,10 @@ function ToolsNavDropdown() {
         className={`inline-flex items-center gap-1 ${navLinkClass({ isActive })}`}
       >
         Tools
-        <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          size={14}
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
       {open && (
         <div role="menu" className="absolute left-0 top-full w-56 pt-2">
@@ -217,6 +221,18 @@ export default function Navbar() {
                     >
                       Settings
                     </button>
+                    {currentUser.role === "admin" && (
+                      <button
+                        role="menuitem"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          navigate("/admin");
+                        }}
+                        className="w-full text-left px-4 py-2.5 font-bold text-[.9rem] text-ink dark:text-white hover:bg-[#EAF1FD] dark:hover:bg-white/10 transition-colors"
+                      >
+                        Admin Dashboard
+                      </button>
+                    )}
                     <div className="my-1 border-t-2 border-line dark:border-white/10" />
                     <button
                       role="menuitem"
@@ -290,7 +306,9 @@ export default function Navbar() {
             to={tool.to}
             tabIndex={navOpen ? 0 : -1}
             onClick={() => setNavOpen(false)}
-            className={({ isActive }) => `flex items-center gap-2.5 ${navLinkClass({ isActive })}`}
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 ${navLinkClass({ isActive })}`
+            }
           >
             <tool.Icon size={16} />
             {tool.title}

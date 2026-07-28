@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { X } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -26,7 +25,6 @@ import {
 import {
   AdminInput,
   AdminTextarea,
-  AdminSelect,
   AdminButton,
   AdminImageUpload,
 } from "./AdminFields";
@@ -133,7 +131,6 @@ function BlockField({ block, onValueChange, onTitleChange }) {
 }
 
 export default function LessonEditor({ lesson, onChange, onRemove }) {
-  const isQuiz = lesson.type === "quiz";
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
@@ -167,71 +164,48 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
     setBlocks(blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
 
-  const updateQuestion = (qi, patch) => {
+  // The practice quiz shown after this lesson's content, on the lesson page —
+  // every question always has exactly 4 options with one marked correct,
+  // matching the shape the rest of the app already assumes everywhere else
+  // (LessonPracticeQuiz, the AI generation script).
+  const practiceQuiz = lesson.practiceQuiz || [];
+  const updatePracticeQuestion = (qi, patch) => {
     onChange({
-      questions: lesson.questions.map((q, i) =>
+      practiceQuiz: practiceQuiz.map((q, i) =>
         i === qi ? { ...q, ...patch } : q,
       ),
     });
   };
-  const updateOption = (qi, oi, value) => {
+  const updatePracticeOption = (qi, oi, value) => {
     onChange({
-      questions: lesson.questions.map((q, i) =>
+      practiceQuiz: practiceQuiz.map((q, i) =>
         i === qi
           ? { ...q, options: q.options.map((o, j) => (j === oi ? value : o)) }
           : q,
       ),
     });
   };
-  const addOption = (qi) => {
+  const addPracticeQuestion = () => {
     onChange({
-      questions: lesson.questions.map((q, i) =>
-        i === qi ? { ...q, options: [...q.options, "New option"] } : q,
-      ),
-    });
-  };
-  const removeOption = (qi, oi) => {
-    onChange({
-      questions: lesson.questions.map((q, i) =>
-        i === qi
-          ? {
-              ...q,
-              options: q.options.filter((_, j) => j !== oi),
-              correct: q.correct === oi ? 0 : q.correct,
-            }
-          : q,
-      ),
-    });
-  };
-  const addQuestion = () => {
-    onChange({
-      questions: [
-        ...lesson.questions,
-        { q: "New question?", options: ["Option A", "Option B"], correct: 0 },
+      practiceQuiz: [
+        ...practiceQuiz,
+        { q: "", options: ["", "", "", ""], correct: 0 },
       ],
     });
   };
-  const removeQuestion = (qi) => {
-    onChange({ questions: lesson.questions.filter((_, i) => i !== qi) });
+  const removePracticeQuestion = (qi) => {
+    onChange({ practiceQuiz: practiceQuiz.filter((_, i) => i !== qi) });
   };
 
   return (
     <div>
-      <div className="grid sm:grid-cols-[1fr_140px_140px_140px] gap-3">
+      <div className="grid sm:grid-cols-[1fr_140px_140px] gap-3">
         <AdminInput
           label="Title"
           placeholder="e.g. Variables and Data Types"
           value={lesson.title}
           onChange={(e) => onChange({ title: e.target.value })}
         />
-        <AdminSelect
-          label="Type"
-          value={lesson.type}
-          onChange={(e) => onChange({ type: e.target.value })}
-        >
-          <option value="lesson">Lesson</option>
-          <option value="quiz">Quiz</option>
-        </AdminSelect>
         <AdminInput
           label="Est. minutes"
           type="number"
@@ -249,7 +223,7 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
           label="Points (XP)"
           type="number"
           min="0"
-          placeholder={isQuiz ? "e.g. 20" : "e.g. 10"}
+          placeholder="e.g. 10"
           value={lesson.points ?? ""}
           onChange={(e) =>
             onChange({
@@ -260,59 +234,62 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
         />
       </div>
 
-      {!isQuiz && (
+      {labeledBlocks.length > 0 && (
         <>
-          {labeledBlocks.length > 0 && (
-            <>
-              <span className="block font-bold text-[.8rem] mb-1 text-ink-soft dark:text-white/60">
-                Drag to reorder how these appear on the lesson page
-              </span>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleBlockDragEnd}
-              >
-                <SortableContext
-                  items={labeledBlocks.map((b) => b.id)}
-                  strategy={verticalListSortingStrategy}
+          <span className="block font-bold text-[.8rem] mb-1 text-ink-soft dark:text-white/60">
+            Drag to reorder how these appear on the lesson page
+          </span>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleBlockDragEnd}
+          >
+            <SortableContext
+              items={labeledBlocks.map((b) => b.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {labeledBlocks.map((block) => (
+                <SortableLessonBlock
+                  key={block.id}
+                  id={block.id}
+                  label={block.label}
+                  onRemove={() => removeBlock(block.id)}
                 >
-                  {labeledBlocks.map((block) => (
-                    <SortableLessonBlock
-                      key={block.id}
-                      id={block.id}
-                      label={block.label}
-                      onRemove={() => removeBlock(block.id)}
-                    >
-                      <BlockField
-                        block={block}
-                        onValueChange={(value) => patchBlock(block.id, { value })}
-                        onTitleChange={(title) => patchBlock(block.id, { title })}
-                      />
-                    </SortableLessonBlock>
-                  ))}
-                </SortableContext>
-              </DndContext>
-            </>
-          )}
-          {addableTypes.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {addableTypes.map((type) => (
-                <AdminButton
-                  key={type}
-                  variant="outline"
-                  onClick={() => addBlock(type)}
-                >
-                  {BLOCK_ADD_LABELS[type]}
-                </AdminButton>
+                  <BlockField
+                    block={block}
+                    onValueChange={(value) => patchBlock(block.id, { value })}
+                    onTitleChange={(title) => patchBlock(block.id, { title })}
+                  />
+                </SortableLessonBlock>
               ))}
-            </div>
-          )}
+            </SortableContext>
+          </DndContext>
         </>
       )}
+      {addableTypes.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {addableTypes.map((type) => (
+            <AdminButton
+              key={type}
+              variant="outline"
+              onClick={() => addBlock(type)}
+            >
+              {BLOCK_ADD_LABELS[type]}
+            </AdminButton>
+          ))}
+        </div>
+      )}
 
-      {isQuiz && (
-        <div className="space-y-3 mt-2">
-          {(lesson.questions || []).map((q, qi) => (
+      <div className="mt-4 pt-4 border-t border-line dark:border-white/10">
+        <span className="block font-bold text-[.9rem] mb-1">
+          Practice quiz
+        </span>
+        <p className="text-[.78rem] text-ink-soft dark:text-white/50 mb-3">
+          Shown after this lesson's content as a self-check. Each question
+          needs exactly 4 options, with one marked correct.
+        </p>
+        <div className="space-y-3">
+          {practiceQuiz.map((q, qi) => (
             <div
               key={qi}
               className="border border-line dark:border-white/10 rounded-lg p-3 bg-white dark:bg-white/5"
@@ -323,60 +300,48 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
                 </span>
                 <AdminButton
                   variant="danger"
-                  onClick={() => removeQuestion(qi)}
+                  onClick={() => removePracticeQuestion(qi)}
                 >
                   Remove
                 </AdminButton>
               </div>
               <AdminInput
                 label="Question text"
-                placeholder="e.g. What does HTML stand for?"
+                placeholder="e.g. HTML stands for ______."
                 value={q.q}
-                onChange={(e) => updateQuestion(qi, { q: e.target.value })}
+                onChange={(e) => updatePracticeQuestion(qi, { q: e.target.value })}
               />
               <span className="block font-bold text-[.8rem] mb-1 text-ink-soft dark:text-white/60">
                 Options (select the correct one)
               </span>
-              {q.options.map((opt, oi) => (
+              {[0, 1, 2, 3].map((oi) => (
                 <div key={oi} className="flex items-center gap-2 mb-2">
                   <input
                     type="radio"
-                    name={`correct-${lesson.id}-${qi}`}
+                    name={`practice-correct-${lesson.id}-${qi}`}
                     checked={q.correct === oi}
-                    onChange={() => updateQuestion(qi, { correct: oi })}
+                    onChange={() => updatePracticeQuestion(qi, { correct: oi })}
                     title="Mark as correct answer"
                   />
                   <input
                     className="flex-1 px-3 py-2 border-2 border-line dark:border-white/15 dark:bg-white/5 dark:text-white rounded-lg text-[.88rem] focus:border-violet outline-none"
-                    placeholder={
-                      OPTION_PLACEHOLDERS[oi] || `e.g. Option ${oi + 1}`
-                    }
-                    value={opt}
-                    onChange={(e) => updateOption(qi, oi, e.target.value)}
+                    placeholder={OPTION_PLACEHOLDERS[oi]}
+                    value={q.options?.[oi] || ""}
+                    onChange={(e) => updatePracticeOption(qi, oi, e.target.value)}
                   />
-                  <AdminButton
-                    variant="ghost"
-                    onClick={() => removeOption(qi, oi)}
-                    disabled={q.options.length <= 2}
-                  >
-                    <X size={14} />
-                  </AdminButton>
                 </div>
               ))}
-              <AdminButton variant="outline" onClick={() => addOption(qi)}>
-                + Add option
-              </AdminButton>
             </div>
           ))}
-          <AdminButton variant="outline" onClick={addQuestion}>
+          <AdminButton variant="outline" onClick={addPracticeQuestion}>
             + Add question
           </AdminButton>
         </div>
-      )}
+      </div>
 
       <div className="mt-3 pt-3 border-t border-line dark:border-white/10">
         <AdminButton variant="danger" className="w-full" onClick={onRemove}>
-          Remove this {isQuiz ? "quiz" : "lesson"}
+          Remove this lesson
         </AdminButton>
       </div>
     </div>

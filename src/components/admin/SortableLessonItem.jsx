@@ -34,6 +34,7 @@ export default function SortableLessonItem({
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
+  const hasQuiz = lesson.practiceQuiz?.length > 0;
 
   return (
     <div
@@ -54,9 +55,9 @@ export default function SortableLessonItem({
           </button>
           <span
             className="text-ink-soft dark:text-white/50 shrink-0"
-            title={lesson.type === "quiz" ? "Quiz" : "Lesson"}
+            title={hasQuiz ? "Has a practice quiz" : "Lesson"}
           >
-            {lesson.type === "quiz" ? (
+            {hasQuiz ? (
               <ClipboardList size={16} />
             ) : (
               <BookOpen size={16} />

@@ -48,10 +48,6 @@ export default {
           "0%, 100%": { transform: "translate(0, 0) scale(1)", opacity: 0.7 },
           "50%": { transform: "translate(18px, -22px) scale(1.12)", opacity: 1 },
         },
-        fadeUp: {
-          from: { opacity: 0, transform: "translateY(18px)" },
-          to: { opacity: 1, transform: "translateY(0)" },
-        },
         heroPop: {
           "0%": { opacity: 0, transform: "translateY(26px) scale(.7)" },
           "60%": { opacity: 1, transform: "translateY(-4px) scale(1.05)" },
@@ -62,7 +58,6 @@ export default {
         cardFloat: "cardFloat 5s ease-in-out infinite",
         logoFloat: "logoFloat 5.5s ease-in-out infinite",
         blobDrift: "blobDrift 9s ease-in-out infinite",
-        fadeUp: "fadeUp .7s ease both",
         heroPop: "heroPop .7s cubic-bezier(.34,1.56,.64,1) both",
       },
     },

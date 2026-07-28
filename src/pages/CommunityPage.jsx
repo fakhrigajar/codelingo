@@ -6,7 +6,6 @@ import { uid } from "../lib/helpers";
 import PostComposer from "../components/community/PostComposer";
 import PostCard from "../components/community/PostCard";
 import AntdThemeProvider from "../components/common/AntdThemeProvider";
-import FadeIn from "../components/common/FadeIn";
 
 export default function CommunityPage() {
   const { currentUser, saveCurrentUser } = useAuth();
@@ -63,18 +62,16 @@ export default function CommunityPage() {
   return (
     <AntdThemeProvider>
       <div>
-        <FadeIn delay={0.05} className="pt-12 pb-2.5">
+        <div className="pt-12 pb-2.5">
           <h1 className="text-[2.2rem]">Community</h1>
           <p className="text-ink-soft dark:text-white/60 max-w-[600px]">
             Share what you&apos;re building, ask questions, and help other
             learners — post a message, image or document, and reply, like or
             report what others share.
           </p>
-        </FadeIn>
+        </div>
 
-        <FadeIn delay={0.15}>
-          <PostComposer onSubmit={handleCreate} />
-        </FadeIn>
+        <PostComposer onSubmit={handleCreate} />
 
         {loading ? (
           <p className="text-ink-soft dark:text-white/60 text-center py-10">
@@ -85,21 +82,16 @@ export default function CommunityPage() {
             No posts yet — be the first to share something!
           </p>
         ) : (
-          <FadeIn delay={0.25} className="flex flex-col gap-5 mt-6">
-            {posts.map((post, index) => (
-              <div
+          <div className="flex flex-col gap-5 mt-6">
+            {posts.map((post) => (
+              <PostCard
                 key={post.id}
-                className="animate-fadeUp"
-                style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
-              >
-                <PostCard
-                  post={post}
-                  onChange={(patch) => patchPost(post.id, patch)}
-                  onRemove={removePostLocal}
-                />
-              </div>
+                post={post}
+                onChange={(patch) => patchPost(post.id, patch)}
+                onRemove={removePostLocal}
+              />
             ))}
-          </FadeIn>
+          </div>
         )}
       </div>
     </AntdThemeProvider>

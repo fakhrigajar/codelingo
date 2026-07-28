@@ -5,6 +5,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { getLessonContentText } from "../src/lib/lessonContentText.js";
 
 const app = express();
 app.use(express.json({ limit: "8mb" }));
@@ -576,6 +577,87 @@ async function start() {
     },
   );
 
+  // Generates a fresh comprehension quiz for a finished course, on demand —
+  // unlike the lesson-embedded practice quizzes (lesson.practiceQuiz), this
+  // is not pre-generated/stored: it's an AI career tool like the others
+  // below (CV analyzer, interview prep, ...), so it regenerates each time
+  // it's requested. Sourced from each lesson's video captions, falling back
+  // to its written blocks, sampling at most MAX_QUIZ_LESSONS lessons spread
+  // across the course so large courses (25+ lessons) still respond quickly.
+  const MAX_QUIZ_LESSONS = 12;
+  app.post("/api/course-quiz", async (req, res) => {
+    const { courseId } = req.body || {};
+    if (!courseId)
+      return res.status(400).json({ error: "courseId is required." });
+
+    const course = await coursesCollection.findOne({ id: courseId });
+    if (!course) return res.status(404).json({ error: "Course not found." });
+
+    const lessons = (course.lessons || []).filter((l) => l.type !== "quiz");
+    if (!lessons.length) {
+      return res
+        .status(400)
+        .json({ error: "This course has no lessons to quiz on." });
+    }
+    const sampled =
+      lessons.length <= MAX_QUIZ_LESSONS
+        ? lessons
+        : Array.from({ length: MAX_QUIZ_LESSONS }, (_, i) =>
+            lessons[Math.floor((i * lessons.length) / MAX_QUIZ_LESSONS)],
+          );
+    const perLessonCap = Math.floor(20000 / sampled.length);
+    const lessonTexts = await Promise.all(
+      sampled.map(async (l) => {
+        const text = await getLessonContentText(l, perLessonCap).catch(
+          () => "",
+        );
+        return text ? `## ${l.title}\n${text}` : "";
+      }),
+    );
+    const content = lessonTexts.filter(Boolean).join("\n\n");
+    if (!content) {
+      return res.status(502).json({
+        error: "Could not gather enough course content to build a quiz.",
+      });
+    }
+
+    const n = Math.min(Math.max(sampled.length, 5), 10);
+    const userContent = `Course "${course.title}":\n${content}\n\nGenerate exactly ${n} multiple-choice comprehension questions covering this whole course.`;
+
+    try {
+      const parsed = await callGemini({
+        systemPrompt: COURSE_QUIZ_SYSTEM_PROMPT,
+        userContent,
+        schema: COURSE_QUIZ_SCHEMA,
+        temperature: 0.6,
+      });
+
+      const questions = (
+        Array.isArray(parsed.questions) ? parsed.questions : []
+      )
+        .filter(
+          (q) =>
+            q && q.question && Array.isArray(q.options) && q.options.length === 4,
+        )
+        .map((q) => ({
+          question: q.question,
+          options: q.options,
+          correctIndex: Math.min(Math.max(Math.round(q.correctIndex ?? 0), 0), 3),
+          explanation: q.explanation || "",
+        }));
+
+      if (!questions.length) {
+        return res
+          .status(502)
+          .json({ error: "Gemini did not return any usable questions." });
+      }
+
+      res.json({ questions });
+    } catch (err) {
+      sendError(res, err);
+    }
+  });
+
   // Start accepting connections right away instead of waiting on Mongo —
   // Vite starts almost instantly and proxies /api here, so if this blocked
   // on mongoClient.connect() first (which can take a moment, especially
@@ -936,6 +1018,28 @@ app.post("/api/project-ideas", async (req, res) => {
     sendError(res, err);
   }
 });
+
+const COURSE_QUIZ_SYSTEM_PROMPT = `You are an expert instructional designer creating a comprehension quiz for a learner who just finished an entire course. Given the combined lesson-by-lesson content of the course, write exactly the requested number of multiple-choice questions that test understanding of the important concepts actually covered across the course — not trivia, and spread across different lessons/topics rather than clustered on one. Each question needs exactly 4 answer options, exactly one correct (0-indexed correctIndex), and a short one-sentence explanation of why that answer is correct. Write the question, options and explanation in the SAME language as the provided content. Return JSON only matching the schema.`;
+
+const COURSE_QUIZ_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    questions: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          question: { type: "STRING" },
+          options: { type: "ARRAY", items: { type: "STRING" } },
+          correctIndex: { type: "NUMBER" },
+          explanation: { type: "STRING" },
+        },
+        required: ["question", "options", "correctIndex", "explanation"],
+      },
+    },
+  },
+  required: ["questions"],
+};
 
 const LEARNING_PATH_SYSTEM_PROMPT = `You are an expert curriculum designer and career mentor. Given a learner's age, experience level, and stated goal, design a personalized step-by-step learning path from foundational skills up to that goal, in the correct learning order (fundamentals first, the goal itself or a capstone like "Portfolio" last). Return 6-10 steps. Each step needs a short title (1-3 words, e.g. "HTML", "Flexbox", "Portfolio") and a one-sentence description of what to do at that step and why it matters, tailored to the learner's age and experience level. Return JSON only matching the schema.`;
 

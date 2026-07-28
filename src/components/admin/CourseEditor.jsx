@@ -53,8 +53,6 @@ export default function CourseEditor({ course, onChange }) {
   const units = getCourseUnits(course);
   const groups = groupLessonsByUnit(course);
 
-  // Every add/move/reorder goes through here so unitTitle/subUnit on each
-  // lesson always stay derived from the current units list, never drift.
   const commit = (nextLessons, nextUnits = units) => {
     onChange({
       lessons: applyUnitsToLessons(nextLessons, nextUnits),
@@ -91,24 +89,6 @@ export default function CourseEditor({ course, onChange }) {
     ]);
     setOpenLessonId(id);
   };
-  const addQuiz = (unitNumber) => {
-    const id = uid("q");
-    commit([
-      ...course.lessons,
-      {
-        id,
-        type: "quiz",
-        title: "New quiz",
-        unit: unitNumber,
-        points: 20,
-        questions: [
-          { q: "New question?", options: ["Option A", "Option B"], correct: 0 },
-        ],
-      },
-    ]);
-    setOpenLessonId(id);
-  };
-
   const addUnit = () => {
     const number = nextUnitNumber(units);
     commit(course.lessons, [...units, { number }]);
@@ -294,11 +274,6 @@ export default function CourseEditor({ course, onChange }) {
                   onAddLesson={
                     group.number != null
                       ? () => addLesson(group.number)
-                      : undefined
-                  }
-                  onAddQuiz={
-                    group.number != null
-                      ? () => addQuiz(group.number)
                       : undefined
                   }
                 />

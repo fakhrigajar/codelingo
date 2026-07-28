@@ -1,55 +1,44 @@
-import { useState } from 'react'
-import { Flag, CheckCircle2, XCircle, PartyPopper } from 'lucide-react'
-import { useAuth } from '../../context/AuthContext'
-import { recordGap } from '../../lib/interviewGaps'
+import { useState } from "react";
+import { Flag, CheckCircle2, XCircle, PartyPopper } from "lucide-react";
 
-export default function InterviewQuizGame({ role, questions, onRestart }) {
-  const { currentUser } = useAuth()
-  const [index, setIndex] = useState(0)
-  const [selected, setSelected] = useState(null)
-  const [score, setScore] = useState(0)
+export default function CourseQuizGame({ course, questions, onRestart }) {
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
 
-  const finished = index >= questions.length
-  const current = questions[index]
+  const finished = index >= questions.length;
+  const current = questions[index];
 
   const handleSelect = (oi) => {
-    if (selected !== null) return
-    setSelected(oi)
-    if (oi === current.correctIndex) {
-      setScore((s) => s + 1)
-    } else if (currentUser) {
-      recordGap(currentUser.username, {
-        title: current.topic || current.question,
-        question: current.question,
-        role,
-      })
-    }
-  }
+    if (selected !== null) return;
+    setSelected(oi);
+    if (oi === current.correctIndex) setScore((s) => s + 1);
+  };
 
   const handleNext = () => {
-    setSelected(null)
-    setIndex((i) => i + 1)
-  }
+    setSelected(null);
+    setIndex((i) => i + 1);
+  };
 
   const handlePlayAgain = () => {
-    setIndex(0)
-    setSelected(null)
-    setScore(0)
-  }
+    setIndex(0);
+    setSelected(null);
+    setScore(0);
+  };
 
   if (finished) {
-    const pct = Math.round((score / questions.length) * 100)
-    const ready = pct >= 80
-    const message = ready
-      ? "You're interview-ready!"
+    const pct = Math.round((score / questions.length) * 100);
+    const strong = pct >= 80;
+    const message = strong
+      ? "You know this course cold!"
       : pct >= 50
-        ? 'Solid start — keep practicing!'
-        : "Let's review and try again."
+        ? "Solid grasp — a quick review would help."
+        : "Might be worth revisiting a few lessons.";
 
     return (
       <div className="max-w-[560px] mx-auto bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-8 text-center">
         <div className="flex justify-center text-violet">
-          {ready ? <PartyPopper size={40} /> : <Flag size={40} />}
+          {strong ? <PartyPopper size={40} /> : <Flag size={40} />}
         </div>
         <h2 className="text-[1.4rem] mt-3 mb-1">
           You scored {score}/{questions.length}
@@ -60,18 +49,18 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
             Play again
           </button>
           <button type="button" className="btn btn-primary" onClick={onRestart}>
-            New topic
+            Pick another course
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="max-w-[640px] mx-auto">
       <div className="flex items-center justify-between mb-3 font-mono text-[.78rem] text-ink-soft dark:text-white/50">
         <span>
-          {role} · Question {index + 1}/{questions.length}
+          {course.title} · Question {index + 1}/{questions.length}
         </span>
         <span>Score: {score}</span>
       </div>
@@ -87,15 +76,17 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
 
         <div className="space-y-2.5 mb-2">
           {current.options.map((opt, oi) => {
-            let stateClasses
+            let stateClasses;
             if (selected !== null && oi === current.correctIndex) {
-              stateClasses = 'bg-[#E4FBF2] border-mint text-[#0B7A55] dark:bg-[#0B3B2E] dark:text-[#6EE7B7]'
+              stateClasses =
+                "bg-[#E4FBF2] border-mint text-[#0B7A55] dark:bg-[#0B3B2E] dark:text-[#6EE7B7]";
             } else if (selected !== null && oi === selected) {
-              stateClasses = 'bg-[#FFEDEB] border-coral text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5]'
+              stateClasses =
+                "bg-[#FFEDEB] border-coral text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5]";
             } else {
               stateClasses = `bg-bg dark:bg-white/5 border-line dark:border-white/10 text-ink dark:text-white ${
-                selected === null ? 'hover:border-violet' : ''
-              }`
+                selected === null ? "hover:border-violet" : ""
+              }`;
             }
             return (
               <button
@@ -107,7 +98,7 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
               >
                 {opt}
               </button>
-            )
+            );
           })}
         </div>
 
@@ -123,7 +114,7 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
                   <XCircle size={15} className="text-coral" /> Not quite.
                 </>
               )}
-            </span>{' '}
+            </span>{" "}
             {current.explanation}
           </div>
         )}
@@ -134,9 +125,9 @@ export default function InterviewQuizGame({ role, questions, onRestart }) {
           onClick={handleNext}
           disabled={selected === null}
         >
-          {index === questions.length - 1 ? 'See results' : 'Next question'}
+          {index === questions.length - 1 ? "See results" : "Next question"}
         </button>
       </div>
     </div>
-  )
+  );
 }

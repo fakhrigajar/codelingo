@@ -2,7 +2,6 @@ import { useState } from "react";
 import AdminTabs from "../components/admin/AdminTabs";
 import RegisteredUsersPanel from "../components/admin/RegisteredUsersPanel";
 import VisitorsPanel from "../components/admin/VisitorsPanel";
-import FadeIn from "../components/common/FadeIn";
 
 const TABS = [
   { value: "registered", label: "Registered users" },
@@ -14,15 +13,9 @@ export default function AdminUsersPage() {
 
   return (
     <div>
-      <FadeIn as="h1" delay={0.05} className="text-2xl mb-1">
-        Users
-      </FadeIn>
-      <FadeIn delay={0.15}>
-        <AdminTabs tabs={TABS} active={tab} onChange={setTab} />
-      </FadeIn>
-      <FadeIn delay={0.25}>
-        {tab === "registered" ? <RegisteredUsersPanel /> : <VisitorsPanel />}
-      </FadeIn>
+      <h1 className="text-2xl mb-1">Users</h1>
+      <AdminTabs tabs={TABS} active={tab} onChange={setTab} />
+      {tab === "registered" ? <RegisteredUsersPanel /> : <VisitorsPanel />}
     </div>
   );
 }

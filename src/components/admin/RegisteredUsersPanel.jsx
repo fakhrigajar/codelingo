@@ -98,9 +98,16 @@ export default function RegisteredUsersPanel() {
                 className="w-full flex items-center gap-3 min-w-0 text-left"
               >
                 <Avatar user={u} size={40} />
-                <span className="font-extrabold truncate flex-1">
+                <div className="font-extrabold truncate flex-1 flex gap-3 items-center">
                   {u.displayName}
-                </span>
+                  <span className="flex items-center">
+                    {u.role === "admin" && (
+                      <span className="text-[.7rem] font-bold bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark rounded-full px-2 py-0.5">
+                        Admin
+                      </span>
+                    )}
+                  </span>
+                </div>
                 <ChevronDown
                   size={18}
                   className={`shrink-0 text-ink-soft dark:text-white/50 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -109,29 +116,29 @@ export default function RegisteredUsersPanel() {
 
               {isOpen && (
                 <div className="mt-4 pt-4 border-t-2 border-line dark:border-white/10">
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-ink-soft dark:text-white/50 text-[.85rem]">
-                    <span className="font-mono">@{u.username}</span>
-                    {u.role === "admin" && (
-                      <span className="text-[.7rem] font-bold bg-indigo-dark text-white dark:bg-white dark:text-indigo-dark rounded-full px-2 py-0.5">
-                        Admin
-                      </span>
-                    )}
-                    <span>Age {u.age}</span>
-                    <span>{u.xp} XP</span>
+                  <div className="flex flex-col gap-x-5 gap-y-2 text-ink-soft dark:text-white/50 text-[.85rem]">
+                    <span className="font-mono">Username: @{u.username}</span>
+
+                    <span>Age: {u.age}</span>
+                    <span>XP: {u.xp}</span>
                     <span>
-                      {totalCompleted} lesson{totalCompleted === 1 ? "" : "s"}{" "}
-                      done
+                      Lesson{totalCompleted === 1 ? "" : "s"} done:{" "}
+                      {totalCompleted}
                     </span>
                     <span>
-                      {u.badges.length} badge{u.badges.length === 1 ? "" : "s"}
+                      Badge{u.badges.length === 1 ? "" : "s"}: {u.badges.length}
                     </span>
-                    <span>Joined {new Date(u.joined).toLocaleDateString()}</span>
+                    <span>
+                      Joined: {new Date(u.joined).toLocaleDateString()}
+                    </span>
                   </div>
 
                   <div className="flex gap-2.5 mt-4">
                     <IconButtonWithTooltip
                       icon={Shield}
-                      tooltip={u.role === "admin" ? "Remove admin" : "Make admin"}
+                      tooltip={
+                        u.role === "admin" ? "Remove admin" : "Make admin"
+                      }
                       onClick={() => handleToggleRole(u.username)}
                     />
                     <IconButtonWithTooltip

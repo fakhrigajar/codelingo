@@ -17,6 +17,7 @@ import CourseCard from "../components/courses/CourseCard";
 import HeroFloatingLayer from "../components/home/HeroFloatingLayer";
 import StepsRow from "../components/home/StepsRow";
 import ThemedButton from "../components/common/ThemedButton";
+import FadeIn from "../components/common/FadeIn";
 
 const FEATURES = [
   {
@@ -218,24 +219,26 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 max-w-[640px] mx-auto text-center">
-          <h1
-            className="text-[2rem] sm:text-[2.4rem] desktop:text-[2.9rem] leading-tight font-bold text-indigo-dark animate-fadeUp"
-            style={{ animationDelay: ".05s" }}
+          <FadeIn
+            as="h1"
+            delay={0.05}
+            className="text-[2rem] sm:text-[2.4rem] desktop:text-[2.9rem] leading-tight font-bold text-indigo-dark"
           >
             Boot up your brain.
             <br />
             Learn tech by doing.
-          </h1>
-          <p
-            className="text-base sm:text-[1.15rem] max-w-[400px] sm:max-w-[500px] desktop:max-w-[600px] mx-auto dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7 animate-fadeUp"
-            style={{ animationDelay: ".18s" }}
+          </FadeIn>
+          <FadeIn
+            as="p"
+            delay={0.18}
+            className="text-base sm:text-[1.15rem] max-w-[400px] sm:max-w-[500px] desktop:max-w-[600px] mx-auto dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7"
           >
             Bite-sized courses in JavaScript, React, backend development, AI and
             more — guided by badges, and backed by a friendly community.
-          </p>
-          <div
-            className="flex gap-3.5 flex-wrap justify-center mb-5 animate-fadeUp"
-            style={{ animationDelay: ".3s" }}
+          </FadeIn>
+          <FadeIn
+            delay={0.3}
+            className="flex gap-3.5 flex-wrap justify-center mb-5"
           >
             <ThemedButton
               className="btn btn-primary"
@@ -251,10 +254,10 @@ export default function HomePage() {
                 Create free account
               </button>
             )}
-          </div>
-          <div
-            className="flex gap-5 sm:gap-7 mt-6 flex-wrap justify-center font-mono animate-fadeUp"
-            style={{ animationDelay: ".42s" }}
+          </FadeIn>
+          <FadeIn
+            delay={0.42}
+            className="flex gap-5 sm:gap-7 mt-6 flex-wrap justify-center font-mono"
           >
             <div>
               <b className="block text-2xl dark:text-white">{courses.length}</b>
@@ -276,7 +279,7 @@ export default function HomePage() {
                 community posts
               </span>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
