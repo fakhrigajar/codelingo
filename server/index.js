@@ -8,16 +8,26 @@ import { fileURLToPath } from "node:url";
 import { getLessonContentText } from "../src/lib/lessonContentText.js";
 
 const app = express();
-app.use(express.json({ limit: "8mb" }));
 
+// CORS goes on before the body parser, not after. express.json() rejects
+// malformed JSON and bodies over its limit by handing an error straight to
+// the error handler, which skips every plain middleware still queued behind
+// it — so with this registered second, a 400 or a 413 went back to the
+// browser with no Access-Control-Allow-Origin on it and surfaced as a
+// misleading CORS failure instead of the real cause.
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type");
+  // Responses differ per origin as soon as ALLOWED_ORIGIN is a real origin
+  // rather than "*", so keep caches from serving one origin the other answer.
+  res.header("Vary", "Origin");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
+
+app.use(express.json({ limit: "8mb" }));
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_DIR = path.join(__dirname, "uploads");
