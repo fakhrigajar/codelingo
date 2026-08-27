@@ -658,76 +658,102 @@ async function start() {
     }
   });
 
-  // Start accepting connections right away instead of waiting on Mongo —
-  // Vite starts almost instantly and proxies /api here, so if this blocked
-  // on mongoClient.connect() first (which can take a moment, especially
-  // against a remote cluster), the very first requests would hit
-  // ECONNREFUSED before this was even listening. The routes above are safe
-  // to register now: the driver queues each operation until the connection
-  // below is ready, so requests that land early just wait briefly instead
-  // of failing outright.
-  app.listen(PORT, () => {
-    console.log(`AI tools proxy listening on http://localhost:${PORT}`);
+  // Bind on 0.0.0.0 so a platform proxy can reach us from outside the
+  // container, and start accepting connections right away instead of waiting
+  // on Mongo — Vite starts almost instantly and proxies /api here, so if this
+  // blocked on mongoClient.connect() first (which can take a moment,
+  // especially against a remote cluster), the very first requests would hit
+  // ECONNREFUSED before this was even listening. The routes above are safe to
+  // register now: the driver queues each operation until the connection is
+  // ready, so requests that land early just wait briefly instead of failing
+  // outright.
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`AI tools proxy listening on port ${PORT}`);
   });
 
-  await mongoClient.connect();
+  // One-time legacy migrations, run once we know we are connected.
+  async function runMigrations() {
+    if ((await pathsCollection.countDocuments()) === 0) {
+      const legacyGrades = await db.collection("grades").find({}).toArray();
+      if (legacyGrades.length) {
+        await pathsCollection.insertMany(
+          legacyGrades.map((g) => ({
+            id: g.id,
+            label: g.label,
+            level: "Beginner",
+            courseIds: [],
+          })),
+        );
+      }
+    }
 
-  // One-time legacy migrations, now that we know we're connected.
-  if ((await pathsCollection.countDocuments()) === 0) {
-    const legacyGrades = await db.collection("grades").find({}).toArray();
-    if (legacyGrades.length) {
-      await pathsCollection.insertMany(
-        legacyGrades.map((g) => ({
-          id: g.id,
-          label: g.label,
-          level: "Beginner",
-          courseIds: [],
-        })),
-      );
+    if ((await badgesCollection.countDocuments()) === 0) {
+      await badgesCollection.insertMany([
+        {
+          id: "first-steps",
+          icon: "sprout",
+          name: "First Steps",
+          desc: "Complete your first lesson",
+        },
+        {
+          id: "course-champion",
+          icon: "trophy",
+          name: "Course Champion",
+          desc: "Finish an entire course",
+        },
+        {
+          id: "quiz-whiz",
+          icon: "brain",
+          name: "Quiz Whiz",
+          desc: "Pass your first quiz",
+        },
+        {
+          id: "chatterbox",
+          icon: "message-circle",
+          name: "Chatterbox",
+          desc: "Share your first community post",
+        },
+        {
+          id: "triple-threat",
+          icon: "zap",
+          name: "Triple Threat",
+          desc: "Make progress in 3 different courses",
+        },
+      ]);
     }
   }
 
-  if ((await badgesCollection.countDocuments()) === 0) {
-    await badgesCollection.insertMany([
-      {
-        id: "first-steps",
-        icon: "sprout",
-        name: "First Steps",
-        desc: "Complete your first lesson",
-      },
-      {
-        id: "course-champion",
-        icon: "trophy",
-        name: "Course Champion",
-        desc: "Finish an entire course",
-      },
-      {
-        id: "quiz-whiz",
-        icon: "brain",
-        name: "Quiz Whiz",
-        desc: "Pass your first quiz",
-      },
-      {
-        id: "chatterbox",
-        icon: "message-circle",
-        name: "Chatterbox",
-        desc: "Share your first community post",
-      },
-      {
-        id: "triple-threat",
-        icon: "zap",
-        name: "Triple Threat",
-        desc: "Make progress in 3 different courses",
-      },
-    ]);
+  // Keep retrying rather than giving up on the first failure. An unreachable
+  // database must not take the process down with it: exiting here leaves the
+  // host restarting us in a loop, and with nothing listening its proxy answers
+  // every request — /api/health included — with a 502, which reads as the whole
+  // app being down rather than just the database. Staying up keeps the health
+  // check and the Gemini routes serving, and the Mongo-backed routes recover on
+  // their own as soon as a retry connects.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await mongoClient.connect();
+      console.log("Connected to MongoDB.");
+      await runMigrations();
+      return;
+    } catch (err) {
+      const delaySeconds = Math.min(30, 2 ** (attempt - 1));
+      console.error(
+        `MongoDB connection attempt ${attempt} failed: ${err.message}`,
+      );
+      console.error(
+        `Retrying in ${delaySeconds}s. Check that MONGODB_URI is set on this host and that the host is allowed to reach the cluster.`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+    }
   }
 }
 
+// Only a failure before the server is listening reaches here — a Mongo outage
+// is handled by the retry loop above and no longer kills the process. Note that
+// MONGODB_URI is deliberately not logged: it carries the database password.
 start().catch((err) => {
   console.error("Failed to start server:", err.message);
-  console.error(
-    `Could not connect to MongoDB at ${MONGODB_URI} — is it running? Set MONGODB_URI to point elsewhere.`,
-  );
   process.exit(1);
 });
 
