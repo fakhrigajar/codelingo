@@ -1,22 +1,8 @@
-import { API_BASE } from './apiBase'
-
-export async function generateCourseQuiz({ courseId }) {
-  let res
-  try {
-    res = await fetch(`${API_BASE}/api/course-quiz`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ courseId }),
-    })
-  } catch {
-    throw new Error(
-      'Could not reach the AI analysis server — make sure it is running (npm run server, or npm run dev:all).',
-    )
-  }
-
-  const data = await res.json().catch(() => null)
-  if (!res.ok) {
-    throw new Error(data?.error || `Request failed (${res.status}).`)
-  }
-  return data.questions
+export async function generateCourseQuiz({ course }) {
+  const questions = course.lessons.flatMap((lesson) => (lesson.practiceQuiz || lesson.questions || []).map((item) => ({
+    question: item.q, options: [...item.options], correctIndex: item.correct,
+    topic: lesson.title, explanation: item.explanation || `Review "${lesson.title}": the correct answer is ${item.options[item.correct]}.`,
+  })))
+  if (!questions.length) throw new Error('This course has no practice questions yet.')
+  return questions
 }

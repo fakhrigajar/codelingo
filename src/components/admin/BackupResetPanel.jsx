@@ -40,7 +40,7 @@ export default function BackupResetPanel() {
   }
 
   const handleReset = () => {
-    if (!confirm('Reset badges back to the original demo content? Courses, paths, learner accounts and community posts are not affected — edit or restore those from a backup instead.')) return
+    if (!confirm('Restore the 10 default courses, learning paths, badges and page text? This replaces your content edits.')) return
     resetToDefault()
     toast('Content reset to defaults')
   }
@@ -58,7 +58,7 @@ export default function BackupResetPanel() {
 
       <AdminCard title="Import content" className="mb-4">
         <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
-          Restore content from a previously exported JSON file. This replaces everything currently on the site.
+          Restore courses, paths, badges and page text from a previously exported JSON file.
         </p>
         {error && (
           <div className="bg-[#FFEDEB] text-[#B23B2C] dark:bg-[#4A1F1A] dark:text-[#FCA5A5] px-3.5 py-2.5 rounded-xl text-[.85rem] mb-3">
@@ -70,9 +70,7 @@ export default function BackupResetPanel() {
 
       <AdminCard title="Reset to defaults">
         <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-3">
-          Wipe admin edits to badges and the page header text, and restore the original demo content. Courses,
-          paths, learner accounts and community posts are not affected — restore those from a backup file above
-          instead.
+          Restore the 10 default courses, learning paths, badges and page text.
         </p>
         <AdminButton variant="danger" onClick={handleReset}>
           Reset content to defaults

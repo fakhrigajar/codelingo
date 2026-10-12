@@ -3,7 +3,7 @@ import { Tabs, Image } from 'antd'
 import { Flag, Trash2, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { listPosts, removePost, listPostDeletions } from '../lib/postApi'
+import { listPosts, removePost, listPostDeletions } from '../lib/posts'
 import { resolveUploadUrl } from '../lib/resolveUploadUrl'
 import AdminCard from '../components/admin/AdminCard'
 import { AdminButton } from '../components/admin/AdminFields'
@@ -155,8 +155,7 @@ export default function AdminPostsPage() {
       children: (
         <AdminCard>
           <p className="text-ink-soft dark:text-white/60 text-[.85rem] mb-3">
-            Only a post&apos;s own author or an admin can delete it — enforced by the server, not
-            just this UI. Every deletion (self or admin) is recorded here.
+            Authors and admins can delete posts. Deletions in this browser are recorded here.
           </p>
           {deletions.length === 0 ? (
             <p className="text-ink-soft dark:text-white/60 text-[.9rem]">

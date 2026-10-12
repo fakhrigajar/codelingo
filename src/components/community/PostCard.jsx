@@ -13,7 +13,7 @@ import {
   replyToPost,
   likeReply,
   removePost,
-} from "../../lib/postApi";
+} from "../../lib/posts";
 import CommentItem from "./CommentItem";
 import DocumentViewerModal from "./DocumentViewerModal";
 import Avatar from "../common/Avatar";

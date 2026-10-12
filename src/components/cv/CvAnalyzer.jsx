@@ -3,7 +3,7 @@ import { FileText } from 'lucide-react'
 import AiFeedbackCard from './AiFeedbackCard'
 import AiFeedbackDetails from './AiFeedbackDetails'
 import { extractTextFromFile } from '../../lib/cvFileParser'
-import { analyzeResumeWithAI } from '../../lib/aiReview'
+import { reviewResume } from '../../lib/resumeReview'
 
 export default function CvAnalyzer({ text, fileName, targetRole, onChange }) {
   const [fileStatus, setFileStatus] = useState('idle') // idle | parsing | error
@@ -53,7 +53,7 @@ export default function CvAnalyzer({ text, fileName, targetRole, onChange }) {
     setAiStatus('loading')
     setAiError('')
     try {
-      const res = await analyzeResumeWithAI({ resumeText: text, targetRole })
+      const res = await reviewResume({ resumeText: text, targetRole })
       setAiResult(res)
       setAiStatus('idle')
     } catch (err) {

@@ -66,7 +66,7 @@ export default function ProjectIdeaForm({ onGenerate, status }) {
         onClick={handleSubmit}
         disabled={!language.trim() || status === 'loading'}
       >
-        {status === 'loading' ? 'Generating ideas...' : 'Generate 10 project ideas'}
+        {status === 'loading' ? 'Generating ideas...' : 'Show 10 project ideas'}
       </button>
     </div>
   )

@@ -18,12 +18,11 @@ export default function InterviewPrepPage() {
       </nav>
 
       <span className="eyebrow">
-        <Bot size={13} /> AI career tools
+        <Bot size={13} /> Practice tools
       </span>
       <h1 className="text-[2rem]">Interview Prep</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Get AI-generated interview FAQs for any role, then quiz yourself game-style to check your
-        knowledge.
+        Practice with default interview questions for your role, then quiz yourself to check your knowledge.
       </p>
 
       {session ? (

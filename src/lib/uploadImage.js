@@ -1,12 +1,7 @@
-import { UPLOADS_BASE } from './apiBase'
+import { uploadFile } from './uploadFile'
 
 export async function uploadImage(dataUrl) {
-  const res = await fetch(`${UPLOADS_BASE}/api/uploads`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ dataUrl }),
-  })
-  const data = await res.json().catch(() => null)
-  if (!res.ok) throw new Error(data?.error || `Upload failed (${res.status}).`)
-  return data.url
+  const file = await uploadFile(dataUrl)
+  if (!file.mime.startsWith('image/')) throw new Error('Choose an image file.')
+  return file.url
 }

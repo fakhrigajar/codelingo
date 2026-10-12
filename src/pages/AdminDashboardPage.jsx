@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useContent } from '../context/ContentContext'
 import { getAllUsers } from '../context/AuthContext'
-import { listPosts } from '../lib/postApi'
-import { listVisits } from '../lib/visitApi'
+import { listPosts } from '../lib/posts'
+import { listVisits } from '../lib/visits'
 import AdminCard from '../components/admin/AdminCard'
 import CategoryBarChart from '../components/admin/charts/CategoryBarChart'
 import VisitsTrendChart from '../components/admin/charts/VisitsTrendChart'
@@ -103,7 +103,7 @@ export default function AdminDashboardPage() {
           <li><strong className="text-ink dark:text-white">Badges</strong> — change what badges look like and what they're called.</li>
           <li><strong className="text-ink dark:text-white">Community posts</strong> — browse every post, review what's been reported, and delete anything that breaks the rules.</li>
           <li><strong className="text-ink dark:text-white">Users</strong> — view registered learners and the visitor log, reset progress, or remove an account.</li>
-          <li><strong className="text-ink dark:text-white">System</strong> — export/restore content, reset to defaults, or look up an API route.</li>
+          <li><strong className="text-ink dark:text-white">System</strong> — export/restore content, or reset to the 10 default courses.</li>
         </ul>
       </AdminCard>
     </div>

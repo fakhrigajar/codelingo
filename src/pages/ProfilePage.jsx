@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useContent } from "../context/ContentContext";
 import { getSignificantGaps } from "../lib/interviewGaps";
-import { listPosts } from "../lib/postApi";
+import { listPosts } from "../lib/posts";
 import CourseCard from "../components/courses/CourseCard";
 import PostCard from "../components/community/PostCard";
 import Avatar from "../components/common/Avatar";

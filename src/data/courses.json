@@ -1,0 +1,1652 @@
+[
+  {
+    "id": "html",
+    "title": "HTML",
+    "color": "#E44D26",
+    "about": "Build accessible web pages with semantic HTML, links, images and forms.",
+    "level": "Beginner",
+    "icon": "",
+    "availability": "available",
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "html-lesson-1",
+        "title": "Your First Web Page",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "html-body-1",
+            "type": "body",
+            "value": "HTML describes the structure of a web page. Elements use opening and closing tags, such as <p>Hello!</p>. Start a document with <!DOCTYPE html>, then an <html> element containing <head> for metadata and <body> for visible content. Put a <title> in the head and an <h1> in the body. Save the file as index.html and open it in a browser."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which element contains the visible page content?",
+            "options": [
+              "head",
+              "body",
+              "title",
+              "meta"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does HTML describe?",
+            "options": [
+              "Page structure",
+              "Database queries",
+              "Animations only",
+              "Network routing"
+            ],
+            "correct": 0
+          }
+        ]
+      },
+      {
+        "id": "html-lesson-2",
+        "title": "Semantic Elements and Links",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "html-body-2",
+            "type": "body",
+            "value": "Use <header>, <nav>, <main>, <section> and <footer> to communicate the purpose of each part of a page. Headings describe a logical hierarchy: one main h1 followed by h2 headings for sections. Create links with <a href=\"/courses\">Courses</a>. Images use <img src=\"photo.png\" alt=\"A learner at a laptop\">. Alternative text explains meaningful images to people using screen readers."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which element describes the main page content?",
+            "options": [
+              "div",
+              "span",
+              "main",
+              "b"
+            ],
+            "correct": 2
+          },
+          {
+            "q": "Which attribute gives an image a text alternative?",
+            "options": [
+              "title",
+              "alt",
+              "href",
+              "style"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "html-lesson-3",
+        "title": "Forms and Accessibility",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "html-body-3",
+            "type": "body",
+            "value": "A <form> groups controls used to collect information. Associate a <label for=\"email\"> with an <input id=\"email\" type=\"email\"> so users know what to enter. Use required for mandatory fields and a button with type=\"submit\" to submit. Keyboard users need a visible focus indicator. Build a contact form with name, email and message fields, and test that every control is reachable with the Tab key."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "How do you associate a label with an input?",
+            "options": [
+              "Match for to the input id",
+              "Use the same placeholder",
+              "Add a color",
+              "Nest a heading"
+            ],
+            "correct": 0
+          },
+          {
+            "q": "Which input type is suitable for an email address?",
+            "options": [
+              "number",
+              "date",
+              "email",
+              "range"
+            ],
+            "correct": 2
+          }
+        ]
+      }
+    ],
+    "order": 0
+  },
+  {
+    "id": "css",
+    "title": "CSS",
+    "color": "#2965F1",
+    "about": "Style responsive pages with selectors, the box model, Flexbox and Grid.",
+    "level": "Beginner",
+    "icon": "",
+    "availability": "available",
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "css-lesson-1",
+        "title": "Selectors and the Cascade",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "css-body-1",
+            "type": "body",
+            "value": "CSS applies visual rules to HTML. A rule has a selector and declarations, such as .card { color: navy; padding: 16px; }. A class selector starts with a dot, an ID selector with #, and an element selector uses the tag name. When competing rules have equal specificity, the later declaration wins. Keep shared styles in a stylesheet and link it from the HTML head."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which selector targets a class called card?",
+            "options": [
+              "#card",
+              ".card",
+              "@card",
+              "card()"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which property sets text color?",
+            "options": [
+              "background",
+              "display",
+              "color",
+              "margin"
+            ],
+            "correct": 2
+          }
+        ]
+      },
+      {
+        "id": "css-lesson-2",
+        "title": "The Box Model and Layout",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "css-body-2",
+            "type": "body",
+            "value": "Each element has content, padding, border and margin. Padding is space inside the border; margin is space outside it. With box-sizing: border-box, an explicit width includes padding and borders. Use display: flex for one-dimensional rows or columns. Set gap for spacing and align-items for cross-axis alignment. CSS Grid is useful for two-dimensional layouts: grid-template-columns: repeat(3, 1fr) creates three equal columns."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Where is padding located?",
+            "options": [
+              "Outside the margin",
+              "Inside the border",
+              "Outside the border",
+              "Only between text lines"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which layout system is designed for rows and columns together?",
+            "options": [
+              "Grid",
+              "float only",
+              "inline",
+              "visibility"
+            ],
+            "correct": 0
+          }
+        ]
+      },
+      {
+        "id": "css-lesson-3",
+        "title": "Responsive Design",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "css-body-3",
+            "type": "body",
+            "value": "Design a narrow layout first, then enhance it with media queries such as @media (min-width: 768px). Prefer flexible widths and max-width over fixed widths that can overflow. Make images responsive with max-width: 100% and height: auto. Use rem units for scalable text. Build a card grid that starts with one column and expands to three on wider screens. Test at several viewport sizes and keep buttons comfortable to tap."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "What is a media query used for?",
+            "options": [
+              "Saving files",
+              "Applying styles under specific conditions",
+              "Creating accounts",
+              "Sending email"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which image rule helps avoid horizontal overflow?",
+            "options": [
+              "width: 2000px",
+              "height: 0",
+              "max-width: 100%",
+              "display: none"
+            ],
+            "correct": 2
+          }
+        ]
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "javascript",
+    "title": "JavaScript",
+    "color": "#D4A017",
+    "about": "Learn variables, functions and events to make web pages interactive.",
+    "level": "Beginner",
+    "icon": "",
+    "availability": "available",
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "javascript-lesson-1",
+        "title": "Variables and Values",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "javascript-body-1",
+            "type": "body",
+            "value": "JavaScript adds behavior to web pages. Declare values with const when the binding will not change, and let when it will. Common types include strings, numbers and booleans. Arrays hold ordered collections; objects hold named properties. Use === for strict equality so values are compared without automatic type conversion. Try const name = \"Ada\"; and console.log(`Hello, ${name}`) in your browser console."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which keyword declares a binding you can reassign?",
+            "options": [
+              "const",
+              "let",
+              "fixed",
+              "static"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which operator checks strict equality?",
+            "options": [
+              "=",
+              "==",
+              "===",
+              "!="
+            ],
+            "correct": 2
+          }
+        ]
+      },
+      {
+        "id": "javascript-lesson-2",
+        "title": "Functions and Control Flow",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "javascript-body-2",
+            "type": "body",
+            "value": "Functions group reusable steps. For example, function double(number) { return number * 2; } takes an input and returns a result. Arrow functions offer another syntax: const double = number => number * 2. Use if/else to choose between actions, and for...of to iterate through an array. Keep each function focused on one task. Practice by writing a function that totals the prices in an array."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "What does return do inside a function?",
+            "options": [
+              "Repeats the function",
+              "Ends the function and supplies a result",
+              "Creates an array",
+              "Changes the file name"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which loop can iterate values in an array?",
+            "options": [
+              "for...of",
+              "if...else",
+              "try...catch",
+              "switch"
+            ],
+            "correct": 0
+          }
+        ]
+      },
+      {
+        "id": "javascript-lesson-3",
+        "title": "DOM and Events",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "javascript-body-3",
+            "type": "body",
+            "value": "The Document Object Model represents the page as objects. Find elements with document.querySelector(\"button\"). Register interactions with addEventListener(\"click\", handler). Read input values, update textContent, and toggle CSS classes with classList.toggle. Use textContent when displaying user-provided plain text. Build a counter whose button increments a number, then add a reset button and test both interactions."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which method registers a click handler?",
+            "options": [
+              "querySelector",
+              "addEventListener",
+              "JSON.parse",
+              "push"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which property updates plain text safely?",
+            "options": [
+              "innerHTML",
+              "outerHTML",
+              "textContent",
+              "style"
+            ],
+            "correct": 2
+          }
+        ]
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "python",
+    "title": "Python",
+    "color": "#3776AB",
+    "about": "Start programming with Python values, loops, functions and collections.",
+    "level": "Beginner",
+    "icon": "",
+    "availability": "available",
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "python-lesson-1",
+        "title": "Python Basics",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "python-body-1",
+            "type": "body",
+            "value": "Python uses indentation to organize blocks of code. Assign values with name = \"Ada\" and age = 18. Use print() to display output. Strings hold text, integers hold whole numbers, and booleans are True or False. Comments start with #. A list such as scores = [8, 10, 9] keeps ordered values. Access the first item with scores[0]. Write a short program that introduces you and prints your favorite subjects."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "What organizes code blocks in Python?",
+            "options": [
+              "Indentation",
+              "Semicolons",
+              "HTML tags",
+              "Parentheses alone"
+            ],
+            "correct": 0
+          },
+          {
+            "q": "Which index accesses the first list item?",
+            "options": [
+              "1",
+              "-2",
+              "0",
+              "first"
+            ],
+            "correct": 2
+          }
+        ]
+      },
+      {
+        "id": "python-lesson-2",
+        "title": "Decisions and Loops",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "python-body-2",
+            "type": "body",
+            "value": "Use if, elif and else to branch based on conditions. A for loop visits each item in a collection: for score in scores: followed by an indented body. range(3) produces 0, 1 and 2. A while loop repeats while its condition is true, so make sure its condition eventually becomes false. Practice by calculating an average score and printing a message based on the result."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "What values does range(3) produce?",
+            "options": [
+              "1, 2, 3",
+              "0, 1, 2",
+              "0, 1, 2, 3",
+              "3 only"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which keyword introduces another conditional branch?",
+            "options": [
+              "elif",
+              "repeat",
+              "then",
+              "caseof"
+            ],
+            "correct": 0
+          }
+        ]
+      },
+      {
+        "id": "python-lesson-3",
+        "title": "Functions and Dictionaries",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "python-body-3",
+            "type": "body",
+            "value": "Define a function with def greet(name): and return a result from its indented body. Dictionaries map keys to values, such as student = {\"name\": \"Ada\", \"score\": 10}. Read a key with student[\"name\"] or use get() with a fallback. Keep data processing in functions so you can reuse and test it. Build a function that accepts a list of students and returns the names of those whose score is at least eight."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which keyword defines a function?",
+            "options": [
+              "func",
+              "function",
+              "def",
+              "make"
+            ],
+            "correct": 2
+          },
+          {
+            "q": "What does a dictionary store?",
+            "options": [
+              "Only numbers",
+              "Key-value pairs",
+              "Only sorted text",
+              "CSS rules"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ],
+    "order": 3
+  },
+  {
+    "id": "git",
+    "title": "Git & Version Control",
+    "color": "#F05032",
+    "about": "Track changes, create branches and collaborate with a clear version history.",
+    "level": "Beginner",
+    "icon": "",
+    "availability": "available",
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "git-lesson-1",
+        "title": "Repositories and Commits",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "git-body-1",
+            "type": "body",
+            "value": "Git tracks changes to files in a repository. Run git init to start one, and git status to inspect changes. Use git add filename to stage a change, then git commit -m \"Describe the change\" to save a snapshot. A commit message should explain one meaningful change. The staging area lets you choose exactly what goes into a commit. Use git log to review the history."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which command stages a file?",
+            "options": [
+              "git log",
+              "git add",
+              "git push",
+              "git branch"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What is a commit?",
+            "options": [
+              "A saved snapshot of changes",
+              "A deleted folder",
+              "A server password",
+              "A stylesheet"
+            ],
+            "correct": 0
+          }
+        ]
+      },
+      {
+        "id": "git-lesson-2",
+        "title": "Branches and Merging",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "git-body-2",
+            "type": "body",
+            "value": "A branch lets you develop a change alongside the main line of work. Create and switch to one with git switch -c feature-name. Commit your work, switch back to the target branch, and use git merge feature-name to combine the histories. A merge conflict occurs when Git cannot automatically combine changes. Inspect the affected file, choose the correct content, remove conflict markers, stage the file and complete the merge."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which command creates and switches to a new branch?",
+            "options": [
+              "git switch -c feature",
+              "git log feature",
+              "git status feature",
+              "git add feature"
+            ],
+            "correct": 0
+          },
+          {
+            "q": "What should you do with a merge conflict?",
+            "options": [
+              "Delete the repository",
+              "Review and resolve the competing edits",
+              "Ignore the file forever",
+              "Change every password"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "git-lesson-3",
+        "title": "Remotes and Collaboration",
+        "type": "lesson",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "git-body-3",
+            "type": "body",
+            "value": "A remote is a named connection to another copy of a repository. git clone copies a remote repository locally. git fetch downloads remote history without merging it into your current branch; git pull normally fetches and then integrates changes. git push publishes your commits to a remote branch. Review changes before committing and keep credentials and generated files out of version control with .gitignore."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 15,
+        "practiceQuiz": [
+          {
+            "q": "Which command downloads remote history without integrating it?",
+            "options": [
+              "git push",
+              "git fetch",
+              "git commit",
+              "git init"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which file lists files Git should ignore?",
+            "options": [
+              "package.json",
+              ".gitignore",
+              "index.html",
+              ".gitkeep"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ],
+    "order": 4
+  },
+  {
+    "id": "typescript",
+    "title": "TypeScript",
+    "icon": "",
+    "level": "Intermediate",
+    "color": "#3178C6",
+    "about": "TypeScript adds a static type system on top of JavaScript, catching whole categories of bugs before your code ever runs and making large codebases much easier to navigate. This course covers why TypeScript exists, its basic types, and how to describe object shapes with interfaces.",
+    "availability": "available",
+    "order": 5,
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "typescript-lesson-1",
+        "type": "lesson",
+        "title": "Why TypeScript?",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "typescript-block-1-1",
+            "type": "body",
+            "value": "JavaScript is dynamically typed — a variable can hold a string one moment and a number the next, and the language won't stop you. That flexibility is great for quick scripts, but on a large codebase it means typos and mismatched data often aren't caught until the code actually runs, sometimes in production."
+          },
+          {
+            "id": "typescript-block-1-2",
+            "type": "body",
+            "value": "TypeScript is a superset of JavaScript that adds optional type annotations. You write TypeScript in .ts files, and the TypeScript compiler (tsc) checks your types and then compiles everything down to plain JavaScript that runs anywhere JavaScript already runs — browsers, Node.js, wherever."
+          },
+          {
+            "id": "typescript-block-1-3",
+            "type": "fact",
+            "value": "TypeScript was created at Microsoft by Anders Hejlsberg, who also designed C# and Turbo Pascal, and it first shipped publicly in 2012."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 7,
+        "practiceQuiz": [
+          {
+            "q": "What does the TypeScript compiler ultimately produce?",
+            "options": [
+              "A standalone .exe file",
+              "Plain JavaScript",
+              "Bytecode for a TypeScript VM",
+              "WebAssembly"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Why is JavaScript's dynamic typing risky on large codebases?",
+            "options": [
+              "It makes code run slower",
+              "Type-related mistakes may not be caught until runtime",
+              "It prevents using functions",
+              "It disables debugging tools"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "TypeScript is best described as a:",
+            "options": [
+              "Replacement for JavaScript",
+              "Superset of JavaScript with optional types",
+              "Database query language",
+              "CSS preprocessor"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "typescript-lesson-2",
+        "type": "lesson",
+        "title": "Basic Types & Type Inference",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "typescript-block-2-1",
+            "type": "body",
+            "value": "TypeScript lets you annotate a variable's type directly: `let age: number = 30;` or `let name: string = \"Ada\";`. Arrays get a type too, like `number[]` for an array of numbers. If a value could be one of several types, you can express that with a union, like `string | number`."
+          },
+          {
+            "id": "typescript-block-2-2",
+            "type": "body",
+            "value": "You don't have to annotate everything by hand — TypeScript is good at inferring types from how a variable is initialized. If you write `let age = 30`, TypeScript already knows `age` is a `number` and will flag it if you later try to assign a string to it. Annotations matter most for function parameters and empty variables, where there's nothing to infer from."
+          },
+          {
+            "id": "typescript-block-2-3",
+            "type": "fact",
+            "value": "TypeScript's `any` type turns off type checking for that value entirely — it's occasionally useful for gradually migrating JavaScript code, but overusing it defeats the purpose of using TypeScript at all."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 9,
+        "practiceQuiz": [
+          {
+            "q": "In `let age = 30;`, how does TypeScript know `age` is a number?",
+            "options": [
+              "You must always annotate it manually",
+              "It infers the type from the initial value",
+              "All variables default to number",
+              "It asks the compiler at runtime"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which type annotation describes a value that could be either a string or a number?",
+            "options": [
+              "string & number",
+              "string[number]",
+              "string | number",
+              "string+number"
+            ],
+            "correct": 2
+          },
+          {
+            "q": "What's a downside of overusing the `any` type?",
+            "options": [
+              "It makes code run slower",
+              "It disables type checking for that value",
+              "It's not valid TypeScript syntax",
+              "It only works with arrays"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "typescript-lesson-3",
+        "type": "lesson",
+        "title": "Interfaces and Type Aliases",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "typescript-block-3-1",
+            "type": "body",
+            "value": "An `interface` describes the shape an object must have. For example, `interface User { name: string; age: number; }` means any value typed as `User` must have a `name` string and an `age` number. If a function expects a `User`, TypeScript will complain if you pass an object missing one of those fields."
+          },
+          {
+            "id": "typescript-block-3-2",
+            "type": "body",
+            "value": "You can mark a property optional with a `?`, like `email?: string`, meaning it may or may not be present. `type` aliases work similarly and can also name unions, like `type Status = \"idle\" | \"loading\" | \"done\"` — useful for restricting a value to a fixed set of allowed strings instead of any string at all."
+          },
+          {
+            "id": "typescript-block-3-3",
+            "type": "fact",
+            "value": "Interfaces in TypeScript are purely a compile-time concept — they add zero bytes to the compiled JavaScript output, since there's nothing left to check once your code has already been type-checked."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 9,
+        "practiceQuiz": [
+          {
+            "q": "What does `interface User { name: string; age: number; }` require of a `User` object?",
+            "options": [
+              "Only a name property",
+              "A name string and an age number",
+              "Any two properties",
+              "Nothing, it's just documentation"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does a `?` after a property name mean, like `email?: string`?",
+            "options": [
+              "The property is required",
+              "The property is optional",
+              "The property is read-only",
+              "The property must be a string or number"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Why don't interfaces add anything to the compiled JavaScript output?",
+            "options": [
+              "They're compiled into comments",
+              "They're a compile-time-only type check",
+              "They get converted into classes",
+              "They're stored in a separate file"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "react",
+    "title": "React",
+    "icon": "",
+    "level": "Intermediate",
+    "color": "#61DAFB",
+    "about": "React is the most widely used JavaScript library for building interactive user interfaces out of small, reusable components. This course covers writing components with JSX, passing data down through props, and managing changing state with the useState hook.",
+    "availability": "available",
+    "order": 6,
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "react-lesson-1",
+        "type": "lesson",
+        "title": "Components and JSX",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "react-block-1-1",
+            "type": "body",
+            "value": "A React component is just a JavaScript function that returns some UI to display. By convention its name starts with a capital letter: `function Welcome() { return <h1>Hello!</h1>; }`. That `<h1>Hello!</h1>` isn't a string or HTML — it's JSX, a syntax extension that lets you write markup-like code directly inside JavaScript."
+          },
+          {
+            "id": "react-block-1-2",
+            "type": "body",
+            "value": "JSX gets compiled into regular JavaScript function calls before it ever reaches the browser, so under the hood it's just JavaScript the whole time. You can embed any JavaScript expression inside JSX using curly braces: `<h1>Hello, {userName}!</h1>` inserts the value of the `userName` variable right into the markup."
+          },
+          {
+            "id": "react-block-1-3",
+            "type": "fact",
+            "value": "JSX isn't required to use React — it's entirely optional syntactic sugar over plain `React.createElement()` calls — but almost every real React codebase uses it because it's dramatically easier to read than the equivalent function calls."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 8,
+        "practiceQuiz": [
+          {
+            "q": "What is a React component, fundamentally?",
+            "options": [
+              "An HTML file",
+              "A JavaScript function that returns UI",
+              "A CSS class",
+              "A database table"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does JSX get compiled into before running in the browser?",
+            "options": [
+              "Plain HTML files",
+              "Regular JavaScript function calls",
+              "CSS",
+              "Nothing, browsers run JSX directly"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "How do you embed a JavaScript variable's value inside JSX markup?",
+            "options": [
+              "With parentheses ()",
+              "With curly braces {}",
+              "With square brackets []",
+              "You can't, JSX only accepts static text"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "react-lesson-2",
+        "type": "lesson",
+        "title": "Props: Passing Data Down",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "react-block-2-1",
+            "type": "body",
+            "value": "Props (short for \"properties\") are how a parent component passes data down to a child component — much like arguments passed into a function. `<Greeting name=\"Ada\" />` passes a prop called `name` with the value `\"Ada\"` into the `Greeting` component, which reads it as `props.name`."
+          },
+          {
+            "id": "react-block-2-2",
+            "type": "body",
+            "value": "Props are read-only from the child's perspective — a component should never modify the props it receives, only read them. This one-way, top-down data flow is deliberate: it makes it much easier to trace where any given piece of data actually came from in a large app, since it can only have come from a parent."
+          },
+          {
+            "id": "react-block-2-3",
+            "type": "fact",
+            "value": "Because props flow only one direction — parent to child — React apps are sometimes described as having \"unidirectional data flow\", a design choice that trades a bit of convenience for making large apps much easier to debug."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 7,
+        "practiceQuiz": [
+          {
+            "q": "What are props used for in React?",
+            "options": [
+              "Storing a component's internal secrets",
+              "Passing data from a parent component down to a child",
+              "Styling components with CSS",
+              "Connecting to a database"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Can a child component modify the props it receives?",
+            "options": [
+              "Yes, freely",
+              "No, props are read-only from the child's side",
+              "Only string props",
+              "Only if wrapped in useState"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does 'unidirectional data flow' mean in React?",
+            "options": [
+              "Data can flow in any direction between components",
+              "Props flow only one way, from parent to child",
+              "Only one component can exist per app",
+              "State updates happen only once"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "react-lesson-3",
+        "type": "lesson",
+        "title": "State with useState",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "react-block-3-1",
+            "type": "body",
+            "value": "Props are read-only, but a component often needs to track data that changes over time — like a counter, or whether a checkbox is checked. The `useState` hook gives a component that: `const [count, setCount] = useState(0);` creates a piece of state called `count`, starting at `0`, plus a function `setCount` to update it."
+          },
+          {
+            "id": "react-block-3-2",
+            "type": "body",
+            "value": "Calling `setCount(count + 1)` doesn't just change a variable — it tells React to re-run the component function and re-render the UI with the new value. That's the core React model: state changes, the component re-renders, the UI updates to match. Event handlers, like `onClick={() => setCount(count + 1)}`, are the usual way state gets updated in response to user interaction."
+          },
+          {
+            "id": "react-block-3-3",
+            "type": "fact",
+            "value": "useState is called a \"hook\" because React hooks must always be called at the top level of a component, in the same order every render — never inside a loop, condition, or nested function — which is how React keeps track of which state belongs to which useState call."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 9,
+        "practiceQuiz": [
+          {
+            "q": "What does `useState(0)` return?",
+            "options": [
+              "Just the current value",
+              "An array with the current value and a function to update it",
+              "A promise",
+              "Nothing, it only sets a default"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What actually happens when you call the setter function returned by useState?",
+            "options": [
+              "Nothing visible happens",
+              "React re-renders the component with the updated value",
+              "The page reloads",
+              "It only works once per component"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Where must React hooks like useState be called?",
+            "options": [
+              "Anywhere, including inside loops",
+              "At the top level of a component, in the same order every render",
+              "Only inside event handlers",
+              "Only in class components"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nodejs",
+    "title": "Node.js",
+    "icon": "",
+    "level": "Intermediate",
+    "color": "#3C873A",
+    "about": "Node.js lets you run JavaScript outside the browser, making it possible to build servers, APIs, and command-line tools with one language end to end. This course covers how the Node runtime works, using modules and npm packages, and building a basic HTTP server.",
+    "availability": "available",
+    "order": 7,
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "nodejs-lesson-1",
+        "type": "lesson",
+        "title": "What Is Node.js?",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "nodejs-block-1-1",
+            "type": "body",
+            "value": "Node.js is a JavaScript runtime built on Chrome's V8 engine — the same engine that runs JavaScript inside Chrome — but packaged to run outside the browser, directly on your computer or a server. That's what makes it possible to write a file-reading script, a command-line tool, or a full web server, all in JavaScript."
+          },
+          {
+            "id": "nodejs-block-1-2",
+            "type": "body",
+            "value": "Node is built around non-blocking, asynchronous I/O: when you ask it to read a file or query a database, it doesn't freeze and wait — it kicks off the operation and keeps handling other work, then runs a callback (or resolves a promise) once the result is ready. This event-driven model is what lets a single Node process handle many simultaneous requests efficiently."
+          },
+          {
+            "id": "nodejs-block-1-3",
+            "type": "fact",
+            "value": "Node.js was created by Ryan Dahl in 2009, partly out of frustration with how traditional web servers handled slow operations like file uploads by blocking — dedicating an entire thread to just wait around."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 7,
+        "practiceQuiz": [
+          {
+            "q": "What JavaScript engine does Node.js run on?",
+            "options": [
+              "SpiderMonkey",
+              "V8, the same engine Chrome uses",
+              "A custom Node-only engine",
+              "Node doesn't use an engine"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does 'non-blocking I/O' mean?",
+            "options": [
+              "Node freezes until every operation finishes",
+              "Node kicks off slow operations and keeps handling other work while waiting",
+              "Node can only do one thing ever",
+              "I/O is disabled in Node"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What made Node.js possible to run outside the browser?",
+            "options": [
+              "Rewriting JavaScript from scratch",
+              "Packaging the V8 engine to run standalone",
+              "It doesn't run outside the browser",
+              "Using a different language entirely"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "nodejs-lesson-2",
+        "type": "lesson",
+        "title": "Modules and npm Packages",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "nodejs-block-2-1",
+            "type": "body",
+            "value": "Node code is organized into modules — separate files that export functionality for other files to import. Using ES module syntax: `export function add(a, b) { return a + b; }` in one file, then `import { add } from \"./math.js\";` in another. Every Node project also has a `package.json` file listing its dependencies and basic metadata."
+          },
+          {
+            "id": "nodejs-block-2-2",
+            "type": "body",
+            "value": "npm (Node Package Manager) is how you install other people's code as a dependency: `npm install express` downloads the `express` package into a `node_modules` folder and records it in `package.json`. This ecosystem of shared, reusable packages — hundreds of thousands of them — is one of the biggest reasons Node became so popular so fast."
+          },
+          {
+            "id": "nodejs-block-2-3",
+            "type": "fact",
+            "value": "npm's public registry is the largest software package registry in the world by number of packages, with well over a million published packages available to install."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 8,
+        "practiceQuiz": [
+          {
+            "q": "What does `export function add(...) {...}` let you do?",
+            "options": [
+              "Delete the function",
+              "Make the function usable from other files via import",
+              "Run the function automatically",
+              "Convert it to CSS"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does `npm install express` do?",
+            "options": [
+              "Deletes the express package",
+              "Downloads the express package and records it as a dependency",
+              "Runs your program",
+              "Compiles your code"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What file lists a Node project's dependencies?",
+            "options": [
+              "index.js",
+              "package.json",
+              "node_modules",
+              "README.md"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "nodejs-lesson-3",
+        "type": "lesson",
+        "title": "Building a Basic HTTP Server",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "nodejs-block-3-1",
+            "type": "body",
+            "value": "`http.createServer((req, res) => { res.end(\"Hello\"); })` uses Node's built-in `http` module to create a web server without any external packages, defining what happens on every incoming request — here, `req` describes the incoming request and `res` is used to send a response back."
+          },
+          {
+            "id": "nodejs-block-3-2",
+            "type": "body",
+            "value": "Calling `server.listen(3001)` starts the server listening for connections on port 3001; visiting `http://localhost:3001` in a browser then triggers that callback function. In practice, most real projects use a framework like Express on top of the raw `http` module, since it adds convenient routing (matching different URLs to different handler functions) without you having to parse the request URL by hand."
+          },
+          {
+            "id": "nodejs-block-3-3",
+            "type": "fact",
+            "value": "A port number identifies which specific program on a machine a connection is meant for — a single computer can run many servers at once, each listening on its own port, which is why local dev servers commonly pick unusual numbers like 3000 or 8080 to avoid clashing with other software."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 9,
+        "practiceQuiz": [
+          {
+            "q": "What does `server.listen(3001)` do?",
+            "options": [
+              "Deletes the server",
+              "Starts the server listening for connections on port 3001",
+              "Sends a response immediately",
+              "Stops all other servers"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "In `(req, res) => {...}`, what does `res` represent?",
+            "options": [
+              "The incoming request",
+              "The response, used to send data back to the client",
+              "A database connection",
+              "A file path"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Why do most real Node projects use a framework like Express instead of the raw http module alone?",
+            "options": [
+              "The http module doesn't work",
+              "Express adds convenient routing and other conveniences on top",
+              "Express is required to use JavaScript",
+              "http module is deprecated"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sql",
+    "title": "SQL & Databases",
+    "icon": "",
+    "level": "Beginner",
+    "color": "#00758F",
+    "about": "SQL is the language you use to store, query, and manage structured data in a relational database — the backbone of almost every app's backend. This course covers how relational tables are organized and how to write SELECT queries to filter, sort, and summarize data.",
+    "availability": "available",
+    "order": 8,
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "sql-lesson-1",
+        "type": "lesson",
+        "title": "Tables, Rows and Columns",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "sql-block-1-1",
+            "type": "body",
+            "value": "A relational database organizes data into tables, similar to a spreadsheet. Each table has a fixed set of columns describing what kind of data it holds — a `users` table might have `id`, `name`, and `email` columns — and each row is one individual record, like one specific user."
+          },
+          {
+            "id": "sql-block-1-2",
+            "type": "body",
+            "value": "Every table usually has a primary key: a column (often called `id`) whose value uniquely identifies each row, guaranteed never to repeat. Primary keys are what let one table reference a row in another table — for example, an `orders` table might have a `user_id` column pointing back to the `users` table, linking an order to the person who placed it."
+          },
+          {
+            "id": "sql-block-1-3",
+            "type": "fact",
+            "value": "The relational model — organizing data into tables with rows and columns — was first described by IBM researcher Edgar F. Codd in a 1970 paper, decades before most of today's databases existed."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 7,
+        "practiceQuiz": [
+          {
+            "q": "In a database table, what does one row typically represent?",
+            "options": [
+              "One column of data",
+              "One entire table",
+              "One individual record",
+              "One database"
+            ],
+            "correct": 2
+          },
+          {
+            "q": "What is a primary key used for?",
+            "options": [
+              "Formatting the table's text",
+              "Uniquely identifying each row",
+              "Encrypting the data",
+              "Deleting old rows automatically"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "How does an `orders` table typically link to the `users` table?",
+            "options": [
+              "By having identical table names",
+              "Through a user_id column referencing a user's primary key",
+              "Tables can't reference each other",
+              "By storing users inside the orders table"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "sql-lesson-2",
+        "type": "lesson",
+        "title": "The SELECT Statement",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "sql-block-2-1",
+            "type": "body",
+            "value": "The `SELECT` statement is how you read data out of a table. `SELECT name, email FROM users;` returns just the `name` and `email` columns for every row in the `users` table. Using `SELECT * FROM users;` returns every column instead — handy while exploring, but usually best avoided in real code since it pulls more data than you need."
+          },
+          {
+            "id": "sql-block-2-2",
+            "type": "body",
+            "value": "To narrow results down, add a `WHERE` clause: `SELECT * FROM users WHERE age >= 18;` only returns rows where that condition is true. You can combine conditions with `AND` and `OR`, like `WHERE age >= 18 AND country = 'US'`, and use `=`, `!=`, `>`, `<` to compare values."
+          },
+          {
+            "id": "sql-block-2-3",
+            "type": "fact",
+            "value": "SQL keywords like SELECT and WHERE are traditionally written in uppercase by convention, but SQL itself is case-insensitive for keywords — it's purely a readability habit, not a rule the database enforces."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 8,
+        "practiceQuiz": [
+          {
+            "q": "What does `SELECT * FROM users;` return?",
+            "options": [
+              "Nothing, it's invalid",
+              "Every column for every row in users",
+              "Only the first row",
+              "Only the id column"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which clause filters which rows are returned?",
+            "options": [
+              "FROM",
+              "SELECT",
+              "WHERE",
+              "ORDER"
+            ],
+            "correct": 2
+          },
+          {
+            "q": "How do you combine two conditions that must both be true in a WHERE clause?",
+            "options": [
+              "Separate them with a comma",
+              "Use the AND keyword",
+              "Use two WHERE clauses",
+              "Use a semicolon between them"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "sql-lesson-3",
+        "type": "lesson",
+        "title": "Sorting, Limiting and Aggregating",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "sql-block-3-1",
+            "type": "body",
+            "value": "`ORDER BY` sorts your results: `SELECT * FROM users ORDER BY age DESC;` returns rows sorted oldest-first (`DESC` for descending; leave it off, or use `ASC`, for ascending). `LIMIT` caps how many rows come back, useful for things like showing only the 10 most recent posts."
+          },
+          {
+            "id": "sql-block-3-2",
+            "type": "body",
+            "value": "Aggregate functions summarize many rows into one number: `COUNT(*)` counts rows, `SUM(price)` adds up a column, `AVG(rating)` averages it. Paired with `GROUP BY`, you can summarize per category — `SELECT country, COUNT(*) FROM users GROUP BY country;` returns one row per country with how many users are in it."
+          },
+          {
+            "id": "sql-block-3-3",
+            "type": "fact",
+            "value": "GROUP BY has to come after WHERE but before ORDER BY in a query — SQL clauses have a fixed order (SELECT, FROM, WHERE, GROUP BY, ORDER BY, LIMIT) that the database expects even though it doesn't execute them in that exact sequence internally."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 8,
+        "practiceQuiz": [
+          {
+            "q": "What does `ORDER BY age DESC` do?",
+            "options": [
+              "Filters out young users",
+              "Sorts results oldest-first",
+              "Deletes the age column",
+              "Groups users by age"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Which function would you use to count how many rows matched a query?",
+            "options": [
+              "SUM(*)",
+              "AVG(*)",
+              "COUNT(*)",
+              "LIMIT(*)"
+            ],
+            "correct": 2
+          },
+          {
+            "q": "What does GROUP BY let you do?",
+            "options": [
+              "Sort rows alphabetically",
+              "Summarize rows per category, like one row per country",
+              "Delete duplicate rows permanently",
+              "Rename a column"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ui-ux",
+    "title": "UI/UX Design Fundamentals",
+    "icon": "",
+    "level": "Beginner",
+    "color": "#A259FF",
+    "about": "Good design is about how something works for the person using it, not just how it looks. This course covers the difference between UI and UX, core usability principles, and why wireframing before you design saves time.",
+    "availability": "available",
+    "order": 9,
+    "units": [
+      {
+        "number": 1,
+        "title": "Fundamentals"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "ui-ux-lesson-1",
+        "type": "lesson",
+        "title": "UI vs UX: What's the Difference?",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.1",
+        "blocks": [
+          {
+            "id": "ui-ux-block-1-1",
+            "type": "body",
+            "value": "UI, user interface, is the actual surface someone interacts with — the buttons, colors, layout, and typography on screen. UX, user experience, is the bigger picture: the entire journey someone has using your product, including how easy it is to figure out, how it makes them feel, and whether it actually solves their problem."
+          },
+          {
+            "id": "ui-ux-block-1-2",
+            "type": "body",
+            "value": "A product can have a beautiful UI and still have terrible UX — a gorgeous checkout screen buried five confusing steps deep is bad UX with good UI. Conversely, a plain-looking form that's fast and obvious to fill out can have great UX despite unremarkable visuals. The two work together, but they're solving different problems."
+          },
+          {
+            "id": "ui-ux-block-1-3",
+            "type": "fact",
+            "value": "The term \"user experience\" was popularized by Don Norman in the early 1990s while he worked at Apple, specifically because he felt \"usability\" was too narrow a word to capture everything that shapes how someone actually feels using a product."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 6,
+        "practiceQuiz": [
+          {
+            "q": "What does UI refer to?",
+            "options": [
+              "The entire customer journey",
+              "The actual visual/interactive surface — buttons, layout, colors",
+              "Backend server code",
+              "A marketing strategy"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Can a product have good UI but bad UX?",
+            "options": [
+              "No, they're always identical",
+              "Yes — for example, a beautiful screen buried in a confusing multi-step flow",
+              "UX doesn't exist without UI",
+              "Only in mobile apps"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What does UX (user experience) encompass beyond visuals?",
+            "options": [
+              "Nothing beyond visuals",
+              "The whole journey and feeling of using a product, including ease and usefulness",
+              "Only the loading speed",
+              "Only the color scheme"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "ui-ux-lesson-2",
+        "type": "lesson",
+        "title": "Core Usability Principles",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.2",
+        "blocks": [
+          {
+            "id": "ui-ux-block-2-1",
+            "type": "body",
+            "value": "Consistency means similar things should look and behave similarly throughout a product — if one page's \"Save\" button is blue and another's identical action is a different color in a different spot, users have to relearn the interface on every screen instead of building one reliable mental model."
+          },
+          {
+            "id": "ui-ux-block-2-2",
+            "type": "body",
+            "value": "Feedback means the interface should always confirm that an action was received — a button that visibly presses, a spinner while something loads, a confirmation message after a form submits. Without feedback, users are left unsure whether their click actually did anything, and often click again, sometimes causing the action to happen twice."
+          },
+          {
+            "id": "ui-ux-block-2-3",
+            "type": "fact",
+            "value": "Visual hierarchy — making the most important element on a screen the biggest, boldest, or highest-contrast one — works because people scan a screen before they read it in detail, so the design itself should guide their eyes to what matters most first."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 7,
+        "practiceQuiz": [
+          {
+            "q": "Why does consistency matter in interface design?",
+            "options": [
+              "It doesn't matter",
+              "It lets users build one reliable mental model instead of relearning each screen",
+              "It only matters for color schemes",
+              "Consistency slows down development"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What problem does 'feedback' (like a spinner or confirmation message) solve?",
+            "options": [
+              "It makes the app slower on purpose",
+              "It confirms an action was received, so users aren't left unsure if their click worked",
+              "It's purely decorative",
+              "It replaces the need for a UI entirely"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What is 'visual hierarchy'?",
+            "options": [
+              "Alphabetizing menu items",
+              "Making the most important element the biggest/boldest to guide the eye first",
+              "A type of database structure",
+              "Sorting colors by hue"
+            ],
+            "correct": 1
+          }
+        ]
+      },
+      {
+        "id": "ui-ux-lesson-3",
+        "type": "lesson",
+        "title": "Wireframing Before You Design",
+        "unit": 1,
+        "unitTitle": "Fundamentals",
+        "subUnit": "1.3",
+        "blocks": [
+          {
+            "id": "ui-ux-block-3-1",
+            "type": "body",
+            "value": "A wireframe is a rough, low-fidelity sketch of a screen's layout — boxes and labels showing roughly where a header, a list, or a button will go, deliberately without colors, fonts, or polished visuals. The point is to validate the structure and flow of a screen cheaply, before investing time into a fully designed, pixel-perfect version."
+          },
+          {
+            "id": "ui-ux-block-3-2",
+            "type": "body",
+            "value": "Because a wireframe is quick and rough by design, it's cheap to throw away and redo if it turns out the layout doesn't work — a five-minute sketch getting rejected costs almost nothing, while a two-day fully polished design getting rejected for the same structural reason is a much bigger loss."
+          },
+          {
+            "id": "ui-ux-block-3-3",
+            "type": "fact",
+            "value": "Wireframes get their name from a similar concept in 3D computer graphics — a \"wireframe model\" shows an object's basic edges and structure with no surface color or texture applied yet, exactly the same idea applied to interface layout."
+          }
+        ],
+        "points": 10,
+        "estimatedMinutes": 7,
+        "practiceQuiz": [
+          {
+            "q": "What is a wireframe?",
+            "options": [
+              "A fully polished, final design",
+              "A rough, low-fidelity sketch showing a screen's structure and layout",
+              "A type of programming language",
+              "A marketing document"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "Why deliberately leave out colors and polished visuals from a wireframe?",
+            "options": [
+              "It's impossible to add them at that stage",
+              "To keep the focus on validating layout and flow cheaply, before investing more time",
+              "Wireframes are only used after the final design",
+              "Colors always confuse designers"
+            ],
+            "correct": 1
+          },
+          {
+            "q": "What's the main benefit of catching a structural problem at the wireframe stage instead of after a full design?",
+            "options": [
+              "There's no benefit",
+              "It's far cheaper to change a rough sketch than a fully polished design",
+              "Wireframes can't have structural problems",
+              "Full designs are always correct"
+            ],
+            "correct": 1
+          }
+        ]
+      }
+    ]
+  }
+]

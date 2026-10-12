@@ -1,6 +1,6 @@
 // A segmented-control tab switcher shared by admin pages that group two
 // related views under one sidebar entry (Users: registered/visitors,
-// System: backup/API usage) instead of giving each its own nav link.
+// System: backup/reset) instead of giving each its own nav link.
 export default function AdminTabs({ tabs, active, onChange }) {
   return (
     <div className="inline-flex items-center gap-1 p-1 mb-6 rounded-xl bg-line/50 dark:bg-white/5">

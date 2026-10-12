@@ -167,7 +167,7 @@ export default function LessonEditor({ lesson, onChange, onRemove }) {
   // The practice quiz shown after this lesson's content, on the lesson page —
   // every question always has exactly 4 options with one marked correct,
   // matching the shape the rest of the app already assumes everywhere else
-  // (LessonPracticeQuiz, the AI generation script).
+  // (LessonPracticeQuiz and the course quiz tool).
   const practiceQuiz = lesson.practiceQuiz || [];
   const updatePracticeQuestion = (qi, patch) => {
     onChange({

@@ -21,12 +21,11 @@ export default function CvAnalyzerPage() {
       </nav>
 
       <span className="eyebrow">
-        <Bot size={13} /> AI career tools
+        <Bot size={13} /> Practice tools
       </span>
-      <h1 className="text-[2rem]">AI-Powered CV Analyzer</h1>
+      <h1 className="text-[2rem]">CV Feedback Preview</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Upload your CV and get a live ATS-friendliness score with concrete, AI-powered tips to
-        improve it.
+        Upload your CV to explore a default feedback preview and practical CV writing tips.
       </p>
 
       <CvAnalyzer

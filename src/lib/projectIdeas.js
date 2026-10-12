@@ -1,22 +1,8 @@
-import { API_BASE } from './apiBase'
+import { DEFAULT_PROJECT_IDEAS } from '../data/toolDefaults'
 
 export async function generateProjectIdeas({ language, level, detailed }) {
-  let res
-  try {
-    res = await fetch(`${API_BASE}/api/project-ideas`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ language, level, detailed }),
-    })
-  } catch {
-    throw new Error(
-      'Could not reach the AI analysis server — make sure it is running (npm run server, or npm run dev:all).',
-    )
-  }
-
-  const data = await res.json().catch(() => null)
-  if (!res.ok) {
-    throw new Error(data?.error || `Request failed (${res.status}).`)
-  }
-  return data.ideas
+  return DEFAULT_PROJECT_IDEAS.map((idea) => ({ ...structuredClone(idea),
+    skills: [language, ...idea.skills],
+    description: `${idea.description}${detailed ? ` Use ${language} and split the work into small, testable steps.` : ''}${level === 'advanced' ? ' Add automated tests, validation and import/export.' : level === 'medium' ? ' Add editing and input validation.' : ''}`,
+  }))
 }

@@ -1,80 +1,53 @@
 # CodeLingo
 
-A kids' ICT e-learning site — courses, grade roadmaps, badges, XP, and a
-community chat — rebuilt with **Vite + React**, styled entirely with
-**Tailwind CSS 3.4**, and with a full **/admin** panel for editing content.
-
-No backend is required: learner accounts, chat messages, and all
-admin-edited content are stored in the browser's `localStorage`.
+A standalone learning app built with Vite, React and Tailwind CSS. It runs without an API server, database, API keys or environment variables.
 
 ## Getting started
 
 ```bash
 npm install
-npm run dev       # start the dev server
-npm run build     # production build -> dist/
+npm run dev       # run the frontend
+npm run build     # build the static site into dist/
 npm run preview   # preview the production build
+npm run lint
 ```
 
-## Admin panel
+Deploy `dist/` to a static host. The included Netlify configuration supports client-side routes.
 
-Go to **`/admin/login`** and log in with the default password:
+## Default content
 
-```
-codelingo-admin
-```
+The app starts with exactly **10 courses** and **30 lessons**, each with practice questions:
 
-You can change this in `src/data/data.js` (`ADMIN_PASSWORD`).
+1. HTML
+2. CSS
+3. JavaScript
+4. Python
+5. Git & Version Control
+6. TypeScript
+7. React
+8. Node.js
+9. SQL & Databases
+10. UI/UX Design Fundamentals
 
-From the admin panel you can:
+Four learning paths link to these courses. Badges, sample community posts and demo accounts are also included. Course content is defined in `src/data/courses.json`; paths, users, posts and badges are in `src/data/data.js`.
 
-- **Grades** — edit the Grades page header/subtitle, and add, edit, reorder,
-  or delete each grade's roadmap stops (title, description, and which
-  course/lesson they link to).
-- **Courses** — edit course info (title, icon, level, color, blurb) and
-  every lesson or quiz inside it, including quiz questions/options/answers.
-- **Badges** — edit badge icon, name and description, or add new ones.
-- **Chat rooms** — rename rooms, or clear a room's stored messages.
-- **Users** — view every registered learner, reset an account's progress,
-  or delete an account.
-- **Backup & reset** — export all content to a JSON file, import content
-  from a JSON file, or reset everything back to the original demo content.
+## Demo accounts
 
-## Folder structure
+Log in at `/account`:
 
-```
-src/
-  data/
-    data.js              default seed content (courses, grades, badges, rooms)
-  lib/
-    storage.js           localStorage helpers (namespaced under "codelingo:")
-    helpers.js            small pure helper functions (progress %, ids, etc.)
-  context/
-    ContentContext.jsx    editable app content (persisted, admin-driven)
-    AuthContext.jsx       learner accounts, session, progress
-    AdminAuthContext.jsx  admin login gate
-    ToastContext.jsx      toast notifications
-  routes/
-    RequireAuth.jsx       guards /profile for logged-in learners
-    RequireAdmin.jsx      guards /admin for the admin session
-  components/
-    layout/               navbar, footer, page shell
-    home/                 hero boot animation
-    courses/               course card, lesson panel, quiz panel
-    grades/                roadmap node
-    common/                shared bits like the filter row
-    admin/                 admin layout, cards, form fields, editors
-  pages/                  one file per route
-App.jsx                   route table
-main.jsx                  app entry point
-```
+| Account | Username | Password |
+| --- | --- | --- |
+| Learner | `demo` | `demo1234` |
+| Admin | `admin` | `codelingo-admin` |
 
-## Notes
+The admin account can open `/admin` to edit courses, paths and badges, manage local users and posts, or export/import content. **System → Reset to defaults** restores the 10 courses, four paths, badges and page text.
 
-- This is a self-contained demo: there's no real server, so "shared" data
-  (chat messages, user accounts, admin content) lives in the current
-  browser's localStorage only. Use **Backup & reset → Export** in the admin
-  panel to save your content edits somewhere durable.
-- The admin password is a simple client-side gate suitable for a demo or
-  internal tool — it is **not** real authentication. Don't rely on it to
-  protect sensitive data.
+## Browser storage and practice tools
+
+Accounts, sessions, progress, favorites, content edits, posts, comments and visit history persist in this browser's `localStorage`. Data is local to this browser and is not shared with other people or devices. New accounts can be created from the account page.
+
+Image and document attachments are kept as data URLs, with a 2 MB per-file limit. Browser storage has limited capacity; export your content edits from the admin panel to keep a backup.
+
+The practice tools use default content: course quizzes reuse lesson questions, interview practice uses a local question bank, project ideas use ten starter projects, and learning paths use the default course catalog. The CV feedback tool shows a clearly labeled sample review; it does not analyze the uploaded CV or call an AI service.
+
+Demo login is a client-side convenience, not secure authentication. Use this app with sample data only.

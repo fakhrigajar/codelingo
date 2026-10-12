@@ -1,15 +1,8 @@
-import { UPLOADS_BASE } from './apiBase'
-
-// Shared upload endpoint for both images and documents — returns the mime
-// type too so callers (e.g. the community composer) can tell attachments
-// apart without re-deriving it from the file extension.
-export async function uploadFile(dataUrl, filename) {
-  const res = await fetch(`${UPLOADS_BASE}/api/uploads`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ dataUrl, filename }),
-  })
-  const data = await res.json().catch(() => null)
-  if (!res.ok) throw new Error(data?.error || `Upload failed (${res.status}).`)
-  return data
+// Attachments stay in the browser as data URLs and persist with their post.
+export async function uploadFile(dataUrl, filename = '') {
+  const match = /^data:([^;,]+);base64,([A-Za-z0-9+/=\s]*)$/.exec(dataUrl)
+  if (!match) throw new Error('Could not read that file.')
+  const size = Math.floor(match[2].replace(/\s/g, '').length * 3 / 4)
+  if (size > 2 * 1024 * 1024) throw new Error('Choose a file smaller than 2 MB for browser storage.')
+  return { url: dataUrl, mime: match[1], name: filename }
 }

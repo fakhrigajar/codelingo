@@ -6,9 +6,9 @@ import { usePublicUsers } from "../../context/PublicUsersContext";
 import { useToast } from "../../context/ToastContext";
 import {
   listComments,
-  postComment as postCommentApi,
-  deleteComment as deleteCommentApi,
-} from "../../lib/discussionApi";
+  postComment as saveComment,
+  deleteComment as removeComment,
+} from "../../lib/discussions";
 import { initials } from "../../lib/helpers";
 import Avatar from "../common/Avatar";
 
@@ -38,7 +38,7 @@ export default function LessonDiscussion({ course, lesson }) {
     }
     setInput("");
     try {
-      const saved = await postCommentApi(course.id, lesson.id, {
+      const saved = await saveComment(course.id, lesson.id, {
         username: currentUser.username,
         displayName: currentUser.displayName,
         text,
@@ -55,7 +55,7 @@ export default function LessonDiscussion({ course, lesson }) {
   const handleDelete = async (messageId) => {
     if (!confirm("Delete this message? This cannot be undone.")) return;
     try {
-      await deleteCommentApi(course.id, lesson.id, messageId, currentUser.username);
+      await removeComment(course.id, lesson.id, messageId, currentUser.username);
       setComments((prev) => prev.filter((c) => c.id !== messageId));
     } catch {
       toast("Could not delete that message — try again.");

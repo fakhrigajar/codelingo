@@ -13,7 +13,7 @@ export default function CourseQuizSetup({ completedCourses, onReady }) {
     setStatus("loading");
     setError("");
     try {
-      const questions = await generateCourseQuiz({ courseId });
+      const questions = await generateCourseQuiz({ course });
       onReady({ course, questions });
     } catch (err) {
       setError(err.message);
@@ -28,8 +28,7 @@ export default function CourseQuizSetup({ completedCourses, onReady }) {
       </div>
       <h2 className="text-[1.3rem] mt-2 mb-1.5">Which course should we quiz you on?</h2>
       <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-5">
-        Pick a course you've finished — AI will generate fresh comprehension questions covering the
-        whole thing.
+        Pick a course you've finished to review its lesson practice questions.
       </p>
 
       <div className="flex flex-col gap-2 mb-5 text-left">

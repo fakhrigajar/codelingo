@@ -1,8 +1,7 @@
-import { API_BASE } from './apiBase'
+import { createLocalCollection } from './localStore'
+import { DEFAULT_USERS } from '../data/data'
 
-export function fetchPublicUsers() {
-  return fetch(`${API_BASE}/api/users-public`).then((res) => {
-    if (!res.ok) throw new Error('Could not load users.')
-    return res.json()
-  })
+const users = createLocalCollection('users', 'username', DEFAULT_USERS)
+export async function fetchPublicUsers() {
+  return (await users.list()).map(({ username, displayName, avatar }) => ({ username, displayName, avatar }))
 }

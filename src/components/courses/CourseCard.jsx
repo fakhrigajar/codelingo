@@ -19,9 +19,8 @@ export default function CourseCard({
   const pct = progressPct(currentUser, course);
   const comingSoon = course.availability === "coming-soon";
   const titleColor = shadeColor(course.color, -12);
-  const hours = Math.round(
-    course.lessons.reduce((sum, l) => sum + getLessonMinutes(l), 0) / 60,
-  );
+  const minutes = course.lessons.reduce((sum, l) => sum + getLessonMinutes(l), 0);
+  const duration = minutes >= 60 ? `${Math.round(minutes / 60)}h` : `${minutes}m`;
   const isFavorite = (currentUser?.favorites || []).includes(course.id);
 
   const toggleFavorite = (e) => {
@@ -142,7 +141,7 @@ export default function CourseCard({
         <div className="flex items-center justify-between gap-3 pt-3 border-t-2 border-dashed border-line dark:border-white/10">
           <div>
             <span className="block text-ink dark:text-white text-[1.15rem] font-extrabold leading-none">
-              {hours > 0 ? `${hours}h` : "—"}
+              {minutes > 0 ? duration : "—"}
             </span>
             <span className="text-ink-soft dark:text-white/50 text-[.68rem]">
               est. time

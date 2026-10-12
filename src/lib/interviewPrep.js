@@ -1,22 +1,13 @@
-import { API_BASE } from './apiBase'
+import { DEFAULT_INTERVIEW_QUESTIONS } from '../data/toolDefaults'
+import { DEFAULT_COURSES } from '../data/data'
+import { generateCourseQuiz } from './courseQuiz'
 
 export async function generateInterviewQuestions({ role, count = 8 }) {
-  let res
-  try {
-    res = await fetch(`${API_BASE}/api/interview-questions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role, count }),
-    })
-  } catch {
-    throw new Error(
-      'Could not reach the AI analysis server — make sure it is running (npm run server, or npm run dev:all).',
-    )
-  }
-
-  const data = await res.json().catch(() => null)
-  if (!res.ok) {
-    throw new Error(data?.error || `Request failed (${res.status}).`)
-  }
-  return data.questions
+  const topic = role.toLowerCase()
+  const ids = /frontend|react|javascript|typescript/.test(topic) ? ['javascript', 'typescript', 'react']
+    : /backend|node/.test(topic) ? ['nodejs', 'sql', 'git']
+    : /data|python|sql/.test(topic) ? ['python', 'sql'] : []
+  const questions = (await Promise.all(DEFAULT_COURSES.filter((course) => ids.includes(course.id))
+    .map((course) => generateCourseQuiz({ course })))).flat()
+  return structuredClone([...questions, ...DEFAULT_INTERVIEW_QUESTIONS].slice(0, count))
 }

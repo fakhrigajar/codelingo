@@ -36,12 +36,11 @@ export default function LearningPathPage() {
       </nav>
 
       <span className="eyebrow">
-        <Bot size={13} /> AI career tools
+        <Bot size={13} /> Practice tools
       </span>
       <h1 className="text-[2rem]">Learning Path</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Tell us your age, experience, and goal — AI builds a personalized step-by-step path to get
-        you there.
+        Choose your experience and goal to explore a default step-by-step learning path.
       </p>
 
       <LearningPathForm onGenerate={handleGenerate} status={status} />

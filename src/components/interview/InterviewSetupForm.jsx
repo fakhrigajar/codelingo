@@ -29,7 +29,7 @@ export default function InterviewSetupForm({ onReady }) {
       </div>
       <h2 className="text-[1.3rem] mt-2 mb-1.5">What role are you interviewing for?</h2>
       <p className="text-ink-soft dark:text-white/60 text-[.9rem] mb-5">
-        AI will generate a set of common interview questions so you can quiz yourself.
+        Choose a role to load a set of default practice questions.
       </p>
 
       <div className="field text-left mb-3">
@@ -67,7 +67,7 @@ export default function InterviewSetupForm({ onReady }) {
         onClick={handleGenerate}
         disabled={!role.trim() || status === 'loading'}
       >
-        {status === 'loading' ? 'Generating questions...' : 'Generate questions'}
+        {status === 'loading' ? 'Generating questions...' : 'Start practice'}
       </button>
     </div>
   )

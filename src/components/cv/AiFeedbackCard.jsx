@@ -10,9 +10,9 @@ export default function AiFeedbackCard({
 }) {
   return (
     <div className="h-full flex flex-col bg-white dark:bg-white/5 border-2 border-line dark:border-white/10 rounded-[18px] p-6">
-      <h3 className="text-[1.05rem] mb-1">AI Feedback</h3>
+      <h3 className="text-[1.05rem] mb-1">Sample CV Feedback</h3>
       <p className="text-[.82rem] text-ink-soft dark:text-white/50 mb-4">
-        A deeper, human-style review of your CV with AI.
+        Default feedback for exploring how a CV review looks.
       </p>
 
       <button
@@ -22,10 +22,10 @@ export default function AiFeedbackCard({
         disabled={!hasContent || status === "loading"}
       >
         {status === "loading"
-          ? "Asking Gemini..."
+          ? "Loading preview..."
           : result
-            ? "Re-analyze"
-            : "Analyze with Gemini"}
+            ? "View sample again"
+            : "View sample feedback"}
       </button>
 
       {error && (
@@ -36,7 +36,7 @@ export default function AiFeedbackCard({
 
       {result ? (
         <div className="flex-1 flex items-center justify-center">
-          <ScoreRing score={result.score} label="Your score" size={112} />
+          <ScoreRing score={result.score} label="Sample score" size={112} />
         </div>
       ) : (
         <div className="flex-1">
@@ -46,7 +46,7 @@ export default function AiFeedbackCard({
           <ul className="space-y-2.5">
             <li className="flex gap-2.5 text-[.86rem] text-ink-soft dark:text-white/60">
               <Target size={16} className="shrink-0" />
-              <span>An overall ATS score out of 100</span>
+              <span>A sample ATS score out of 100</span>
             </li>
             <li className="flex gap-2.5 text-[.86rem] text-ink-soft dark:text-white/60">
               <CheckCircle2 size={16} className="shrink-0" />

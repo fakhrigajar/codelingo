@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
-import { listPosts, createPost as createPostApi } from "../lib/postApi";
+import { listPosts, createPost as savePost } from "../lib/posts";
 import { uid } from "../lib/helpers";
 import PostComposer from "../components/community/PostComposer";
 import PostCard from "../components/community/PostCard";
@@ -36,7 +36,7 @@ export default function CommunityPage() {
     };
     setPosts((prev) => [post, ...prev]);
     try {
-      await createPostApi(post);
+      await savePost(post);
     } catch {
       setPosts((prev) => prev.filter((p) => p.id !== post.id));
       toast("Could not publish that post — try again.");

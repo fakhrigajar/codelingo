@@ -71,7 +71,7 @@ export default function RegisteredUsersPanel() {
     <div>
       <p className="text-ink-soft dark:text-white/60 mb-6">
         {list.length} registered learner{list.length === 1 ? "" : "s"}. Accounts
-        are stored on the server.
+        are stored in this browser.
       </p>
 
       {list.length === 0 && (

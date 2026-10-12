@@ -6,12 +6,13 @@ import {
   useCallback,
 } from "react";
 import { storageGet, storageSet, storageRemove } from "../lib/storage";
-import { createResourceSync } from "../lib/adminSync";
+import { createLocalCollection } from "../lib/localStore";
+import { DEFAULT_USERS } from "../data/data";
 
 const AuthContext = createContext(null);
 
 const SESSION_KEY = "session";
-const usersApi = createResourceSync("users", "username");
+const usersStore = createLocalCollection("users", "username", DEFAULT_USERS);
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -26,35 +27,10 @@ export function AuthProvider({ children }) {
 
     let cancelled = false;
 
-    // The API server can still be finishing its MongoDB connection right as
-    // the page loads (same race ContentContext's loader retries around), so
-    // a failed lookup here isn't proof the session is invalid — only a
-    // confirmed 404 means the account is actually gone. Retry with backoff
-    // instead of logging a real user out because of a transient failure.
-    function load(attempt = 0) {
-      usersApi
-        .get(session)
-        .then((user) => {
-          if (cancelled) return;
-          setCurrentUser(user);
-          setReady(true);
-        })
-        .catch((err) => {
-          if (cancelled) return;
-          if (err.status === 404) {
-            storageRemove(SESSION_KEY);
-            setReady(true);
-            return;
-          }
-          if (attempt < 5) {
-            setTimeout(() => load(attempt + 1), 500 * (attempt + 1));
-          } else {
-            setReady(true);
-          }
-        });
-    }
-
-    load();
+    usersStore.get(session)
+      .then((user) => { if (!cancelled) setCurrentUser(user); })
+      .catch(() => { if (!cancelled) storageRemove(SESSION_KEY); })
+      .finally(() => { if (!cancelled) setReady(true); });
     return () => {
       cancelled = true;
     };
@@ -62,7 +38,7 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (username, password) => {
     const uname = username.trim().toLowerCase();
-    const user = await usersApi.get(uname).catch(() => null);
+    const user = await usersStore.get(uname).catch(() => null);
     if (!user || user.password !== password) {
       return { ok: false, error: "Username or password is incorrect." };
     }
@@ -90,7 +66,7 @@ export function AuthProvider({ children }) {
         joined: new Date().toISOString(),
       };
       try {
-        await usersApi.create(newUser);
+        await usersStore.create(newUser);
       } catch {
         return { ok: false, error: "That username is taken — try another." };
       }
@@ -137,16 +113,16 @@ export function AuthProvider({ children }) {
 
       try {
         if (uname !== currentUser.username) {
-          const existing = await usersApi.get(uname).catch(() => null);
+          const existing = await usersStore.get(uname).catch(() => null);
           if (existing)
             return {
               ok: false,
               error: "That username is taken — try another.",
             };
-          await usersApi.create(updated);
-          await usersApi.remove(currentUser.username);
+          await usersStore.create(updated);
+          await usersStore.remove(currentUser.username);
         } else {
-          await usersApi.update(uname, updated);
+          await usersStore.update(uname, updated);
         }
       } catch (e) {
         return { ok: false, error: e.message || "Could not save changes." };
@@ -161,7 +137,7 @@ export function AuthProvider({ children }) {
 
   const saveCurrentUser = useCallback((updated) => {
     setCurrentUser(updated);
-    usersApi.update(updated.username, updated).catch(() => {});
+    usersStore.update(updated.username, updated).catch(() => {});
   }, []);
 
   const value = {
@@ -186,11 +162,11 @@ export function useAuth() {
 // Exposed for the admin "Users" manager, which needs to see/edit every
 // account, not just the currently logged-in one.
 export function getAllUsers() {
-  return usersApi.list();
+  return usersStore.list();
 }
 export function saveUser(user) {
-  return usersApi.update(user.username, user);
+  return usersStore.update(user.username, user);
 }
 export function deleteUser(username) {
-  return usersApi.remove(username);
+  return usersStore.remove(username);
 }

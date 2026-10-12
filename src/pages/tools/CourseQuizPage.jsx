@@ -28,12 +28,11 @@ export default function CourseQuizPage() {
       </nav>
 
       <span className="eyebrow">
-        <Bot size={13} /> AI career tools
+        <Bot size={13} /> Practice tools
       </span>
       <h1 className="text-[2rem]">Course Quiz</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Finish a course to unlock its quiz — AI will generate fresh comprehension questions
-        covering everything you learned.
+        Finish a course to unlock its quiz and review the practice questions from its lessons.
       </p>
 
       {session ? (

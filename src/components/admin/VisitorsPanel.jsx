@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { listVisits, clearVisits } from "../../lib/visitApi";
+import { listVisits, clearVisits } from "../../lib/visits";
 import { useToast } from "../../context/ToastContext";
 import AdminCard from "./AdminCard";
 import { AdminButton } from "./AdminFields";

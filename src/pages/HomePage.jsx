@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useContent } from "../context/ContentContext";
 import { useAuth } from "../context/AuthContext";
-import { listPosts } from "../lib/postApi";
+import { listPosts } from "../lib/posts";
 import CourseCard from "../components/courses/CourseCard";
 import HeroFloatingLayer from "../components/home/HeroFloatingLayer";
 import StepsRow from "../components/home/StepsRow";
@@ -116,7 +116,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Real dev skills",
-    body: "JavaScript, React, backend development, AI and more — all in one place, taught in bite-sized steps.",
+    body: "JavaScript, React, Python, databases and more — all in one place, taught in bite-sized steps.",
   },
   {
     pad: "05",
@@ -173,7 +173,7 @@ const STEPS = [
   {
     icon: Compass,
     title: "Pick a course",
-    body: "Choose from JavaScript, React, backend dev, AI and more.",
+    body: "Choose from JavaScript, React, Python, databases and more.",
   },
   {
     icon: CheckCircle2,
@@ -233,7 +233,7 @@ export default function HomePage() {
             delay={0.18}
             className="text-base sm:text-[1.15rem] max-w-[400px] sm:max-w-[500px] desktop:max-w-[600px] mx-auto dark:text-[#C4CCEB] text-indigo-dark my-4 mb-7"
           >
-            Bite-sized courses in JavaScript, React, backend development, AI and
+            Bite-sized courses in JavaScript, React, Python, databases and
             more — guided by badges, and backed by a friendly community.
           </FadeIn>
           <FadeIn
@@ -290,7 +290,7 @@ export default function HomePage() {
           </h2>
           <p className="text-ink-soft dark:text-white/60 text-[1.05rem] mb-7">
             {courses.length} course modules covering JavaScript, React, backend
-            development, AI and more.
+            development, Python and more.
           </p>
         </div>
         <div className="grid sm:grid-cols-3 gap-6 max-w-[980px] mx-auto">

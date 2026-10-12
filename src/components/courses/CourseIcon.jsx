@@ -1,7 +1,7 @@
 export function isImageIcon(icon) {
   return (
     typeof icon === "string" &&
-    (icon.startsWith("data:image") || /^https?:\/\//.test(icon))
+    (icon.startsWith("/") || icon.startsWith("data:image") || /^https?:\/\//.test(icon))
   );
 }
 

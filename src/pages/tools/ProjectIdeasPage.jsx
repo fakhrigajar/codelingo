@@ -36,11 +36,11 @@ export default function ProjectIdeasPage() {
       </nav>
 
       <span className="eyebrow">
-        <Bot size={13} /> AI career tools
+        <Bot size={13} /> Practice tools
       </span>
       <h1 className="text-[2rem]">Project Ideas</h1>
       <p className="text-ink-soft dark:text-white/60 max-w-[640px] mb-6">
-        Pick a language and a level, and AI will generate 10 project ideas to build your skills.
+        Pick a language and a level to explore 10 default project ideas and build your skills.
       </p>
 
       <ProjectIdeaForm onGenerate={handleGenerate} status={status} />
@@ -61,7 +61,7 @@ export default function ProjectIdeasPage() {
               onClick={() => lastRequest && handleGenerate(lastRequest)}
               disabled={status === 'loading'}
             >
-              {status === 'loading' ? 'Generating...' : 'Generate 10 more'}
+              {status === 'loading' ? 'Generating...' : 'Show ideas again'}
             </button>
           </div>
         </div>

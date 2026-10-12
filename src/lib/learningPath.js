@@ -1,22 +1,11 @@
-import { API_BASE } from './apiBase'
+import { DEFAULT_COURSES, DEFAULT_PATHS } from '../data/data'
 
-export async function generateLearningPath({ age, experience, goal }) {
-  let res
-  try {
-    res = await fetch(`${API_BASE}/api/learning-path`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ age, experience, goal }),
-    })
-  } catch {
-    throw new Error(
-      'Could not reach the AI analysis server — make sure it is running (npm run server, or npm run dev:all).',
-    )
-  }
-
-  const data = await res.json().catch(() => null)
-  if (!res.ok) {
-    throw new Error(data?.error || `Request failed (${res.status}).`)
-  }
-  return data.steps
+export async function generateLearningPath({ experience, goal }) {
+  const target = goal.toLowerCase()
+  const pathId = /python|data/.test(target) ? 'python-data' : /full.?stack|backend|node/.test(target) ? 'full-stack'
+    : /react|frontend|front.end/.test(target) ? 'frontend' : 'web-foundations'
+  const path = DEFAULT_PATHS.find((entry) => entry.id === pathId)
+  const courses = path.courseIds.map((id) => DEFAULT_COURSES.find((course) => course.id === id))
+  return [...courses.map((course) => ({ title: course.title, description: course.about })),
+    { title: 'Build a practice project', description: `Apply these courses to a ${experience === 'Advanced' ? 'larger' : 'small'} project, document your decisions and review what you learned.` }]
 }

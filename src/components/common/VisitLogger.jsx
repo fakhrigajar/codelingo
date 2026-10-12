@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { logVisit } from '../../lib/visitApi'
+import { logVisit } from '../../lib/visits'
 
 // Logs one row per page view for the admin "Visitors" page. Skips /admin/*
 // itself so an admin browsing their own dashboard doesn't pollute the
